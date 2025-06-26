@@ -1324,6 +1324,12 @@
                         <strong>API Dashboard</strong>
                         <p>Status & Metriken</p>
                     </div>
+                    <div class="template-card" data-template="header">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">🎪</div>
+                        <strong>Website Header</strong>
+                        <p>Navigation & Logo</p>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1406,7 +1412,7 @@
         let autoSaveInterval = null;
         let currentEditingElement = null;
 
-        // Icon Collections für verschiedene Zwecke
+        // Icon Collections für verschiedene Zwecke (erweitert)
         const iconCollections = {
             fontawesome: {
                 // Navigation & Pfeile
@@ -1583,7 +1589,129 @@
                 'Medaille': '&#xf5a2;',
                 'Flagge': '&#xf024;',
                 'Tag': '&#xf02b;',
-                'Lesezeichen': '&#xf02e;'
+                'Lesezeichen': '&#xf02e;',
+
+                // Erweiterte Icon-Sammlung
+                'Akademie': '&#xf19d;',
+                'Ausbildung': '&#xf501;',
+                'Zertifikat': '&#xf0a3;',
+                'Diplom': '&#xf5ea;',
+                'Abschluss': '&#xf19d;',
+                'Schulung': '&#xf02d;',
+                'Webinar': '&#xf03d;',
+                'E-Learning': '&#xf108;',
+                'Online-Kurs': '&#xf109;',
+                'Training': '&#xf0c0;',
+
+                // Erweiterte Business Icons
+                'Strategie': '&#xf0e8;',
+                'Planung': '&#xf073;',
+                'Projekt': '&#xf0c1;',
+                'Aufgabe': '&#xf0ae;',
+                'Deadline': '&#xf017;',
+                'Meeting': '&#xf0c0;',
+                'Präsentation': '&#xf1c1;',
+                'Report': '&#xf15c;',
+                'Dashboard': '&#xf200;',
+                'Analyse': '&#xf080;',
+                'Statistik': '&#xf201;',
+                'Diagramm': '&#xf200;',
+
+                // Erweiterte Kommunikation
+                'Newsletter': '&#xf0e0;',
+                'Blog': '&#xf781;',
+                'Forum': '&#xf086;',
+                'FAQ': '&#xf059;',
+                'Support': '&#xf1cd;',
+                'Hilfe': '&#xf059;',
+                'Kontakt': '&#xf095;',
+                'Anfrage': '&#xf075;',
+                'Feedback': '&#xf4ad;',
+                'Bewertung': '&#xf005;',
+
+                // Erweiterte Sicherheit
+                'Verschlüsselung': '&#xf084;',
+                'Authentifizierung': '&#xf2f6;',
+                'Firewall': '&#xf132;',
+                'Backup': '&#xf0c7;',
+                'Wiederherstellung': '&#xf2ea;',
+                'Audit': '&#xf1b2;',
+                'Protokoll': '&#xf15c;',
+                'Überwachung': '&#xf06e;',
+                'Alarm': '&#xf0f3;',
+                'Warnung': '&#xf071;',
+
+                // Erweiterte Workflow Icons
+                'Genehmigung': '&#xf058;',
+                'Ablehnung': '&#xf057;',
+                'Pending': '&#xf017;',
+                'Bearbeitung': '&#xf044;',
+                'Überprüfung': '&#xf00c;',
+                'Freigabe': '&#xf00c;',
+                'Archiv': '&#xf187;',
+                'Export': '&#xf019;',
+                'Import': '&#xf093;',
+                'Synchronisation': '&#xf021;',
+
+                // Social & Marketing
+                'Website': '&#xf0ac;',
+                'SEO': '&#xf002;',
+                'Analytics': '&#xf080;',
+                'Campaign': '&#xf0a1;',
+                'Lead': '&#xf007;',
+                'Conversion': '&#xf0ec;',
+                'ROI': '&#xf201;',
+                'Traffic': '&#xf1fe;',
+                'Ranking': '&#xf091;',
+                'Optimization': '&#xf085;',
+
+                // Erweiterte System Icons
+                'Installation': '&#xf019;',
+                'Update': '&#xf021;',
+                'Konfiguration': '&#xf085;',
+                'Einstellungen': '&#xf013;',
+                'Benutzer': '&#xf007;',
+                'Gruppe': '&#xf0c0;',
+                'Berechtigung': '&#xf132;',
+                'Rolle': '&#xf507;',
+                'Lizenz': '&#xf0c1;',
+                'Aktivierung': '&#xf00c;',
+
+                // Erweiterte Dokument-Typen
+                'Vertrag': '&#xf1c2;',
+                'Rechnung': '&#xf570;',
+                'Angebot': '&#xf15c;',
+                'Bestellung': '&#xf07a;',
+                'Lieferschein': '&#xf0d1;',
+                'Protokoll': '&#xf15c;',
+                'Checkliste': '&#xf0ae;',
+                'Handbuch': '&#xf02d;',
+                'Richtlinie': '&#xf1c9;',
+                'Vorlage': '&#xf1c1;',
+
+                // Erweiterte Status Icons
+                'Aktiv': '&#xf058;',
+                'Inaktiv': '&#xf057;',
+                'Pausiert': '&#xf04c;',
+                'Laufend': '&#xf04b;',
+                'Beendet': '&#xf04d;',
+                'Geplant': '&#xf073;',
+                'Überfällig': '&#xf071;',
+                'Pünktlich': '&#xf00c;',
+                'Verspätet': '&#xf12a;',
+                'Storniert': '&#xf00d;',
+
+                // Industrie-spezifische Icons
+                'Immobilie': '&#xf015;',
+                'Versicherung': '&#xf132;',
+                'Gesundheit': '&#xf0fa;',
+                'Bildung': '&#xf19d;',
+                'Einzelhandel': '&#xf07a;',
+                'Produktion': '&#xf275;',
+                'Transport': '&#xf1b9;',
+                'Energie': '&#xf0e7;',
+                'Telekommunikation': '&#xf095;',
+                'Software': '&#xf121;'
             },
             categories: {
                 'Navigation': ['Pfeil rechts', 'Pfeil links', 'Pfeil unten', 'Pfeil oben', 'Externe Link', 'Kreis rechts'],
@@ -1596,7 +1724,14 @@
                 'Zeit': ['Kalender', 'Uhr', 'Stoppuhr', 'Termin', 'Timer'],
                 'Business': ['Euro', 'Bank', 'Chart-Line', 'Chart-Bar', 'Trend-up', 'Taschenrechner'],
                 'Tools': ['Einstellungen', 'Werkzeug', 'Filter', 'Suche', 'Bearbeiten', 'Löschen'],
-                'Verschiedenes': ['Stern', 'Herz', 'Blitz', 'Rakete', 'Glühbirne', 'Ziel']
+                'Verschiedenes': ['Stern', 'Herz', 'Blitz', 'Rakete', 'Glühbirne', 'Ziel'],
+                'Bildung & Training': ['Akademie', 'Ausbildung', 'Zertifikat', 'Diplom', 'Schulung', 'Webinar', 'E-Learning', 'Training'],
+                'Erweiterte Business': ['Strategie', 'Planung', 'Projekt', 'Meeting', 'Präsentation', 'Dashboard', 'Analyse', 'Statistik'],
+                'Marketing & Web': ['Website', 'SEO', 'Analytics', 'Campaign', 'Lead', 'Conversion', 'Traffic', 'Ranking'],
+                'Workflow & Status': ['Genehmigung', 'Ablehnung', 'Pending', 'Bearbeitung', 'Freigabe', 'Aktiv', 'Inaktiv', 'Laufend'],
+                'Erweiterte Sicherheit': ['Verschlüsselung', 'Authentifizierung', 'Firewall', 'Backup', 'Audit', 'Überwachung', 'Alarm'],
+                'Dokument-Typen': ['Vertrag', 'Rechnung', 'Angebot', 'Bestellung', 'Protokoll', 'Checkliste', 'Handbuch', 'Richtlinie'],
+                'Industrie-spezifisch': ['Immobilie', 'Versicherung', 'Gesundheit', 'Bildung', 'Einzelhandel', 'Produktion', 'Transport']
             },
             listStyles: {
                 'Standard': 'disc',
@@ -2289,12 +2424,45 @@
             showNotification('🎮 Alle Slides sichtbar gemacht', 'success');
         }
         
-        // Elemente editierbar machen
+        // Elemente editierbar machen (reparierte Version)
         function makeElementsEditable(container) {
-            // 1. Icons editierbar machen
-            const icons = container.querySelectorAll('.icon, .contact-icon, .cta-icon, .phase-icon, [class*="icon"], [class*="fa-"]');
+            // Interaktive Module für Bearbeitung vorbereiten
+            prepareInteractiveModulesForEditing(container);
+
+            // Editor-eigene Bereiche ausschließen
+            function isInEditorArea(element) {
+                const editorSelectors = [
+                    '.text-editor-popup', '.element-controls', '.toolbar-btn', '.element-btn',
+                    '.modal-content', '.sidebar', '.header-content', '.app-header',
+                    '.form-group', '.btn', 'button', 'input', 'textarea', 'select', 'label',
+                    '.notification', '.welcome-screen', '.tab', '.tab-panel', 
+                    '#moduleEditor', '#welcomeScreen'
+                ];
+                
+                return editorSelectors.some(function(selector) {
+                    return element.closest(selector) || element.matches(selector);
+                });
+            }
+
+            // 1. Icons editierbar machen (erweiterte Erkennung)
+            const icons = container.querySelectorAll('.icon, .contact-icon, .cta-icon, .phase-icon, .kerberos-feature-icon, .kerberos-highlight-icon, .kerberos-button-icon, .kerberos-card-button-icon, .kerberos-api-symbol, .kerberos-device-symbol, [class*="icon"], [class*="fa-"]');
+            
+            // Zusätzlich: Automatische Icon-Erkennung durch Inhalt
+            const allSpans = container.querySelectorAll('span');
+            allSpans.forEach(function(span) {
+                const content = span.innerHTML;
+                // Prüfen auf FontAwesome Unicode oder Emojis
+                if (content.match(/&#x[0-9a-fA-F]+;/) || 
+                    content.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u) ||
+                    (span.style.fontFamily && span.style.fontFamily.includes('Font Awesome'))) {
+                    if (!span.querySelector('.element-controls') && !isInEditorArea(span)) {
+                        makeIconEditable(span);
+                    }
+                }
+            });
+            
             icons.forEach(function(icon) {
-                if (!icon.querySelector('.element-controls')) {
+                if (!icon.querySelector('.element-controls') && !isInEditorArea(icon)) {
                     makeIconEditable(icon);
                 }
             });
@@ -2302,39 +2470,219 @@
             // 2. Bilder editierbar machen
             const images = container.querySelectorAll('img');
             images.forEach(function(image) {
-                if (!image.classList.contains('element-editable')) {
+                if (!image.classList.contains('element-editable') && !isInEditorArea(image)) {
                     makeImageEditable(image);
                 }
             });
 
             // 3. Buttons/Links editierbar machen
-            const links = container.querySelectorAll('a, .btn, .contact-cta, [class*="button"], [href]');
+            const links = container.querySelectorAll('a, .btn, .contact-cta, .kerberos-cta-button, .kerberos-card-button, [class*="button"], [href]');
             links.forEach(function(link) {
-                if (!link.classList.contains('element-editable')) {
+                if (!link.classList.contains('element-editable') && !isInEditorArea(link)) {
                     makeElementEditable(link);
                 }
             });
 
-            // 4. Standard editierbare Elemente
-            const editableElements = container.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span:not(.icon), td, th, li');
-            editableElements.forEach(function(element) {
+            // 4. Listen editierbar machen
+            const lists = container.querySelectorAll('ul, ol');
+            lists.forEach(function(list) {
+                if (!list.classList.contains('element-editable') && !isInEditorArea(list)) {
+                    makeListEditable(list);
+                }
+            });
+
+            // 5. Interaktive und komplexe Elemente
+            const interactiveElements = container.querySelectorAll(
+                '.kerberos-api-box, .kerberos-device, .kerberos-feature-item, .kerberos-highlight-item, ' +
+                '.kerberos-code-line, .kerberos-card-container, .kerberos-terminal-title, ' +
+                '.kerberos-api-name, .kerberos-api-description, .kerberos-device-label, ' +
+                '.kerberos-feature-text, .kerberos-highlight-text, .kerberos-code-key, ' +
+                '.kerberos-code-value, .process-step, .contact-card, .prize-item, .step-item, ' +
+                '.kerberos-flow-step, .kerberos-step-title'
+            );
+            
+            interactiveElements.forEach(function(element) {
                 if (!element.classList.contains('element-editable') && 
                     !element.closest('.element-editable') && 
-                    !element.classList.contains('icon-editable') &&
-                    element.textContent.trim()) {
+                    !isInEditorArea(element)) {
                     makeElementEditable(element);
                 }
             });
 
-            // 5. Listen editierbar machen
-            const lists = container.querySelectorAll('ul, ol');
-            lists.forEach(function(list) {
-                if (!list.classList.contains('element-editable')) {
-                    makeListEditable(list);
+            // 6. Standard editierbare Elemente
+            const editableElements = container.querySelectorAll(
+                'h1, h2, h3, h4, h5, h6, p, span:not(.icon):not(.contact-icon):not(.cta-icon):not(.kerberos-feature-icon), ' +
+                'td, th, li, .kerberos-main-title, .kerberos-description, .kerberos-card-title, ' +
+                '.kerberos-card-description, .kerberos-api-title, .kerberos-api-subtitle, ' +
+                '.process-title, .process-text'
+            );
+            
+            editableElements.forEach(function(element) {
+                if (!element.classList.contains('element-editable') && 
+                    !element.closest('.element-editable') && 
+                    !element.classList.contains('icon-editable') &&
+                    !isInEditorArea(element) &&
+                    element.textContent.trim()) {
+                    makeElementEditable(element);
                 }
             });
         }
 
+        // Interaktive Module für Bearbeitung vorbereiten
+        function prepareInteractiveModulesForEditing(container) {
+            handleAccordionModules(container);
+            handleTabModules(container);
+            handleModalModules(container);
+            handleDropdownModules(container);
+            handleCarouselModules(container);
+            handleToggleModules(container);
+        }
+
+        function handleAccordionModules(container) {
+            const accordionSelectors = [
+                '.accordion', '.collapse', '.collapsible',
+                '[data-toggle="collapse"]', '[aria-expanded]',
+                '.kerberos-accordion', '.faq-item', '.expandable',
+                '.toggle-content', '.show-hide'
+            ];
+            
+            accordionSelectors.forEach(function(selector) {
+                const accordions = container.querySelectorAll(selector);
+                accordions.forEach(function(accordion) {
+                    makeAccordionEditable(accordion);
+                });
+            });
+            
+            const hiddenContent = container.querySelectorAll('[style*="display: none"], [style*="display:none"], .collapsed, .hidden');
+            hiddenContent.forEach(function(element) {
+                if (isAccordionContent(element)) {
+                    element.style.display = 'block';
+                    element.classList.remove('collapsed', 'hidden');
+                    element.classList.add('editor-expanded');
+                    addInteractiveModuleIndicator(element, 'Accordion-Inhalt (im Editor aufgeklappt)');
+                }
+            });
+        }
+
+        function isAccordionContent(element) {
+            const parent = element.parentElement;
+            if (!parent) return false;
+            
+            return parent.classList.contains('accordion') ||
+                parent.classList.contains('collapsible') ||
+                parent.classList.contains('faq-item') ||
+                parent.querySelector('.accordion-header, .collapse-header, .toggle-header') ||
+                element.hasAttribute('data-parent') ||
+                element.classList.contains('collapse') ||
+                element.classList.contains('accordion-body');
+        }
+
+        function handleTabModules(container) {
+            const tabSelectors = [
+                '.tabs', '.tab-container', '.tabbed-content',
+                '[role="tablist"]', '.nav-tabs', '.kerberos-tabs',
+                '.tab-navigation'
+            ];
+            
+            tabSelectors.forEach(function(selector) {
+                const tabContainers = container.querySelectorAll(selector);
+                tabContainers.forEach(function(tabContainer) {
+                    makeTabModuleEditable(tabContainer);
+                });
+            });
+            
+            const tabPanels = container.querySelectorAll('.tab-panel, .tab-content, [role="tabpanel"], .tabpanel');
+            tabPanels.forEach(function(panel) {
+                panel.style.display = 'block';
+                panel.classList.add('editor-visible');
+                addInteractiveModuleIndicator(panel, 'Tab-Panel (im Editor sichtbar)');
+            });
+        }
+
+        function handleModalModules(container) {
+            const modals = container.querySelectorAll('.modal, .popup, .overlay, .lightbox, [role="dialog"]');
+            modals.forEach(function(modal) {
+                modal.style.display = 'block';
+                modal.style.position = 'relative';
+                modal.style.zIndex = 'auto';
+                modal.classList.add('editor-modal');
+                addInteractiveModuleIndicator(modal, 'Modal/Popup (im Editor sichtbar)');
+                makeModalEditable(modal);
+            });
+        }
+
+        function handleDropdownModules(container) {
+            const dropdowns = container.querySelectorAll('.dropdown, .dropdown-menu, .select-options, [data-toggle="dropdown"]');
+            dropdowns.forEach(function(dropdown) {
+                dropdown.style.display = 'block';
+                dropdown.style.position = 'relative';
+                dropdown.classList.add('editor-dropdown');
+                addInteractiveModuleIndicator(dropdown, 'Dropdown (im Editor sichtbar)');
+            });
+        }
+
+        function handleCarouselModules(container) {
+            const carousels = container.querySelectorAll('.carousel, .slider, .swiper, .slideshow');
+            carousels.forEach(function(carousel) {
+                const slides = carousel.querySelectorAll('.slide, .carousel-item, .swiper-slide');
+                slides.forEach(function(slide, index) {
+                    slide.style.display = 'block';
+                    slide.style.position = 'relative';
+                    slide.classList.add('editor-slide');
+                    addInteractiveModuleIndicator(slide, 'Slide ' + (index + 1) + ' (im Editor sichtbar)');
+                });
+                makeCarouselEditable(carousel);
+            });
+        }
+
+        function handleToggleModules(container) {
+            const toggles = container.querySelectorAll('[data-toggle], .toggle, .switch, .show-hide-toggle');
+            toggles.forEach(function(toggle) {
+                const target = getToggleTarget(toggle);
+                if (target) {
+                    target.style.display = 'block';
+                    target.classList.add('editor-toggled');
+                    addInteractiveModuleIndicator(target, 'Toggle-Inhalt (im Editor sichtbar)');
+                }
+            });
+        }
+
+        function getToggleTarget(toggle) {
+            const targetId = toggle.getAttribute('data-target') || toggle.getAttribute('href');
+            if (targetId) {
+                return document.querySelector(targetId);
+            }
+            return toggle.nextElementSibling;
+        }
+
+        function addInteractiveModuleIndicator(element, text) {
+            if (element.querySelector('.interactive-indicator')) return;
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'interactive-indicator';
+            indicator.innerHTML = '<div style="background: linear-gradient(135deg, #B265E9, #EF8646); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; position: absolute; top: -5px; right: -5px; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);">🎮 ' + text + '</div>';
+            
+            element.style.position = 'relative';
+            element.appendChild(indicator);
+        }
+
+        // Dummy-Funktionen für die interaktiven Editoren (können später implementiert werden)
+        function makeAccordionEditable(accordion) {
+            // Placeholder - kann bei Bedarf implementiert werden
+        }
+
+        function makeTabModuleEditable(tabContainer) {
+            // Placeholder - kann bei Bedarf implementiert werden
+        }
+
+        function makeModalEditable(modal) {
+            // Placeholder - kann bei Bedarf implementiert werden
+        }
+
+        function makeCarouselEditable(carousel) {
+            // Placeholder - kann bei Bedarf implementiert werden
+        }
+        
         // Icon editierbar machen
         function makeIconEditable(iconElement) {
             iconElement.classList.add('icon-editable');
@@ -2514,6 +2862,42 @@
             }
             
             content.innerHTML = inputHtml;
+
+            // Rich Text Editor als Standard-Option anbieten
+            const richTextBtn = document.getElementById('useRichTextBtn');
+            if (richTextBtn) {
+                richTextBtn.addEventListener('click', function() {
+                    popup.style.display = 'none';
+                    createRichTextEditor(element);
+                });
+            } else {
+                // Rich Text Button auch für andere Element-Typen hinzufügen
+                const extraRichTextBtn = document.createElement('button');
+                extraRichTextBtn.textContent = '🎨 Rich Text Editor';
+                extraRichTextBtn.style.cssText = 'margin-top: 1rem; padding: 0.5rem 1rem; background: #009CE6; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;';
+                extraRichTextBtn.onclick = function() {
+                    popup.style.display = 'none';
+                    createRichTextEditor(element);
+                };
+                content.appendChild(extraRichTextBtn);
+            }
+            
+            // Find/Replace für interaktive Elemente
+            const replaceBtn = document.getElementById('replaceBtn');
+            if (replaceBtn) {
+                replaceBtn.addEventListener('click', function() {
+                    const findText = document.getElementById('findText').value;
+                    const replaceText = document.getElementById('replaceText').value;
+                    const htmlInput = document.getElementById('htmlInput');
+                    
+                    if (findText) {
+                        const newContent = htmlInput.value.replace(new RegExp(findText, 'g'), replaceText);
+                        htmlInput.value = newContent;
+                        showNotification('✅ "' + findText + '" wurde durch "' + replaceText + '" ersetzt', 'success');
+                    }
+                });
+            }
+            
             popup.style.display = 'block';
             
             const firstInput = content.querySelector('input, textarea');
@@ -2747,7 +3131,7 @@
             }
         }
 
-        // Icon bearbeiten
+        // Icon bearbeiten (erweitert mit allen FontAwesome-Icons)
         function editIcon(iconElement) {
             currentEditingElement = iconElement;
             const popup = document.getElementById('textEditorPopup');
@@ -2757,98 +3141,272 @@
             title.textContent = 'Icon bearbeiten';
             
             const currentIcon = iconElement.innerHTML;
-            const iconCurrentColor = iconElement.style.color || '#063AA8';
-            const currentSize = iconElement.style.fontSize || '1rem';
-            
-            let colorOptions = '';
-            Object.entries(iconCollections.iconColors).forEach(function(entry) {
-                const name = entry[0];
-                const color = entry[1];
-                const selected = iconCurrentColor === color ? 'selected' : '';
-                colorOptions += '<div class="color-option ' + selected + '" ' +
-                    'data-color="' + color + '" ' +
-                    'style="background-color: ' + color + ';" ' +
-                    'title="' + name + '"></div>';
-            });
-            
-            let iconOptions = '';
-            Object.entries(iconCollections.fontawesome).forEach(function(entry) {
-                const name = entry[0];
-                const unicode = entry[1];
-                iconOptions += '<div class="icon-option" data-unicode="' + unicode + '" title="' + name + '">' +
-                    '<span style="font-family: \'Font Awesome 5 Pro\'; font-size: 1.5rem;">' + unicode + '</span>' +
-                    '<div style="font-size: 0.7rem; margin-top: 0.25rem;">' + name + '</div>' +
-                    '</div>';
-            });
+            const iconCurrentColor = rgbToHex(iconElement.style.color || getComputedStyle(iconElement).color || '#063AA8');
+            const currentSize = iconElement.style.fontSize || getComputedStyle(iconElement).fontSize || '1rem';
             
             content.innerHTML = '<div class="form-group">' +
                 '<label>Icon auswählen:</label>' +
-                '<div id="iconGrid" class="icon-grid" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">' +
-                iconOptions +
+                '<div style="margin-bottom: 1rem;">' +
+                    '<input type="text" id="iconSearch" placeholder="🔍 Icons suchen..." style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                    '<select id="iconCategory" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                        '<option value="all">📁 Alle Kategorien (' + Object.keys(iconCollections.fontawesome).length + ' Icons)</option>' +
+                        '<option value="Navigation">🧭 Navigation</option>' +
+                        '<option value="Personen">👥 Personen</option>' +
+                        '<option value="Kommunikation">📞 Kommunikation</option>' +
+                        '<option value="Status">✅ Status</option>' +
+                        '<option value="Compliance">🛡️ Compliance</option>' +
+                        '<option value="Technologie">💻 Technologie</option>' +
+                        '<option value="Dokumente">📄 Dokumente</option>' +
+                        '<option value="Zeit">⏰ Zeit</option>' +
+                        '<option value="Business">💼 Business</option>' +
+                        '<option value="Tools">🔧 Tools</option>' +
+                        '<option value="Bildung & Training">🎓 Bildung & Training</option>' +
+                        '<option value="Erweiterte Business">📊 Erweiterte Business</option>' +
+                        '<option value="Marketing & Web">🌐 Marketing & Web</option>' +
+                        '<option value="Workflow & Status">⚡ Workflow & Status</option>' +
+                        '<option value="Erweiterte Sicherheit">🔐 Erweiterte Sicherheit</option>' +
+                        '<option value="Dokument-Typen">📋 Dokument-Typen</option>' +
+                        '<option value="Industrie-spezifisch">🏢 Industrie-spezifisch</option>' +
+                        '<option value="Verschiedenes">⭐ Verschiedenes</option>' +
+                    '</select>' +
+                    '<div style="text-align: center; margin-top: 0.5rem; font-size: 0.8rem; color: #6c757d;">' +
+                        '<span id="iconCounter">Wählen Sie eine Kategorie</span>' +
+                    '</div>' +
                 '</div>' +
+                '<div id="iconGrid" class="icon-grid" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">' +
+                    '<!-- Icons werden hier geladen -->' +
                 '</div>' +
-                '<div class="form-group">' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Aktuelles Icon (Unicode):</label>' +
                 '<input type="text" id="customIcon" value="' + currentIcon + '" placeholder="&#xf00c; oder 🔥">' +
-                '</div>' +
-                '<div class="form-group">' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Icon-Farbe:</label>' +
                 '<div class="icon-color-picker">' +
-                colorOptions +
+                    Object.entries(iconCollections.iconColors).map(function(entry) {
+                        const name = entry[0];
+                        const color = entry[1];
+                        const selected = iconCurrentColor === color ? 'selected' : '';
+                        return '<div class="color-option ' + selected + '" ' +
+                            'data-color="' + color + '" ' +
+                            'style="background-color: ' + color + ';" ' +
+                            'title="' + name + '"></div>';
+                    }).join('') +
                 '</div>' +
                 '<input type="color" id="customColor" value="' + iconCurrentColor + '" style="width: 100%; margin-top: 0.5rem;">' +
-                '</div>' +
-                '<div class="form-group">' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Icon-Größe:</label>' +
                 '<select id="iconSize" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
-                '<option value="0.75rem"' + (currentSize === '0.75rem' ? ' selected' : '') + '>Klein (0.75rem)</option>' +
-                '<option value="1rem"' + (currentSize === '1rem' ? ' selected' : '') + '>Normal (1rem)</option>' +
-                '<option value="1.25rem"' + (currentSize === '1.25rem' ? ' selected' : '') + '>Groß (1.25rem)</option>' +
-                '<option value="1.5rem"' + (currentSize === '1.5rem' ? ' selected' : '') + '>Sehr groß (1.5rem)</option>' +
-                '<option value="2rem"' + (currentSize === '2rem' ? ' selected' : '') + '>XXL (2rem)</option>' +
+                    '<option value="0.75rem"' + (currentSize === '0.75rem' ? ' selected' : '') + '>Klein (0.75rem)</option>' +
+                    '<option value="1rem"' + (currentSize === '1rem' ? ' selected' : '') + '>Normal (1rem)</option>' +
+                    '<option value="1.25rem"' + (currentSize === '1.25rem' ? ' selected' : '') + '>Groß (1.25rem)</option>' +
+                    '<option value="1.5rem"' + (currentSize === '1.5rem' ? ' selected' : '') + '>Sehr groß (1.5rem)</option>' +
+                    '<option value="2rem"' + (currentSize === '2rem' ? ' selected' : '') + '>XXL (2rem)</option>' +
+                    '<option value="2.5rem"' + (currentSize === '2.5rem' ? ' selected' : '') + '>XXXL (2.5rem)</option>' +
                 '</select>' +
-                '</div>' +
-                '<div class="form-group">' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Vorschau:</label>' +
                 '<div id="iconPreview" style="padding: 1rem; background: #f8f9fa; border-radius: 4px; text-align: center; font-size: 2rem;">' +
-                '<span style="color: ' + iconCurrentColor + '; font-size: ' + currentSize + '; font-family: \'Font Awesome 5 Pro\';">' + currentIcon + '</span>' +
+                    '<span style="color: ' + iconCurrentColor + '; font-size: ' + currentSize + '; font-family: \'Font Awesome 5 Pro\';">' + currentIcon + '</span>' +
                 '</div>' +
-                '</div>';
+            '</div>';
             
-            // Event Listeners für Icon-Auswahl
-            content.querySelectorAll('.icon-option').forEach(function(option) {
-                option.addEventListener('click', function() {
-                    content.querySelectorAll('.icon-option').forEach(function(opt) {
-                        opt.classList.remove('selected');
-                    });
-                    option.classList.add('selected');
-                    document.getElementById('customIcon').value = option.dataset.unicode;
-                    updateIconPreview();
-                });
+            // Icon-Grid laden
+            loadIconGrid('all');
+            
+            // Event Listeners
+            const iconSearch = document.getElementById('iconSearch');
+            const iconCategory = document.getElementById('iconCategory');
+            const customIcon = document.getElementById('customIcon');
+            const customColor = document.getElementById('customColor');
+            const iconSize = document.getElementById('iconSize');
+            const iconPreview = document.getElementById('iconPreview');
+            
+            function updatePreview() {
+                const icon = customIcon.value;
+                const color = customColor.value;
+                const size = iconSize.value;
+                iconPreview.innerHTML = '<span style="color: ' + color + '; font-size: ' + size + '; font-family: \'Font Awesome 5 Pro\';">' + icon + '</span>';
+            }
+            
+            // Search functionality
+            iconSearch.addEventListener('input', function(e) {
+                filterIcons(e.target.value, iconCategory.value);
             });
             
-            // Event Listeners für Farb-Auswahl
+            iconCategory.addEventListener('change', function(e) {
+                loadIconGrid(e.target.value);
+                filterIcons(iconSearch.value, e.target.value);
+            });
+            
+            customIcon.addEventListener('input', updatePreview);
+            customColor.addEventListener('input', updatePreview);
+            iconSize.addEventListener('change', updatePreview);
+            
+            // Color picker
             content.querySelectorAll('.color-option').forEach(function(option) {
                 option.addEventListener('click', function() {
                     content.querySelectorAll('.color-option').forEach(function(opt) {
                         opt.classList.remove('selected');
                     });
                     option.classList.add('selected');
-                    document.getElementById('customColor').value = option.dataset.color;
-                    updateIconPreview();
+                    customColor.value = option.dataset.color;
+                    updatePreview();
                 });
             });
             
-            // Event Listeners für Eingaben
-            const customIcon = document.getElementById('customIcon');
-            const customColor = document.getElementById('customColor');
-            const iconSize = document.getElementById('iconSize');
-            
-            customIcon.addEventListener('input', updateIconPreview);
-            customColor.addEventListener('input', updateIconPreview);
-            iconSize.addEventListener('change', updateIconPreview);
-            
             popup.style.display = 'block';
+            iconSearch.focus();
+        }
+
+        // RGB zu Hex konvertieren
+        function rgbToHex(color) {
+            // Wenn es bereits ein Hex-Wert ist, zurückgeben
+            if (color.startsWith('#')) {
+                return color;
+            }
+            
+            // RGB-Werte extrahieren
+            const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (rgbMatch) {
+                const r = parseInt(rgbMatch[1]);
+                const g = parseInt(rgbMatch[2]);
+                const b = parseInt(rgbMatch[3]);
+                
+                // Zu Hex konvertieren
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+            
+            // RGBA-Werte extrahieren (falls vorhanden)
+            const rgbaMatch = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d.]+\)/);
+            if (rgbaMatch) {
+                const r = parseInt(rgbaMatch[1]);
+                const g = parseInt(rgbaMatch[2]);
+                const b = parseInt(rgbaMatch[3]);
+                
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+            
+            // Fallback
+            return '#063AA8';
+        }
+
+        // Icon-Grid laden (erweitert)
+        function loadIconGrid(category) {
+            const iconGrid = document.getElementById('iconGrid');
+            const iconCounter = document.getElementById('iconCounter');
+            if (!iconGrid) return;
+            
+            let iconsToShow = {};
+            
+            if (category === 'all') {
+                iconsToShow = iconCollections.fontawesome;
+            } else if (iconCollections.categories[category]) {
+                iconCollections.categories[category].forEach(function(iconName) {
+                    if (iconCollections.fontawesome[iconName]) {
+                        iconsToShow[iconName] = iconCollections.fontawesome[iconName];
+                    }
+                });
+            }
+            
+            const iconCount = Object.keys(iconsToShow).length;
+            if (iconCounter) {
+                iconCounter.textContent = iconCount + ' Icons in dieser Kategorie';
+            }
+            
+            iconGrid.innerHTML = Object.entries(iconsToShow).map(function(entry) {
+                const name = entry[0];
+                const unicode = entry[1];
+                return '<div class="icon-option" data-unicode="' + unicode + '" title="' + name + '" style="' +
+                    'padding: 0.75rem 0.5rem;' +
+                    'border: 1px solid #e9ecef;' +
+                    'border-radius: 6px;' +
+                    'cursor: pointer;' +
+                    'transition: all 0.3s ease;' +
+                    'text-align: center;' +
+                    'background: white;' +
+                    'position: relative;' +
+                    'overflow: hidden;' +
+                '">' +
+                    '<span style="' +
+                        'font-family: \'Font Awesome 5 Pro\'; ' +
+                        'font-weight: 300;' +
+                        'font-size: 1.5rem;' +
+                        'color: #063AA8;' +
+                        'display: block;' +
+                        'margin-bottom: 0.5rem;' +
+                    '">' + unicode + '</span>' +
+                    '<div style="' +
+                        'font-size: 0.7rem; ' +
+                        'color: #6c757d;' +
+                        'text-align: center;' +
+                        'line-height: 1.2;' +
+                        'word-break: break-word;' +
+                        'height: 2.4em;' +
+                        'overflow: hidden;' +
+                        'display: -webkit-box;' +
+                        '-webkit-line-clamp: 2;' +
+                        '-webkit-box-orient: vertical;' +
+                    '">' + name + '</div>' +
+                '</div>';
+            }).join('');
+            
+            // Icon selection mit verbessertem Feedback
+            iconGrid.querySelectorAll('.icon-option').forEach(function(option) {
+                option.addEventListener('mouseenter', function() {
+                    option.style.borderColor = '#009CE6';
+                    option.style.background = '#f8f9fa';
+                    option.style.transform = 'translateY(-2px)';
+                    option.style.boxShadow = '0 4px 12px rgba(0, 156, 230, 0.15)';
+                });
+                
+                option.addEventListener('mouseleave', function() {
+                    if (!option.classList.contains('selected')) {
+                        option.style.borderColor = '#e9ecef';
+                        option.style.background = 'white';
+                        option.style.transform = 'translateY(0)';
+                        option.style.boxShadow = 'none';
+                    }
+                });
+                
+                option.addEventListener('click', function() {
+                    iconGrid.querySelectorAll('.icon-option').forEach(function(opt) {
+                        opt.classList.remove('selected');
+                        opt.style.borderColor = '#e9ecef';
+                        opt.style.background = 'white';
+                        opt.style.transform = 'translateY(0)';
+                        opt.style.boxShadow = 'none';
+                    });
+                    
+                    option.classList.add('selected');
+                    option.style.borderColor = '#063AA8';
+                    option.style.background = 'linear-gradient(135deg, #f8f9fa, #e9ecef)';
+                    option.style.transform = 'translateY(-2px)';
+                    option.style.boxShadow = '0 4px 12px rgba(6, 58, 168, 0.2)';
+                    
+                    document.getElementById('customIcon').value = option.dataset.unicode;
+                    updateIconPreview();
+                    
+                    // Success-Feedback
+                    showNotification('✅ Icon "' + option.title + '" ausgewählt', 'success');
+                });
+            });
+        }
+
+        // Icons filtern
+        function filterIcons(searchTerm, category) {
+            const iconGrid = document.getElementById('iconGrid');
+            if (!iconGrid) return;
+            
+            const options = iconGrid.querySelectorAll('.icon-option');
+            options.forEach(function(option) {
+                const iconName = option.title.toLowerCase();
+                const matchesSearch = searchTerm === '' || iconName.includes(searchTerm.toLowerCase());
+                option.style.display = matchesSearch ? 'block' : 'none';
+            });
         }
 
         // Icon-Vorschau aktualisieren
@@ -2863,7 +3421,7 @@
             }
         }
 
-        // Bild bearbeiten
+        // Bild bearbeiten (erweitert)
         function editImage(imageElement) {
             currentEditingElement = imageElement;
             const popup = document.getElementById('textEditorPopup');
@@ -2876,22 +3434,87 @@
             const currentAlt = imageElement.alt || '';
             const currentWidth = imageElement.style.width || imageElement.width || '';
             const currentHeight = imageElement.style.height || imageElement.height || '';
+            const currentObjectFit = imageElement.style.objectFit || 'cover';
+            
+            // Prüfen ob Bild in einem Link ist
+            const parentLink = imageElement.closest('a');
+            const currentLink = parentLink ? parentLink.href : '';
+            const currentTarget = parentLink ? parentLink.target : '';
             
             content.innerHTML = '<div class="form-group">' +
                 '<label>Bild-URL:</label>' +
                 '<input type="url" id="imageUrl" value="' + currentSrc + '" placeholder="https://example.com/image.jpg">' +
-                '</div>' +
-                '<div class="form-group">' +
+                '<button type="button" id="browseUnsplash" style="margin-top: 0.5rem; padding: 0.5rem; background: #009CE6; color: white; border: none; border-radius: 4px; cursor: pointer;">📷 Unsplash durchsuchen</button>' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Alt-Text (Beschreibung):</label>' +
                 '<input type="text" id="imageAlt" value="' + currentAlt + '" placeholder="Beschreibung des Bildes">' +
-                '</div>' +
-                '<div class="form-group">' +
+            '</div>' +
+            '<div class="form-group">' +
                 '<label>Bildgröße:</label>' +
                 '<div class="size-controls">' +
-                '<input type="text" id="imageWidth" value="' + currentWidth + '" placeholder="Breite (z.B. 300px, 50%)">' +
-                '<input type="text" id="imageHeight" value="' + currentHeight + '" placeholder="Höhe (z.B. 200px, auto)">' +
+                    '<input type="text" id="imageWidth" value="' + currentWidth + '" placeholder="Breite (z.B. 300px, 50%)">' +
+                    '<input type="text" id="imageHeight" value="' + currentHeight + '" placeholder="Höhe (z.B. 200px, auto)">' +
                 '</div>' +
-                '</div>';
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Bild-Skalierung:</label>' +
+                '<select id="imageObjectFit">' +
+                    '<option value="cover"' + (currentObjectFit === 'cover' ? ' selected' : '') + '>Cover (beschneiden)</option>' +
+                    '<option value="contain"' + (currentObjectFit === 'contain' ? ' selected' : '') + '>Contain (alles sichtbar)</option>' +
+                    '<option value="fill"' + (currentObjectFit === 'fill' ? ' selected' : '') + '>Fill (verzerren)</option>' +
+                    '<option value="scale-down"' + (currentObjectFit === 'scale-down' ? ' selected' : '') + '>Scale-down</option>' +
+                    '<option value="none"' + (currentObjectFit === 'none' ? ' selected' : '') + '>Original</option>' +
+                '</select>' +
+            '</div>' +
+            '<div class="form-group-inline">' +
+                '<input type="checkbox" id="imageResponsive"' + (imageElement.style.maxWidth === '100%' ? ' checked' : '') + '>' +
+                '<label for="imageResponsive">Responsive (max-width: 100%)</label>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Bild verlinken (optional):</label>' +
+                '<input type="url" id="imageLink" value="' + currentLink + '" placeholder="https://example.com (leer = kein Link)">' +
+                '<div class="form-group-inline" style="margin-top: 0.5rem;">' +
+                    '<input type="checkbox" id="imageLinkNewTab"' + (currentTarget === '_blank' ? ' checked' : '') + '>' +
+                    '<label for="imageLinkNewTab">In neuem Tab öffnen</label>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Schnell-Größen:</label>' +
+                '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem;">' +
+                    '<button type="button" class="quick-size-btn" data-width="100%" data-height="auto">Vollbreite</button>' +
+                    '<button type="button" class="quick-size-btn" data-width="50%" data-height="auto">Halbe Breite</button>' +
+                    '<button type="button" class="quick-size-btn" data-width="300px" data-height="200px">300x200px</button>' +
+                    '<button type="button" class="quick-size-btn" data-width="400px" data-height="300px">400x300px</button>' +
+                    '<button type="button" class="quick-size-btn" data-width="150px" data-height="150px">Quadrat klein</button>' +
+                    '<button type="button" class="quick-size-btn" data-width="" data-height="">Original</button>' +
+                '</div>' +
+            '</div>';
+            
+            // Event Listeners für Schnell-Größen
+            content.querySelectorAll('.quick-size-btn').forEach(function(btn) {
+                btn.style.cssText = 'padding: 0.5rem; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; font-size: 0.8rem;';
+                btn.addEventListener('click', function() {
+                    document.getElementById('imageWidth').value = btn.dataset.width;
+                    document.getElementById('imageHeight').value = btn.dataset.height;
+                });
+                btn.addEventListener('mouseenter', function() {
+                    btn.style.background = '#e9ecef';
+                });
+                btn.addEventListener('mouseleave', function() {
+                    btn.style.background = '#f8f9fa';
+                });
+            });
+            
+            // Unsplash Browser (vereinfacht)
+            document.getElementById('browseUnsplash').addEventListener('click', function() {
+                const keywords = prompt('Suchbegriff für Unsplash (englisch):', 'business compliance');
+                if (keywords) {
+                    const unsplashUrl = 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+                    document.getElementById('imageUrl').value = unsplashUrl;
+                    showNotification('💡 Beispiel-Bild eingefügt. Besuchen Sie unsplash.com für mehr Bilder.', 'success');
+                }
+            });
             
             popup.style.display = 'block';
             document.getElementById('imageUrl').focus();
@@ -2979,6 +3602,8 @@
         }
 
         function saveElementEdit() {
+            if (!currentEditingElement) return;
+            
             // Rich Text Editor speichern
             const richTextEditor = document.getElementById('richTextEditor');
             if (richTextEditor) {
@@ -2992,18 +3617,17 @@
                 showNotification('✅ Rich Text wurde aktualisiert!', 'success');
                 return;
             }
-
-            if (!currentEditingElement) return;
             
-            // Icon speichern
+            // Icon speichern (erweitert)
             const customIcon = document.getElementById('customIcon');
             if (customIcon) {
-                const selectedColor = document.querySelector('.color-option.selected');
-                const color = selectedColor ? selectedColor.dataset.color : document.getElementById('customColor').value;
+                const selectedColor = document.querySelector('.color-option.selected') ? 
+                    document.querySelector('.color-option.selected').dataset.color : 
+                    document.getElementById('customColor').value;
                 const iconSize = document.getElementById('iconSize').value;
                 
                 currentEditingElement.innerHTML = customIcon.value;
-                currentEditingElement.style.color = color;
+                currentEditingElement.style.color = selectedColor;
                 currentEditingElement.style.fontSize = iconSize;
                 
                 updateCodeFromVisual();
@@ -3012,22 +3636,71 @@
                 return;
             }
 
-            // Bild speichern
+            // Bild speichern (erweitert mit Verlinkung)
             const imageUrl = document.getElementById('imageUrl');
             if (imageUrl) {
                 const imageAlt = document.getElementById('imageAlt').value;
                 const imageWidth = document.getElementById('imageWidth').value;
                 const imageHeight = document.getElementById('imageHeight').value;
+                const imageObjectFit = document.getElementById('imageObjectFit') ? 
+                    document.getElementById('imageObjectFit').value : 'cover';
+                const imageResponsive = document.getElementById('imageResponsive').checked;
+                const imageLink = document.getElementById('imageLink') ? 
+                    document.getElementById('imageLink').value : '';
+                const imageLinkNewTab = document.getElementById('imageLinkNewTab') ? 
+                    document.getElementById('imageLinkNewTab').checked : false;
                 
+                // Bild-Eigenschaften setzen
                 currentEditingElement.src = imageUrl.value;
                 currentEditingElement.alt = imageAlt;
                 
                 if (imageWidth) currentEditingElement.style.width = imageWidth;
                 if (imageHeight) currentEditingElement.style.height = imageHeight;
+                currentEditingElement.style.objectFit = imageObjectFit;
+                
+                if (imageResponsive) {
+                    currentEditingElement.style.maxWidth = '100%';
+                    currentEditingElement.style.height = 'auto';
+                }
+                
+                // Link-Funktionalität
+                const parentLink = currentEditingElement.closest('a');
+                
+                if (imageLink && imageLink.trim()) {
+                    // Link hinzufügen oder aktualisieren
+                    if (parentLink) {
+                        parentLink.href = imageLink;
+                        parentLink.target = imageLinkNewTab ? '_blank' : '';
+                    } else {
+                        // Neuen Link um das Bild erstellen
+                        const link = document.createElement('a');
+                        link.href = imageLink;
+                        if (imageLinkNewTab) link.target = '_blank';
+                        
+                        const parent = currentEditingElement.parentNode;
+                        parent.insertBefore(link, currentEditingElement);
+                        link.appendChild(currentEditingElement);
+                    }
+                } else if (parentLink) {
+                    // Bestehenden Link entfernen
+                    const parent = parentLink.parentNode;
+                    parent.insertBefore(currentEditingElement, parentLink);
+                    parent.removeChild(parentLink);
+                }
                 
                 updateCodeFromVisual();
                 closeTextEditor();
                 showNotification('✅ Bild wurde aktualisiert!', 'success');
+                return;
+            }
+
+            // Listen-Stil speichern
+            const customListStyle = document.getElementById('customListStyle');
+            if (customListStyle) {
+                currentEditingElement.style.listStyleType = customListStyle.value;
+                updateCodeFromVisual();
+                closeTextEditor();
+                showNotification('✅ Listen-Stil wurde aktualisiert!', 'success');
                 return;
             }
 
@@ -3038,13 +3711,17 @@
                 const linkNewTab = document.getElementById('linkNewTab').checked;
                 
                 // Text aktualisieren, aber Icons beibehalten
-                const iconElements = currentEditingElement.querySelectorAll('.icon, .contact-icon, .cta-icon');
+                const iconElements = currentEditingElement.querySelectorAll('.icon, .contact-icon, .cta-icon, .kerberos-button-icon, .kerberos-feature-icon, .kerberos-highlight-icon, .kerberos-card-button-icon');
                 const controlElements = currentEditingElement.querySelectorAll('.element-controls');
                 
                 currentEditingElement.innerHTML = '';
-                iconElements.forEach(function(icon) { currentEditingElement.appendChild(icon); });
+                iconElements.forEach(function(icon) {
+                    currentEditingElement.appendChild(icon);
+                });
                 currentEditingElement.appendChild(document.createTextNode(linkText.value));
-                controlElements.forEach(function(control) { currentEditingElement.appendChild(control); });
+                controlElements.forEach(function(control) {
+                    currentEditingElement.appendChild(control);
+                });
                 
                 currentEditingElement.href = linkHref.value;
                 if (linkNewTab) {
@@ -3059,13 +3736,17 @@
                 return;
             }
 
-            // Text speichern
+            // Text speichern (einfach)
             const textInput = document.getElementById('textInput');
             const htmlInput = document.getElementById('htmlInput');
             
             if (textInput) {
                 const controls = currentEditingElement.querySelector('.element-controls');
-                currentEditingElement.innerHTML = textInput.value;
+                
+                // HTML-Tags im Text beibehalten
+                const newContent = textInput.value;
+                currentEditingElement.innerHTML = newContent;
+                
                 if (controls) {
                     currentEditingElement.appendChild(controls);
                 }
@@ -3622,6 +4303,21 @@
                         '</div>' +
                     '</div>' +
                 '</div>';
+            } else if (template === 'header') {
+                newModule.name = 'Website Header ' + moduleCounter;
+                newModule.category = 'header';
+                newModule.description = 'Navigation und Logo-Bereich';
+                newModule.code = '<header style="background: linear-gradient(135deg, #063AA8, #009CE6); color: white; padding: 1rem 0;">' +
+                    '<div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem;">' +
+                        '<div style="font-size: 1.5rem; font-weight: 700;">Kerberos</div>' +
+                        '<nav style="display: flex; gap: 2rem;">' +
+                            '<a href="#" style="color: white; text-decoration: none; font-weight: 500;">Startseite</a>' +
+                            '<a href="#" style="color: white; text-decoration: none; font-weight: 500;">Lösungen</a>' +
+                            '<a href="#" style="color: white; text-decoration: none; font-weight: 500;">Über uns</a>' +
+                            '<a href="#" style="color: white; text-decoration: none; font-weight: 500;">Kontakt</a>' +
+                        '</nav>' +
+                    '</div>' +
+                '</header>';
             } else {
                 // Blank template
                 newModule.code = '<div style="padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
