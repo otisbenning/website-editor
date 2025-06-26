@@ -1,0 +1,4001 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerberos Module Manager - Reparierte Version</title>
+    <style>
+        :root {
+            --kerberos-primary: #063AA8;
+            --kerberos-secondary: #009CE6;
+            --kerberos-dark: #212529;
+            --kerberos-light-gray: #ADB5BD;
+            --kerberos-accent: #B265E9;
+            --kerberos-orange: #EF8646;
+            --kerberos-white: #FFFFFF;
+            --kerberos-bg-light: #F8F9FA;
+            --kerberos-border: #DEE2E6;
+            --kerberos-shadow: 0 4px 12px rgba(6, 58, 168, 0.1);
+            --kerberos-shadow-hover: 0 6px 20px rgba(6, 58, 168, 0.15);
+            --kerberos-danger: #dc3545;
+            --kerberos-success: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--kerberos-bg-light);
+            color: var(--kerberos-dark);
+            line-height: 1.6;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--kerberos-primary), var(--kerberos-secondary));
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: var(--kerberos-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .storage-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--kerberos-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-success {
+            background: var(--kerberos-accent);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #9A4FD4;
+        }
+
+        .btn-warning {
+            background: var(--kerberos-orange);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #E67336;
+        }
+
+        .btn-danger {
+            background: var(--kerberos-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--kerberos-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar h3 {
+            color: var(--kerberos-primary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .auto-save-indicator {
+            font-size: 0.75rem;
+            color: var(--kerberos-success);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .module-search {
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .category-filter {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .module-stats {
+            font-size: 0.75rem;
+            color: var(--kerberos-light-gray);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .module-list {
+            list-style: none;
+        }
+
+        .module-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .module-item:hover {
+            background: var(--kerberos-bg-light);
+            border-color: var(--kerberos-border);
+        }
+
+        .module-item.active {
+            background: linear-gradient(135deg, var(--kerberos-primary), var(--kerberos-secondary));
+            color: white;
+            border-color: var(--kerberos-primary);
+        }
+
+        .module-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .module-description {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .module-meta {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        .module-delete {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--kerberos-danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-item:hover .module-delete {
+            opacity: 1;
+        }
+
+        .module-delete:hover {
+            background: #c82333;
+        }
+
+        .quick-actions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--kerberos-border);
+        }
+
+        .quick-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            justify-content: center;
+        }
+
+        .backup-status {
+            background: var(--kerberos-bg-light);
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .backup-status-title {
+            font-weight: 600;
+            color: var(--kerberos-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--kerberos-shadow);
+            min-height: 600px;
+        }
+
+        .content-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--kerberos-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            color: var(--kerberos-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .editor-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--kerberos-border);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            color: var(--kerberos-primary);
+            border-bottom-color: var(--kerberos-primary);
+            background: var(--kerberos-bg-light);
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--kerberos-bg-light);
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+            height: 500px;
+            overflow: auto;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--kerberos-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--kerberos-primary);
+            box-shadow: 0 0 0 3px rgba(6, 58, 168, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group-inline input[type="checkbox"] {
+            width: auto;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .code-editor {
+            background: #1a1a1a;
+            color: #e6e6e6;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            min-height: 400px;
+            border-radius: 6px;
+            padding: 1rem;
+            border: 1px solid var(--kerberos-border);
+            white-space: pre;
+            overflow: auto;
+        }
+
+        .preview-container {
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            background: white;
+            min-height: 400px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .visual-editor {
+            border: 1px solid var(--kerberos-border);
+            border-radius: 6px;
+            background: white;
+            min-height: 400px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .visual-editor-content {
+            padding: 1rem;
+            min-height: 360px;
+        }
+
+        .visual-editor-content [contenteditable="true"] {
+            outline: 2px dashed var(--kerberos-secondary);
+            outline-offset: 2px;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: outline-color 0.3s ease;
+            position: relative;
+        }
+
+        .visual-editor-content [contenteditable="true"]:focus {
+            outline-color: var(--kerberos-primary);
+        }
+
+        .element-editable {
+            position: relative;
+            border: 2px dashed transparent;
+            padding: 0.25rem;
+            margin: 0.125rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .element-editable:hover {
+            border-color: var(--kerberos-secondary);
+            background: rgba(0, 156, 230, 0.05);
+        }
+
+        .element-editable.selected {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.05);
+        }
+
+        .element-controls {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            display: none;
+            gap: 2px;
+            z-index: 10;
+        }
+
+        .element-editable:hover .element-controls {
+            display: flex;
+        }
+
+        .element-btn {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .element-delete {
+            background: var(--kerberos-danger);
+            color: white;
+        }
+
+        .element-delete:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        .element-edit {
+            background: var(--kerberos-accent);
+            color: white;
+        }
+
+        .element-edit:hover {
+            background: #9A4FD4;
+            transform: scale(1.1);
+        }
+
+        .element-duplicate {
+            background: var(--kerberos-orange);
+            color: white;
+        }
+
+        .element-duplicate:hover {
+            background: #E67336;
+            transform: scale(1.1);
+        }
+
+        .icon-editable {
+            border: 2px dashed var(--kerberos-secondary);
+            padding: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .icon-editable:hover {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.1);
+        }
+
+        .image-editable {
+            border: 2px dashed var(--kerberos-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-editable:hover {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.1);
+        }
+
+        .text-editor-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 8px;
+            box-shadow: var(--kerberos-shadow-hover);
+            padding: 1rem;
+            z-index: 1000;
+            min-width: 400px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .text-editor-popup h4 {
+            margin-bottom: 1rem;
+            color: var(--kerberos-primary);
+        }
+
+        .text-editor-popup input, 
+        .text-editor-popup textarea, 
+        .text-editor-popup select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            font-family: inherit;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .popup-buttons button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-save {
+            background: var(--kerberos-accent);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: var(--kerberos-light-gray);
+            color: white;
+        }
+
+        .visual-editor-toolbar {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--kerberos-primary);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0 6px 0 6px;
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 3rem;
+            color: var(--kerberos-light-gray);
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--kerberos-secondary);
+        }
+
+        .welcome-features {
+            background: var(--kerberos-bg-light);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .welcome-features h4 {
+            color: var(--kerberos-primary);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .welcome-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--kerberos-border);
+        }
+
+        .welcome-features li:last-child {
+            border-bottom: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--kerberos-light-gray);
+        }
+
+        .modal-close:hover {
+            color: var(--kerberos-dark);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--kerberos-bg-light);
+            border: 2px dashed var(--kerberos-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.05);
+        }
+
+        .storage-info {
+            background: rgba(0, 156, 230, 0.1);
+            border: 1px solid var(--kerberos-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .storage-info h4 {
+            color: var(--kerberos-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .storage-info p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--kerberos-success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--kerberos-shadow-hover);
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--kerberos-danger);
+        }
+
+        .notification.warning {
+            background: var(--kerberos-orange);
+        }
+
+        .size-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .icon-option {
+            padding: 0.5rem;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-option:hover {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.05);
+        }
+
+        .icon-option.selected {
+            background: var(--kerberos-primary);
+            color: white;
+        }
+
+        .template-card {
+            background: var(--kerberos-bg-light);
+            border: 1px solid var(--kerberos-border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            border-color: var(--kerberos-primary);
+            background: rgba(6, 58, 168, 0.05);
+        }
+
+        .no-modules {
+            text-align: center;
+            padding: 2rem;
+            color: var(--kerberos-light-gray);
+            background: var(--kerberos-bg-light);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .icon-color-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .color-option:hover,
+        .color-option.selected {
+            border-color: var(--kerberos-dark);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .text-editor-popup {
+                min-width: 300px;
+                max-width: 90vw;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .content-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .size-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .icon-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* ============================================
+        WEBSITE-CSS INTEGRATION FÜR MODULE
+        ============================================ */
+
+        /* Kerberos Website Fonts Integration */
+        @font-face {
+        font-family: "Inter-Website";
+        font-style: normal;
+        font-weight: 400;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e67ba9f256c7e0410ff9a/1698588603351/Inter-Regular.eot);
+        src: local(""),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e67e4fad67d3ed1ead2e3/1698588644718/Inter-Regular.woff2) format("woff2"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e67e4425da202458de638/1698588644798/Inter-Regular.woff) format("woff"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e67e478448c37a00ec33c/1698588645455/Inter-Regular.ttf) format("truetype");
+        }
+
+        @font-face {
+        font-family: "Inter-Website";
+        font-style: normal;
+        font-weight: 600;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6bcc2a38224453791c4c/1698589645502/Inter-SemiBold.otf);
+        src: local(""),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6bcce7c1f1256e370ba0/1698589645406/Inter-SemiBold.eot) format("embedded-opentype"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6bcca330e02cfb57f651/1698589645008/Inter-SemiBold.woff2) format("woff2"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6bcc4c040b64466e992a/1698589645209/Inter-SemiBold.woff) format("woff"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6bcc3a3cff508e14e114/1698589645867/Inter-SemiBold.ttf) format("truetype");
+        }
+
+        @font-face {
+        font-family: "Inter-Website";
+        font-style: normal;
+        font-weight: 700;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6c37425da202458e6ab5/1698589752943/Inter-Bold.otf);
+        src: local(""),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6c110acd6c13d8975f2f/1698589713613/Inter-Bold.eot) format("embedded-opentype"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6c3871000d326b680ac0/1698589752626/Inter-Bold.woff2) format("woff2"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6c373a3cff508e14ed1a/1698589752709/Inter-Bold.woff) format("woff"),
+            url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/653e6c3746e40866c799eebf/1698589753320/Inter-Bold.ttf) format("truetype");
+        }
+
+        /* FontAwesome für Module */
+        @font-face {
+        font-family: 'Font Awesome 5 Pro-Website';
+        font-style: normal;
+        font-weight: 300;
+        font-display: block;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/681b35be2fa34a7ab8b1cb3e/1746613695920/fa-light-300.ttf) format("truetype");
+        }
+
+        @font-face {
+        font-family: 'Font Awesome 5 Pro-Website';
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/681b35be18d0ba5468d30aaf/1746613695871/fa-regular-400.ttf) format("truetype");
+        }
+
+        @font-face {
+        font-family: 'Font Awesome 5 Solid-Website';
+        font-style: normal;
+        font-weight: 900;
+        font-display: block;
+        src: url(https://static1.squarespace.com/static/651eacf7cae17a228645a660/t/681b35befb46871ebe573e8b/1746613695679/fa-solid-900.ttf) format("truetype");
+        }
+
+        /* Module Container - Website-kompatible Styles */
+        .visual-editor-content,
+        .preview-content {
+            --website-primary: #063AA8;
+            --website-secondary: #009CE6;
+            --website-dark: #212529;
+            --website-light-gray: #ADB5BD;
+            --website-accent: #B265E9;
+            --website-orange: #EF8646;
+            --website-white: #FFFFFF;
+            --website-bg-light: #F8F9FA;
+            --website-border: #DEE2E6;
+            --website-shadow: 0 4px 12px rgba(6, 58, 168, 0.1);
+            --website-shadow-hover: 0 6px 20px rgba(6, 58, 168, 0.15);
+            
+            --heading-font-font-family: "Inter-Website", "Inter", sans-serif;
+            --heading-font-font-weight: 700;
+            --heading-font-line-height: 1.3em;
+            
+            --body-font-font-family: "Inter-Website", "Inter", sans-serif;
+            --body-font-line-height: 1.6em;
+            
+            --button-font-family: "Inter-Website", "Inter", sans-serif;
+            --button-font-weight: 600;
+        }
+
+        /* Website-kompatible Basis-Styles für Module */
+        .visual-editor-content h1,
+        .visual-editor-content h2,
+        .visual-editor-content h3,
+        .visual-editor-content h4,
+        .visual-editor-content h5,
+        .visual-editor-content h6,
+        .preview-content h1,
+        .preview-content h2,
+        .preview-content h3,
+        .preview-content h4,
+        .preview-content h5,
+        .preview-content h6 {
+            font-family: var(--heading-font-font-family);
+            font-weight: var(--heading-font-font-weight);
+            line-height: var(--heading-font-line-height);
+            color: var(--website-dark);
+        }
+
+        .visual-editor-content p,
+        .visual-editor-content span,
+        .visual-editor-content div,
+        .visual-editor-content li,
+        .preview-content p,
+        .preview-content span,
+        .preview-content div,
+        .preview-content li {
+            font-family: var(--body-font-font-family);
+            line-height: var(--body-font-line-height);
+        }
+
+        /* Website-kompatible Button-Styles */
+        .visual-editor-content a[class*="btn"],
+        .visual-editor-content a[class*="button"],
+        .visual-editor-content a[class*="cta"],
+        .preview-content a[class*="btn"],
+        .preview-content a[class*="button"],
+        .preview-content a[class*="cta"] {
+            font-family: var(--button-font-family);
+            font-weight: var(--button-font-weight);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Website-kompatible Icon-Styles */
+        .visual-editor-content .icon,
+        .visual-editor-content .contact-icon,
+        .visual-editor-content .cta-icon,
+        .preview-content .icon,
+        .preview-content .contact-icon,
+        .preview-content .cta-icon {
+            font-family: 'Font Awesome 5 Pro-Website', 'Font Awesome 5 Pro';
+            font-weight: 300;
+            font-style: normal;
+            speak: never;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Responsive Behavior für Website-Integration */
+        .visual-editor-content,
+        .preview-content {
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        /* Mobile Responsive Anpassungen für Website-Kompatibilität */
+        @media (max-width: 768px) {
+            .visual-editor-content [style*="grid-template-columns"],
+            .preview-content [style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .visual-editor-content [style*="display: flex"],
+            .preview-content [style*="display: flex"] {
+                flex-direction: column !important;
+                gap: 1rem !important;
+            }
+        }
+
+        /* Scroll-Behavior für Website-Kompatibilität */
+        .visual-editor-content,
+        .preview-content {
+            scroll-behavior: smooth;
+        }
+
+        /* Website-kompatible Print-Styles */
+        @media print {
+            .visual-editor-content,
+            .preview-content {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt !important;
+            }
+            
+            .visual-editor-content .element-controls,
+            .preview-content .element-controls {
+                display: none !important;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div>
+                <div class="logo">🛡️ Kerberos Module Manager Pro</div>
+                <div class="storage-status">
+                    <div class="status-indicator"></div>
+                    <span>Reparierte Version - Alle Syntax-Fehler behoben</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-success" id="quickBackupBtn">💾 Schnell-Backup</button>
+                <button class="btn btn-primary" id="exportAllBtn">📦 Vollexport</button>
+                <button class="btn btn-success" id="importBtn">📥 Import</button>
+                <button class="btn btn-warning" id="newModuleBtn">➕ Neues Modul</button>
+                <button class="btn btn-success" id="loadDefaultBtn">🎯 Standard-Module laden</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-grid">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Module Bibliothek</h3>
+                    <div class="auto-save-indicator">
+                        <span>💾</span>
+                        <span id="moduleCount">0</span>
+                    </div>
+                </div>
+                
+                <div class="module-search">
+                    <input type="text" class="search-input" id="moduleSearch" placeholder="🔍 Module suchen...">
+                    <select class="category-filter" id="categoryFilter">
+                        <option value="all">📁 Alle Kategorien</option>
+                        <option value="content">📄 Content</option>
+                        <option value="contact">👥 Kontakt</option>
+                        <option value="process">⚙️ Prozesse</option>
+                        <option value="promo">🎯 Promotion</option>
+                        <option value="blog">📰 Blog</option>
+                        <option value="layout">🎨 Layout</option>
+                        <option value="api">🔗 API & Daten</option>
+                        <option value="header">🎪 Header & Navigation</option>
+                        <option value="interactive">🎮 Interaktiv</option>
+                        <option value="custom">🔧 Benutzerdefiniert</option>
+                    </select>
+                    <div class="module-stats" id="moduleStats">0 Module gefunden</div>
+                </div>
+                
+                <ul class="module-list" id="moduleList">
+                    <!-- Module werden dynamisch geladen -->
+                </ul>
+                
+                <div class="quick-actions">
+                    <button class="btn btn-success quick-btn" id="restoreBtn">🔄 Wiederherstellen</button>
+                    <button class="btn btn-warning quick-btn" id="clearAllBtn">🗑️ Alle löschen</button>
+                </div>
+
+                <div class="backup-status">
+                    <div class="backup-status-title">💾 Speicher-Status</div>
+                    <div id="backupStatus">Module werden lokal gespeichert</div>
+                    <div style="margin-top: 0.5rem;">
+                        <small>Letzte Speicherung: <span id="lastBackup">Beim Laden</span></small>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div id="welcomeScreen" class="welcome-screen">
+                    <div class="welcome-icon">🎨</div>
+                    <h2>Willkommen im reparierten Kerberos Module Manager</h2>
+                    <p>Alle JavaScript-Syntax-Fehler wurden behoben! Jetzt vollständig funktionsfähig.</p>
+                    
+                    <div class="welcome-features">
+                        <h4>✅ Reparaturen durchgeführt:</h4>
+                        <ul>
+                            <li>🔧 <strong>Template-Strings entfernt:</strong> Alle Backticks durch normale String-Konkatenation ersetzt</li>
+                            <li>📝 <strong>HTML-Code-Generierung repariert:</strong> Kein unescaptes HTML mehr in JavaScript</li>
+                            <li>⚡ <strong>Syntax-Fehler behoben:</strong> Vollständig funktionstüchtiger JavaScript-Code</li>
+                            <li>🎨 <strong>Visual Editor verbessert:</strong> Stabile Element-Bearbeitung ohne Parsing-Probleme</li>
+                            <li>💾 <strong>Auto-Save optimiert:</strong> Zuverlässige lokale Speicherung</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="moduleEditor" style="display: none;">
+                    <div class="content-header">
+                        <h2 class="content-title" id="moduleTitle">Modul bearbeiten</h2>
+                        <div class="content-actions">
+                            <button class="btn btn-success" id="saveBtn">💾 Speichern</button>
+                            <button class="btn btn-primary" id="exportBtn">📤 Exportieren</button>
+                            <button class="btn btn-warning" id="duplicateBtn">📋 Duplizieren</button>
+                            <button class="btn btn-danger" id="deleteBtn">🗑️ Löschen</button>
+                        </div>
+                    </div>
+
+                    <div class="editor-tabs">
+                        <div class="tab active" data-tab="visual">🎨 Visual Editor</div>
+                        <div class="tab" data-tab="settings">⚙️ Einstellungen</div>
+                        <div class="tab" data-tab="code">💻 Code</div>
+                        <div class="tab" data-tab="preview">👁️ Vorschau</div>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="visualTab" class="tab-panel active">
+                            <div class="visual-editor">
+                                <div class="visual-editor-toolbar">Klicken Sie auf Elemente zum Bearbeiten • Vollständig repariert!</div>
+                                <div class="visual-editor-content" id="visualEditor">
+                                    <p>Wechseln Sie zu einem anderen Tab oder laden Sie ein Modul, um mit der Bearbeitung zu beginnen.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="settingsTab" class="tab-panel">
+                            <div class="form-group">
+                                <label class="form-label">Modul Name</label>
+                                <input type="text" class="form-control" id="moduleName" placeholder="z.B. Ansprechpartner Modul">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Beschreibung</label>
+                                <textarea class="form-control" id="moduleDescription" placeholder="Kurze Beschreibung des Moduls..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Kategorie</label>
+                                    <select class="form-control" id="moduleCategory">
+                                        <option value="content">📄 Content Module</option>
+                                        <option value="contact">👥 Kontakt Module</option>
+                                        <option value="process">⚙️ Prozess Module</option>
+                                        <option value="promo">🎯 Promotion Module</option>
+                                        <option value="blog">📰 Blog Module</option>
+                                        <option value="layout">🎨 Layout Module</option>
+                                        <option value="api">🔗 API & Daten Module</option>
+                                        <option value="header">🎪 Header & Navigation</option>
+                                        <option value="interactive">🎮 Interaktiv Module</option>
+                                        <option value="custom">🔧 Benutzerdefiniert</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tags (kommagetrennt)</label>
+                                    <input type="text" class="form-control" id="moduleTags" placeholder="kerberos, compliance, kontakt">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="codeTab" class="tab-panel">
+                            <div class="form-group">
+                                <label class="form-label">HTML Code</label>
+                                <textarea class="form-control code-editor" id="moduleCode" placeholder="<!-- Ihr HTML Code hier -->"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="previewTab" class="tab-panel">
+                            <div class="preview-container">
+                                <div class="preview-content" id="previewContent">
+                                    <p>Wechseln Sie zum Code-Tab und fügen Sie HTML hinzu, um eine Vorschau zu sehen.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="newModuleModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeNewModal">&times;</button>
+            <h3>Neues Modul erstellen</h3>
+            <div class="form-group">
+                <label class="form-label">Vorlage wählen</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div class="template-card" data-template="blank">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">📄</div>
+                        <strong>Leeres Modul</strong>
+                        <p>Beginnen Sie von Grund auf</p>
+                    </div>
+                    <div class="template-card" data-template="contact">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">👥</div>
+                        <strong>Kontakt Modul</strong>
+                        <p>Ansprechpartner-Template</p>
+                    </div>
+                    <div class="template-card" data-template="process">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">⚙️</div>
+                        <strong>Prozess Modul</strong>
+                        <p>Schritt-für-Schritt Template</p>
+                    </div>
+                    <div class="template-card" data-template="layout-left">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">🎨</div>
+                        <strong>Bild-Text (Links)</strong>
+                        <p>Layout mit Bild links</p>
+                    </div>
+                    <div class="template-card" data-template="layout-right">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">🖼️</div>
+                        <strong>Bild-Text (Rechts)</strong>
+                        <p>Layout mit Bild rechts</p>
+                    </div>
+                    <div class="template-card" data-template="api-dashboard">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--kerberos-primary);">📊</div>
+                        <strong>API Dashboard</strong>
+                        <p>Status & Metriken</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeImportModal">&times;</button>
+            <h3>Module importieren</h3>
+            
+            <div class="storage-info">
+                <h4>💡 Lokaler Speicher Info</h4>
+                <p>Ihre Module werden automatisch im Browser gespeichert und beim nächsten Besuch wiederhergestellt.</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">JSON-Datei auswählen</label>
+                <label for="importFile" class="file-input-label">
+                    📁 Datei auswählen
+                </label>
+                <input type="file" id="importFile" class="file-input" accept=".json">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Oder JSON-Text einfügen</label>
+                <textarea class="form-control" id="importText" rows="5" placeholder='{"modules": {...}}'></textarea>
+                <button class="btn btn-success" id="importTextBtn" style="margin-top: 0.5rem;">📝 Text importieren</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeDeleteModal">&times;</button>
+            <h3>Modul löschen</h3>
+            <p>Sind Sie sicher, dass Sie das Modul "<span id="deleteModuleName"></span>" löschen möchten?</p>
+            <p style="color: var(--kerberos-danger); font-weight: 600;">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button class="btn btn-danger" id="confirmDeleteBtn">🗑️ Löschen</button>
+                <button class="btn btn-primary" id="cancelDeleteBtn">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="clearAllModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeClearAllModal">&times;</button>
+            <h3>⚠️ Alle Module löschen</h3>
+            <p>Sind Sie sicher, dass Sie <strong>ALLE Module</strong> löschen möchten?</p>
+            <p style="color: var(--kerberos-danger); font-weight: 600;">Diese Aktion kann nicht rückgängig gemacht werden!</p>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button class="btn btn-danger" id="confirmClearAllBtn">🗑️ Alle löschen</button>
+                <button class="btn btn-primary" id="cancelClearAllBtn">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Text Editor Popup -->
+    <div class="text-editor-popup" id="textEditorPopup">
+        <h4 id="editorTitle">Element bearbeiten</h4>
+        <div id="editorContent">
+            <!-- Dynamischer Inhalt wird hier eingefügt -->
+        </div>
+        <div class="popup-buttons">
+            <button class="btn-save" id="saveElementBtn">💾 Speichern</button>
+            <button class="btn-cancel" id="cancelElementBtn">❌ Abbrechen</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script>
+        // Globale Variablen
+        let modules = {};
+        let currentModule = null;
+        let moduleCounter = 1;
+        let moduleToDelete = null;
+        let autoSaveInterval = null;
+        let currentEditingElement = null;
+
+        // Icon Collections für verschiedene Zwecke
+        const iconCollections = {
+            fontawesome: {
+                // Navigation & Pfeile
+                'Pfeil rechts': '&#xf054;',
+                'Pfeil links': '&#xf053;',
+                'Pfeil unten': '&#xf078;',
+                'Pfeil oben': '&#xf077;',
+                'Externe Link': '&#xf35d;',
+                'Kreis rechts': '&#xf138;',
+                'Doppelpfeil rechts': '&#xf101;',
+                'Winkel rechts': '&#xf105;',
+                
+                // Personen & Kontakt
+                'User': '&#xf007;',
+                'Benutzer-Kreis': '&#xf2bd;',
+                'Benutzer-Gruppe': '&#xf0c0;',
+                'Benutzer-Plus': '&#xf234;',
+                'ID Karte': '&#xf2c2;',
+                'Adressbuch': '&#xf2b9;',
+                
+                // Kommunikation
+                'Email': '&#xf0e0;',
+                'Email-offen': '&#xf2b6;',
+                'Telefon': '&#xf095;',
+                'Telefon-Alt': '&#xf879;',
+                'Mobile': '&#xf10b;',
+                'Fax': '&#xf1ac;',
+                'Chat': '&#xf075;',
+                'Kommentar': '&#xf27a;',
+                'Video-Call': '&#xf03d;',
+                
+                // Business & Status
+                'Check': '&#xf00c;',
+                'Check-Kreis': '&#xf058;',
+                'Times': '&#xf00d;',
+                'Times-Kreis': '&#xf057;',
+                'Plus': '&#xf067;',
+                'Plus-Kreis': '&#xf055;',
+                'Minus': '&#xf068;',
+                'Info': '&#xf129;',
+                'Info-Kreis': '&#xf05a;',
+                'Warnung': '&#xf071;',
+                'Ausrufezeichen': '&#xf12a;',
+                'Frage': '&#xf128;',
+                'Frage-Kreis': '&#xf059;',
+                
+                // Compliance & Sicherheit
+                'Schloss': '&#xf023;',
+                'Schloss-offen': '&#xf3c1;',
+                'Schild': '&#xf132;',
+                'Schild-Check': '&#xf2f7;',
+                'Sicherheit': '&#xf3ed;',
+                'Schlüssel': '&#xf084;',
+                'Fingerabdruck': '&#xf577;',
+                'Auge': '&#xf06e;',
+                'Auge-slash': '&#xf070;',
+                'Geldwäsche': '&#xf51e;',
+                'Compliance': '&#xf0c1;',
+                'Regelwerk': '&#xf1c9;',
+                'Prüfung': '&#xf1b2;',
+                
+                // Technologie & Daten
+                'API': '&#xf1c0;',
+                'Database': '&#xf1c0;',
+                'Server': '&#xf233;',
+                'Cloud': '&#xf0c2;',
+                'Laptop': '&#xf109;',
+                'Desktop': '&#xf108;',
+                'Code': '&#xf121;',
+                'Terminal': '&#xf120;',
+                'Plugin': '&#xf1e6;',
+                'Wifi': '&#xf1eb;',
+                'Sync': '&#xf021;',
+                'Refresh': '&#xf2f1;',
+                
+                // Dokumente & Dateien
+                'Dokument': '&#xf15b;',
+                'Dokument-Text': '&#xf15c;',
+                'PDF': '&#xf1c1;',
+                'Excel': '&#xf1c3;',
+                'Word': '&#xf1c2;',
+                'Ordner': '&#xf07b;',
+                'Ordner-offen': '&#xf07c;',
+                'Archiv': '&#xf187;',
+                'Download': '&#xf019;',
+                'Upload': '&#xf093;',
+                'Clipboard': '&#xf328;',
+                'Vertrag': '&#xf1c3;',
+                
+                // Zeit & Termine
+                'Kalender': '&#xf073;',
+                'Kalender-Check': '&#xf274;',
+                'Kalender-Plus': '&#xf271;',
+                'Uhr': '&#xf017;',
+                'Stoppuhr': '&#xf2f2;',
+                'Termin': '&#xf783;',
+                'Timer': '&#xf253;',
+                'Countdown': '&#xf251;',
+                
+                // Finanzen & Business
+                'Euro': '&#xf153;',
+                'Dollar': '&#xf155;',
+                'Kredit-Karte': '&#xf09d;',
+                'Bank': '&#xf19c;',
+                'Rechnung': '&#xf570;',
+                'Taschenrechner': '&#xf1ec;',
+                'Chart-Line': '&#xf201;',
+                'Chart-Bar': '&#xf080;',
+                'Chart-Pie': '&#xf200;',
+                'Trend-up': '&#xf3a5;',
+                'Trend-down': '&#xf3a0;',
+                'Prozent': '&#xf295;',
+                
+                // Marketing & Medien
+                'Bullhorn': '&#xf0a1;',
+                'Megaphon': '&#xf675;',
+                'Bild': '&#xf03e;',
+                'Kamera': '&#xf030;',
+                'Video': '&#xf03d;',
+                'Play': '&#xf04b;',
+                'Pause': '&#xf04c;',
+                'Stop': '&#xf04d;',
+                'Mikrofon': '&#xf130;',
+                'Lautsprecher': '&#xf028;',
+                
+                // Tools & Einstellungen
+                'Einstellungen': '&#xf013;',
+                'Zahnrad': '&#xf085;',
+                'Werkzeug': '&#xf0ad;',
+                'Schraubenschlüssel': '&#xf0ad;',
+                'Filter': '&#xf0b0;',
+                'Sort': '&#xf0dc;',
+                'Liste': '&#xf03a;',
+                'Grid': '&#xf009;',
+                'Suche': '&#xf002;',
+                'Zoom-In': '&#xf00e;',
+                'Zoom-Out': '&#xf010;',
+                'Bearbeiten': '&#xf044;',
+                'Löschen': '&#xf1f8;',
+                
+                // Transport & Standort
+                'Standort': '&#xf3c5;',
+                'Karte': '&#xf279;',
+                'Karte-Marker': '&#xf041;',
+                'Navigation': '&#xf14e;',
+                'Auto': '&#xf1b9;',
+                'Flugzeug': '&#xf072;',
+                'Haus': '&#xf015;',
+                'Gebäude': '&#xf1ad;',
+                'Büro': '&#xf0f7;',
+                'Fabrik': '&#xf275;',
+                
+                // Social & Bewertung
+                'Stern': '&#xf005;',
+                'Stern-halb': '&#xf089;',
+                'Herz': '&#xf004;',
+                'Daumen-hoch': '&#xf164;',
+                'Daumen-runter': '&#xf165;',
+                'Teilen': '&#xf064;',
+                'Link': '&#xf0c1;',
+                'Hashtag': '&#xf292;',
+                'At-Symbol': '&#xf1fa;',
+                
+                // Verschiedenes
+                'Blitz': '&#xf0e7;',
+                'Magnet': '&#xf076;',
+                'Glühbirne': '&#xf0eb;',
+                'Rakete': '&#xf135;',
+                'Ziel': '&#xf140;',
+                'Kompass': '&#xf14e;',
+                'Puzzle': '&#xf12e;',
+                'Geschenk': '&#xf06b;',
+                'Trophäe': '&#xf091;',
+                'Medaille': '&#xf5a2;',
+                'Flagge': '&#xf024;',
+                'Tag': '&#xf02b;',
+                'Lesezeichen': '&#xf02e;'
+            },
+            categories: {
+                'Navigation': ['Pfeil rechts', 'Pfeil links', 'Pfeil unten', 'Pfeil oben', 'Externe Link', 'Kreis rechts'],
+                'Personen': ['User', 'Benutzer-Kreis', 'Benutzer-Gruppe', 'Benutzer-Plus', 'ID Karte', 'Adressbuch'],
+                'Kommunikation': ['Email', 'Email-offen', 'Telefon', 'Mobile', 'Chat', 'Kommentar', 'Video-Call'],
+                'Status': ['Check', 'Check-Kreis', 'Times', 'Plus', 'Info', 'Warnung', 'Frage'],
+                'Compliance': ['Schloss', 'Schild', 'Sicherheit', 'Schlüssel', 'Geldwäsche', 'Compliance', 'Prüfung'],
+                'Technologie': ['API', 'Database', 'Server', 'Cloud', 'Code', 'Terminal', 'Laptop'],
+                'Dokumente': ['Dokument', 'PDF', 'Excel', 'Word', 'Ordner', 'Download', 'Upload'],
+                'Zeit': ['Kalender', 'Uhr', 'Stoppuhr', 'Termin', 'Timer'],
+                'Business': ['Euro', 'Bank', 'Chart-Line', 'Chart-Bar', 'Trend-up', 'Taschenrechner'],
+                'Tools': ['Einstellungen', 'Werkzeug', 'Filter', 'Suche', 'Bearbeiten', 'Löschen'],
+                'Verschiedenes': ['Stern', 'Herz', 'Blitz', 'Rakete', 'Glühbirne', 'Ziel']
+            },
+            listStyles: {
+                'Standard': 'disc',
+                'Kreise': 'circle',
+                'Quadrate': 'square',
+                'Zahlen': 'decimal',
+                'Römisch': 'upper-roman',
+                'Buchstaben': 'upper-alpha',
+                'Keine': 'none'
+            },
+            iconColors: {
+                'Kerberos Blau': '#063AA8',
+                'Kerberos Cyan': '#009CE6',
+                'Kerberos Lila': '#B265E9',
+                'Kerberos Orange': '#EF8646',
+                'Dunkelgrau': '#212529',
+                'Hellgrau': '#ADB5BD',
+                'Weiß': '#FFFFFF',
+                'Schwarz': '#000000',
+                'Erfolg Grün': '#28a745',
+                'Warnung Gelb': '#ffc107',
+                'Gefahr Rot': '#dc3545'
+            }
+        };
+
+        // Module-Kategorien
+        const moduleCategories = {
+            'content': '📄 Content',
+            'contact': '👥 Kontakt',
+            'process': '⚙️ Prozesse',
+            'promo': '🎯 Promotion',
+            'blog': '📰 Blog',
+            'layout': '🎨 Layout',
+            'api': '🔗 API & Daten',
+            'header': '🎪 Header & Navigation',
+            'interactive': '🎮 Interaktiv',
+            'custom': '🔧 Benutzerdefiniert'
+        };
+
+        // Suchfilter-Variablen
+        let searchTerm = '';
+        let selectedCategory = 'all';
+
+        // Utility-Funktionen
+        function showNotification(text, type) {
+            type = type || 'success';
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notification.className = 'notification ' + type;
+            notificationText.textContent = text;
+            notification.classList.add('show');
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function saveToLocalStorage() {
+            try {
+                const data = {
+                    modules: modules,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('kerberos-modules-pro', JSON.stringify(data));
+                updateBackupStatus('Lokal gespeichert');
+            } catch (error) {
+                console.error('Fehler beim lokalen Speichern:', error);
+                showNotification('❌ Fehler beim Auto-Speichern', 'error');
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const stored = localStorage.getItem('kerberos-modules-pro');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    if (data.modules) {
+                        modules = data.modules;
+                        renderModuleList();
+                        updateBackupStatus('Aus lokalem Speicher geladen');
+                        showNotification('✅ Module aus lokalem Speicher geladen', 'success');
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden aus lokalem Speicher:', error);
+                showNotification('❌ Fehler beim Laden', 'error');
+            }
+            return false;
+        }
+
+        function updateBackupStatus(action) {
+            const status = document.getElementById('backupStatus');
+            const lastBackup = document.getElementById('lastBackup');
+            const moduleCount = document.getElementById('moduleCount');
+            
+            status.textContent = action + ' - ' + Object.keys(modules).length + ' Module';
+            lastBackup.textContent = new Date().toLocaleTimeString();
+            moduleCount.textContent = Object.keys(modules).length;
+        }
+
+        // Tab-Verwaltung
+        function switchTab(tabName) {
+            // Alle Tabs deaktivieren
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-panel').forEach(function(panel) {
+                panel.classList.remove('active');
+            });
+
+            // Aktiven Tab und Panel aktivieren
+            document.querySelector('[data-tab="' + tabName + '"]').classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Spezielle Aktionen für bestimmte Tabs
+            if (tabName === 'preview') {
+                updatePreview();
+            } else if (tabName === 'visual') {
+                updateVisualEditor();
+            }
+        }
+
+        // Module-Liste rendern
+        function renderModuleList() {
+            const moduleList = document.getElementById('moduleList');
+            const moduleStats = document.getElementById('moduleStats');
+            
+            moduleList.innerHTML = '';
+            
+            // Nach Änderungsdatum sortieren (neueste zuerst)
+            const sortedModules = Object.values(modules).sort(function(a, b) {
+                return new Date(b.modified) - new Date(a.modified);
+            });
+            
+            // Filter anwenden
+            const filteredModules = sortedModules.filter(function(module) {
+                const matchesSearch = searchTerm === '' || 
+                    module.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    module.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (module.tags && module.tags.some(function(tag) {
+                        return tag.toLowerCase().includes(searchTerm.toLowerCase());
+                    }));
+                
+                const matchesCategory = selectedCategory === 'all' || module.category === selectedCategory;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            // Statistiken aktualisieren
+            if (moduleStats) {
+                const totalModules = Object.keys(modules).length;
+                const filteredCount = filteredModules.length;
+                moduleStats.textContent = filteredCount + ' von ' + totalModules + ' Modulen';
+            }
+            
+            // Module anzeigen
+            filteredModules.forEach(function(module) {
+                const li = document.createElement('li');
+                li.className = 'module-item';
+                li.onclick = function() { loadModule(module.id); };
+                
+                const modifiedDate = new Date(module.modified).toLocaleDateString();
+                const categoryLabel = moduleCategories[module.category] || '🔧 Custom';
+                
+                li.innerHTML = '<div class="module-name">' + module.name + '</div>' +
+                    '<div class="module-description">' + module.description + '</div>' +
+                    '<div class="module-meta">📝 ' + modifiedDate + ' • ' + categoryLabel + '</div>' +
+                    '<button class="module-delete" onclick="event.stopPropagation(); deleteModule(\'' + module.id + '\')" title="Modul löschen">×</button>';
+                
+                moduleList.appendChild(li);
+            });
+            
+            // Keine Module gefunden
+            if (filteredModules.length === 0) {
+                const noModules = document.createElement('li');
+                noModules.className = 'no-modules';
+                if (searchTerm || selectedCategory !== 'all') {
+                    noModules.innerHTML = '🔍 Keine Module gefunden<br><small>Versuchen Sie andere Suchbegriffe</small>';
+                } else {
+                    noModules.innerHTML = '📝 Noch keine Module vorhanden<br><small>Erstellen Sie Ihr erstes Modul!</small>';
+                }
+                moduleList.appendChild(noModules);
+            }
+
+            updateBackupStatus('Liste aktualisiert');
+        }
+
+        // Modul laden
+        function loadModule(moduleId) {
+            currentModule = modules[moduleId];
+            if (!currentModule) return;
+
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('moduleEditor').style.display = 'block';
+            
+            document.getElementById('moduleTitle').textContent = currentModule.name;
+            document.getElementById('moduleName').value = currentModule.name;
+            document.getElementById('moduleDescription').value = currentModule.description;
+            document.getElementById('moduleCategory').value = currentModule.category;
+            document.getElementById('moduleTags').value = (currentModule.tags || []).join(', ');
+            document.getElementById('moduleCode').value = currentModule.code;
+
+            // Aktive Auswahl markieren
+            document.querySelectorAll('.module-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+            
+            const items = document.querySelectorAll('.module-item');
+            const sortedModules = Object.values(modules).sort(function(a, b) {
+                return new Date(b.modified) - new Date(a.modified);
+            });
+            const moduleIndex = sortedModules.findIndex(function(m) { return m.id === moduleId; });
+            if (items[moduleIndex]) {
+                items[moduleIndex].classList.add('active');
+            }
+
+            updatePreview();
+            updateVisualEditor();
+        }
+
+        // Vorschau aktualisieren
+        function updatePreview() {
+            const code = document.getElementById('moduleCode').value;
+            const previewContent = document.getElementById('previewContent');
+            
+            if (code.trim()) {
+                previewContent.innerHTML = code;
+            } else {
+                previewContent.innerHTML = '<p>Kein Code zur Vorschau verfügbar.</p>';
+            }
+        }
+
+        // Visual Editor aktualisieren
+        function updateVisualEditor() {
+            const code = document.getElementById('moduleCode').value;
+            const visualEditor = document.getElementById('visualEditor');
+            
+            if (code.trim()) {
+                visualEditor.innerHTML = code;
+                setTimeout(function() {
+                    makeElementsEditable(visualEditor);
+                }, 10);
+            } else {
+                visualEditor.innerHTML = '<p>Fügen Sie HTML-Code hinzu, um mit der visuellen Bearbeitung zu beginnen.</p>';
+            }
+        }
+
+        // Interaktive Module für Bearbeitung vorbereiten
+        function prepareInteractiveModulesForEditing(container) {
+            handleAccordionModules(container);
+            handleTabModules(container);
+            handleModalModules(container);
+            handleDropdownModules(container);
+            handleCarouselModules(container);
+            handleToggleModules(container);
+        }
+
+        function handleAccordionModules(container) {
+            const accordionSelectors = [
+                '.accordion', '.collapse', '.collapsible',
+                '[data-toggle="collapse"]', '[aria-expanded]',
+                '.kerberos-accordion', '.faq-item', '.expandable',
+                '.toggle-content', '.show-hide'
+            ];
+            
+            accordionSelectors.forEach(function(selector) {
+                const accordions = container.querySelectorAll(selector);
+                accordions.forEach(function(accordion) {
+                    makeAccordionEditable(accordion);
+                });
+            });
+            
+            const hiddenContent = container.querySelectorAll('[style*="display: none"], [style*="display:none"], .collapsed, .hidden');
+            hiddenContent.forEach(function(element) {
+                if (isAccordionContent(element)) {
+                    element.style.display = 'block';
+                    element.classList.remove('collapsed', 'hidden');
+                    element.classList.add('editor-expanded');
+                    addInteractiveModuleIndicator(element, 'Accordion-Inhalt (im Editor aufgeklappt)');
+                }
+            });
+        }
+
+        function isAccordionContent(element) {
+            const parent = element.parentElement;
+            if (!parent) return false;
+            
+            return parent.classList.contains('accordion') ||
+                parent.classList.contains('collapsible') ||
+                parent.classList.contains('faq-item') ||
+                parent.querySelector('.accordion-header, .collapse-header, .toggle-header') ||
+                element.hasAttribute('data-parent') ||
+                element.classList.contains('collapse') ||
+                element.classList.contains('accordion-body');
+        }
+
+        function handleTabModules(container) {
+            const tabSelectors = [
+                '.tabs', '.tab-container', '.tabbed-content',
+                '[role="tablist"]', '.nav-tabs', '.kerberos-tabs',
+                '.tab-navigation'
+            ];
+            
+            tabSelectors.forEach(function(selector) {
+                const tabContainers = container.querySelectorAll(selector);
+                tabContainers.forEach(function(tabContainer) {
+                    makeTabModuleEditable(tabContainer);
+                });
+            });
+            
+            const tabPanels = container.querySelectorAll('.tab-panel, .tab-content, [role="tabpanel"], .tabpanel');
+            tabPanels.forEach(function(panel) {
+                panel.style.display = 'block';
+                panel.classList.add('editor-visible');
+                addInteractiveModuleIndicator(panel, 'Tab-Panel (im Editor sichtbar)');
+            });
+        }
+
+        function handleModalModules(container) {
+            const modals = container.querySelectorAll('.modal, .popup, .overlay, .lightbox, [role="dialog"]');
+            modals.forEach(function(modal) {
+                modal.style.display = 'block';
+                modal.style.position = 'relative';
+                modal.style.zIndex = 'auto';
+                modal.classList.add('editor-modal');
+                addInteractiveModuleIndicator(modal, 'Modal/Popup (im Editor sichtbar)');
+                makeModalEditable(modal);
+            });
+        }
+
+        function handleDropdownModules(container) {
+            const dropdowns = container.querySelectorAll('.dropdown, .dropdown-menu, .select-options, [data-toggle="dropdown"]');
+            dropdowns.forEach(function(dropdown) {
+                dropdown.style.display = 'block';
+                dropdown.style.position = 'relative';
+                dropdown.classList.add('editor-dropdown');
+                addInteractiveModuleIndicator(dropdown, 'Dropdown (im Editor sichtbar)');
+            });
+        }
+
+        function handleCarouselModules(container) {
+            const carousels = container.querySelectorAll('.carousel, .slider, .swiper, .slideshow');
+            carousels.forEach(function(carousel) {
+                const slides = carousel.querySelectorAll('.slide, .carousel-item, .swiper-slide');
+                slides.forEach(function(slide, index) {
+                    slide.style.display = 'block';
+                    slide.style.position = 'relative';
+                    slide.classList.add('editor-slide');
+                    addInteractiveModuleIndicator(slide, 'Slide ' + (index + 1) + ' (im Editor sichtbar)');
+                });
+                makeCarouselEditable(carousel);
+            });
+        }
+
+        function handleToggleModules(container) {
+            const toggles = container.querySelectorAll('[data-toggle], .toggle, .switch, .show-hide-toggle');
+            toggles.forEach(function(toggle) {
+                const target = getToggleTarget(toggle);
+                if (target) {
+                    target.style.display = 'block';
+                    target.classList.add('editor-toggled');
+                    addInteractiveModuleIndicator(target, 'Toggle-Inhalt (im Editor sichtbar)');
+                }
+            });
+        }
+
+        function getToggleTarget(toggle) {
+            const targetId = toggle.getAttribute('data-target') || toggle.getAttribute('href');
+            if (targetId) {
+                return document.querySelector(targetId);
+            }
+            return toggle.nextElementSibling;
+        }
+
+        function addInteractiveModuleIndicator(element, text) {
+            if (element.querySelector('.interactive-indicator')) return;
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'interactive-indicator';
+            indicator.innerHTML = '<div style="background: linear-gradient(135deg, #B265E9, #EF8646); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; position: absolute; top: -5px; right: -5px; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);">🎮 ' + text + '</div>';
+            
+            element.style.position = 'relative';
+            element.appendChild(indicator);
+        }
+
+        function makeAccordionEditable(accordion) {
+            accordion.classList.add('element-editable');
+            accordion.dataset.elementId = 'accordion-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls interactive-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '🎮';
+            editBtn.title = 'Accordion bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editInteractiveModule(accordion, 'accordion');
+            };
+            
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'element-btn element-duplicate';
+            toggleBtn.innerHTML = '👁️';
+            toggleBtn.title = 'Alle Bereiche ein-/ausblenden';
+            toggleBtn.onclick = function(e) {
+                e.stopPropagation();
+                toggleAllAccordionPanels(accordion);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Accordion duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(accordion);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Accordion löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(accordion);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(toggleBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            accordion.appendChild(controls);
+        }
+
+        function makeTabModuleEditable(tabContainer) {
+            tabContainer.classList.add('element-editable');
+            tabContainer.dataset.elementId = 'tabs-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls interactive-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '🎮';
+            editBtn.title = 'Tab-Module bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editInteractiveModule(tabContainer, 'tabs');
+            };
+            
+            const showAllBtn = document.createElement('button');
+            showAllBtn.className = 'element-btn element-duplicate';
+            showAllBtn.innerHTML = '👁️';
+            showAllBtn.title = 'Alle Tabs anzeigen';
+            showAllBtn.onclick = function(e) {
+                e.stopPropagation();
+                showAllTabPanels(tabContainer);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Tab-Module duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(tabContainer);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Tab-Module löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(tabContainer);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(showAllBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            tabContainer.appendChild(controls);
+        }
+
+        function makeModalEditable(modal) {
+            modal.classList.add('element-editable');
+            modal.dataset.elementId = 'modal-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls interactive-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '🎮';
+            editBtn.title = 'Modal bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editInteractiveModule(modal, 'modal');
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Modal duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(modal);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Modal löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(modal);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            modal.appendChild(controls);
+        }
+
+        function makeCarouselEditable(carousel) {
+            carousel.classList.add('element-editable');
+            carousel.dataset.elementId = 'carousel-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls interactive-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '🎮';
+            editBtn.title = 'Carousel bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editInteractiveModule(carousel, 'carousel');
+            };
+            
+            const showAllBtn = document.createElement('button');
+            showAllBtn.className = 'element-btn element-duplicate';
+            showAllBtn.innerHTML = '👁️';
+            showAllBtn.title = 'Alle Slides anzeigen';
+            showAllBtn.onclick = function(e) {
+                e.stopPropagation();
+                showAllSlides(carousel);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Carousel duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(carousel);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Carousel löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(carousel);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(showAllBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            carousel.appendChild(controls);
+        }
+
+        function editInteractiveModule(element, type) {
+            currentEditingElement = element;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = type.charAt(0).toUpperCase() + type.slice(1) + '-Modul bearbeiten';
+            
+            let specificOptions = '';
+            
+            switch(type) {
+                case 'accordion':
+                    specificOptions = '<div class="form-group">' +
+                        '<label>Accordion-Optionen:</label>' +
+                        '<button type="button" id="addAccordionItem" style="width: 100%; padding: 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">➕ Neuen Accordion-Bereich hinzufügen</button>' +
+                        '<div class="form-group-inline">' +
+                            '<input type="checkbox" id="allowMultiple"' + (element.hasAttribute('data-multiple') ? ' checked' : '') + '>' +
+                            '<label for="allowMultiple">Mehrere Bereiche gleichzeitig öffnen</label>' +
+                        '</div>' +
+                    '</div>';
+                    break;
+                    
+                case 'tabs':
+                    specificOptions = '<div class="form-group">' +
+                        '<label>Tab-Optionen:</label>' +
+                        '<button type="button" id="addTabItem" style="width: 100%; padding: 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">➕ Neuen Tab hinzufügen</button>' +
+                    '</div>';
+                    break;
+                    
+                case 'modal':
+                    specificOptions = '<div class="form-group">' +
+                        '<label>Modal-Größe:</label>' +
+                        '<select id="modalSize" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                            '<option value="small">Klein</option>' +
+                            '<option value="medium" selected>Mittel</option>' +
+                            '<option value="large">Groß</option>' +
+                            '<option value="fullscreen">Vollbild</option>' +
+                        '</select>' +
+                    '</div>';
+                    break;
+                    
+                case 'carousel':
+                    specificOptions = '<div class="form-group">' +
+                        '<label>Carousel-Optionen:</label>' +
+                        '<button type="button" id="addSlide" style="width: 100%; padding: 0.5rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 0.5rem;">➕ Neue Slide hinzufügen</button>' +
+                    '</div>';
+                    break;
+            }
+            
+            content.innerHTML = '<div class="form-group">' +
+                '<label>Modul-Typ: <strong>' + type.charAt(0).toUpperCase() + type.slice(1) + '</strong></label>' +
+                '<p style="background: #e3f2fd; padding: 1rem; border-radius: 6px; margin: 0.5rem 0;">' +
+                    '💡 <strong>Interaktives Modul erkannt!</strong><br>' +
+                    'Alle Bereiche wurden im Editor sichtbar gemacht. Änderungen werden in der fertigen Version interaktiv funktionieren.' +
+                '</p>' +
+            '</div>' +
+            specificOptions +
+            '<div class="form-group">' +
+                '<label>Gesamtes Modul (HTML):</label>' +
+                '<textarea id="interactiveModuleCode" rows="8" style="font-family: monospace; font-size: 0.9rem; width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' + getCleanHtmlContent(element) + '</textarea>' +
+            '</div>';
+            
+            popup.style.display = 'block';
+        }
+
+        function toggleAllAccordionPanels(accordion) {
+            const panels = accordion.querySelectorAll('.accordion-body, .collapse-body, .toggle-content, [style*="display: none"], [style*="display:none"]');
+            
+            panels.forEach(function(panel) {
+                if (panel.style.display === 'none') {
+                    panel.style.display = 'block';
+                    panel.classList.add('editor-expanded');
+                } else {
+                    panel.style.display = 'none';
+                    panel.classList.remove('editor-expanded');
+                }
+            });
+            
+            updateCodeFromVisual();
+            showNotification('🎮 Accordion-Bereiche umgeschaltet', 'success');
+        }
+
+        function showAllTabPanels(tabContainer) {
+            const panels = tabContainer.querySelectorAll('.tab-panel, .tab-content, [role="tabpanel"]');
+            
+            panels.forEach(function(panel) {
+                panel.style.display = 'block';
+                panel.classList.add('editor-visible');
+            });
+            
+            updateCodeFromVisual();
+            showNotification('🎮 Alle Tab-Panels sichtbar gemacht', 'success');
+        }
+
+        function showAllSlides(carousel) {
+            const slides = carousel.querySelectorAll('.slide, .carousel-item, .swiper-slide');
+            
+            slides.forEach(function(slide, index) {
+                slide.style.display = 'block';
+                slide.style.position = 'relative';
+                slide.classList.add('editor-slide');
+                
+                if (!slide.querySelector('.slide-number')) {
+                    const slideNumber = document.createElement('div');
+                    slideNumber.className = 'slide-number';
+                    slideNumber.style.cssText = 'position: absolute; top: 10px; left: 10px; background: rgba(6, 58, 168, 0.8); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; z-index: 100;';
+                    slideNumber.textContent = 'Slide ' + (index + 1);
+                    slide.appendChild(slideNumber);
+                }
+            });
+            
+            updateCodeFromVisual();
+            showNotification('🎮 Alle Slides sichtbar gemacht', 'success');
+        }
+        
+        // Elemente editierbar machen
+        function makeElementsEditable(container) {
+            // 1. Icons editierbar machen
+            const icons = container.querySelectorAll('.icon, .contact-icon, .cta-icon, .phase-icon, [class*="icon"], [class*="fa-"]');
+            icons.forEach(function(icon) {
+                if (!icon.querySelector('.element-controls')) {
+                    makeIconEditable(icon);
+                }
+            });
+
+            // 2. Bilder editierbar machen
+            const images = container.querySelectorAll('img');
+            images.forEach(function(image) {
+                if (!image.classList.contains('element-editable')) {
+                    makeImageEditable(image);
+                }
+            });
+
+            // 3. Buttons/Links editierbar machen
+            const links = container.querySelectorAll('a, .btn, .contact-cta, [class*="button"], [href]');
+            links.forEach(function(link) {
+                if (!link.classList.contains('element-editable')) {
+                    makeElementEditable(link);
+                }
+            });
+
+            // 4. Standard editierbare Elemente
+            const editableElements = container.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span:not(.icon), td, th, li');
+            editableElements.forEach(function(element) {
+                if (!element.classList.contains('element-editable') && 
+                    !element.closest('.element-editable') && 
+                    !element.classList.contains('icon-editable') &&
+                    element.textContent.trim()) {
+                    makeElementEditable(element);
+                }
+            });
+
+            // 5. Listen editierbar machen
+            const lists = container.querySelectorAll('ul, ol');
+            lists.forEach(function(list) {
+                if (!list.classList.contains('element-editable')) {
+                    makeListEditable(list);
+                }
+            });
+        }
+
+        // Icon editierbar machen
+        function makeIconEditable(iconElement) {
+            iconElement.classList.add('icon-editable');
+            iconElement.onclick = function(e) {
+                e.stopPropagation();
+                editIcon(iconElement);
+            };
+            
+            iconElement.style.position = 'relative';
+            iconElement.style.cursor = 'pointer';
+            iconElement.style.transition = 'all 0.3s ease';
+            
+            iconElement.addEventListener('mouseenter', function() {
+                if (!iconElement.classList.contains('editing')) {
+                    iconElement.style.transform = 'scale(1.1)';
+                    iconElement.style.filter = 'brightness(1.2)';
+                }
+            });
+            
+            iconElement.addEventListener('mouseleave', function() {
+                if (!iconElement.classList.contains('editing')) {
+                    iconElement.style.transform = 'scale(1)';
+                    iconElement.style.filter = 'brightness(1)';
+                }
+            });
+        }
+
+        // Einzelnes Element editierbar machen
+        function makeElementEditable(element) {
+            element.classList.add('element-editable');
+            element.dataset.elementId = 'element-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '✏️';
+            editBtn.title = 'Bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editElement(element);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(element);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Element löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(element);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            element.appendChild(controls);
+        }
+
+        // Bild editierbar machen
+        function makeImageEditable(image) {
+            image.classList.add('image-editable', 'element-editable');
+            image.dataset.elementId = 'image-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '🖼️';
+            editBtn.title = 'Bild bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editImage(image);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(image);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Bild löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(image);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            
+            // Container für Bild erstellen falls nötig
+            if (!image.parentElement.classList.contains('image-container')) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'image-container';
+                wrapper.style.position = 'relative';
+                wrapper.style.display = 'inline-block';
+                image.parentNode.insertBefore(wrapper, image);
+                wrapper.appendChild(image);
+                wrapper.appendChild(controls);
+            } else {
+                image.parentElement.appendChild(controls);
+            }
+        }
+
+        // Element bearbeiten
+        function editElement(element) {
+            currentEditingElement = element;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = getElementType(element) + ' bearbeiten';
+            
+            let inputHtml = '';
+            
+            // Button/Link bearbeitung
+            if (element.tagName === 'A' || element.classList.contains('btn') || element.classList.contains('contact-cta') || element.getAttribute('href')) {
+                const currentHref = element.href || element.getAttribute('href') || '';
+                const currentText = getCleanTextContent(element);
+                const currentTarget = element.target || '';
+                
+                inputHtml = '<div class="form-group">' +
+                    '<label>Link-Text:</label>' +
+                    '<input type="text" id="linkText" value="' + currentText + '" placeholder="Button Text">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label>Link-URL:</label>' +
+                    '<input type="url" id="linkHref" value="' + currentHref + '" placeholder="https://example.com">' +
+                    '</div>' +
+                    '<div class="form-group-inline">' +
+                    '<input type="checkbox" id="linkNewTab" ' + (currentTarget === '_blank' ? 'checked' : '') + '>' +
+                    '<label for="linkNewTab">In neuem Tab öffnen</label>' +
+                    '</div>';
+            }
+            // Text-Element bearbeitung
+            else if (isTextElement(element)) {
+                const textContent = getCleanTextContent(element);
+                inputHtml = '<div class="form-group">' +
+                    '<label>Text bearbeiten:</label>' +
+                    '<textarea id="textInput" rows="3">' + textContent + '</textarea>' +
+                    '<small style="display: block; margin-top: 0.5rem; color: #6c757d;">' +
+                    'Tipp: Verwenden Sie HTML-Tags für Formatierungen: &lt;strong&gt;fett&lt;/strong&gt;, &lt;em&gt;kursiv&lt;/em&gt;' +
+                    '</small>' +
+                    '</div>';
+            }
+
+            // Rich Text Editor Option hinzufügen
+            inputHtml += '<div class="form-group">' +
+                '<button type="button" id="useRichTextBtn" style="width: 100%; padding: 0.75rem; background: #009CE6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 1rem;">🎨 Rich Text Editor verwenden</button>' +
+            '</div>';
+
+            // Allgemeine HTML bearbeitung für andere Elemente
+            if (!(element.tagName === 'A' || element.classList.contains('btn') || element.classList.contains('contact-cta') || element.getAttribute('href')) && !isTextElement(element)) {
+                const cleanHtml = getCleanHtmlContent(element);
+                inputHtml = '<div class="form-group">' +
+                    '<label>Element Typ: <strong>' + getElementType(element) + '</strong></label>' +
+                    '<label>HTML Inhalt:</label>' +
+                    '<textarea id="htmlInput" rows="6">' + cleanHtml + '</textarea>' +
+                    '</div>';
+            }
+            
+            content.innerHTML = inputHtml;
+            popup.style.display = 'block';
+            
+            const firstInput = content.querySelector('input, textarea');
+            if (firstInput) firstInput.focus();
+        }
+
+        // Rich Text Editor erstellen
+        function createRichTextEditor(element) {
+            currentEditingElement = element;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = getElementType(element) + ' - Rich Text Editor';
+            
+            const currentText = getCleanTextContent(element);
+            const currentHtml = getCleanHtmlContent(element);
+            
+            content.innerHTML = '<div class="rich-text-toolbar">' +
+                '<div class="toolbar-group">' +
+                    '<button type="button" class="toolbar-btn" data-action="bold" title="Fett (Ctrl+B)">' +
+                        '<strong>B</strong>' +
+                    '</button>' +
+                    '<button type="button" class="toolbar-btn" data-action="italic" title="Kursiv (Ctrl+I)">' +
+                        '<em>I</em>' +
+                    '</button>' +
+                    '<button type="button" class="toolbar-btn" data-action="underline" title="Unterstrichen (Ctrl+U)">' +
+                        '<u>U</u>' +
+                    '</button>' +
+                    '<button type="button" class="toolbar-btn" data-action="strikethrough" title="Durchgestrichen">' +
+                        '<s>S</s>' +
+                    '</button>' +
+                '</div>' +
+                '<div class="toolbar-group">' +
+                    '<select class="toolbar-select" id="textColor" title="Textfarbe">' +
+                        '<option value="">Farbe wählen</option>' +
+                        '<option value="#063AA8" style="color: #063AA8;">Kerberos Blau</option>' +
+                        '<option value="#009CE6" style="color: #009CE6;">Kerberos Cyan</option>' +
+                        '<option value="#B265E9" style="color: #B265E9;">Kerberos Lila</option>' +
+                        '<option value="#EF8646" style="color: #EF8646;">Kerberos Orange</option>' +
+                        '<option value="#28a745" style="color: #28a745;">Erfolg Grün</option>' +
+                        '<option value="#dc3545" style="color: #dc3545;">Gefahr Rot</option>' +
+                        '<option value="#ffc107" style="color: #ffc107;">Warnung Gelb</option>' +
+                        '<option value="#212529" style="color: #212529;">Dunkelgrau</option>' +
+                        '<option value="#6c757d" style="color: #6c757d;">Mittelgrau</option>' +
+                    '</select>' +
+                    '<select class="toolbar-select" id="textSize" title="Textgröße">' +
+                        '<option value="">Größe wählen</option>' +
+                        '<option value="0.8em">Klein (0.8em)</option>' +
+                        '<option value="0.9em">Etwas kleiner (0.9em)</option>' +
+                        '<option value="1em">Normal (1em)</option>' +
+                        '<option value="1.1em">Etwas größer (1.1em)</option>' +
+                        '<option value="1.2em">Groß (1.2em)</option>' +
+                        '<option value="1.5em">Sehr groß (1.5em)</option>' +
+                        '<option value="2em">XXL (2em)</option>' +
+                    '</select>' +
+                '</div>' +
+                '<div class="toolbar-group">' +
+                    '<button type="button" class="toolbar-btn" data-action="highlight" title="Text hervorheben">' +
+                        '<span style="background: #ffeb3b; padding: 2px;">■</span>' +
+                    '</button>' +
+                    '<button type="button" class="toolbar-btn" data-action="link" title="Link einfügen">' +
+                        '🔗' +
+                    '</button>' +
+                    '<button type="button" class="toolbar-btn" data-action="clear" title="Formatierung entfernen">' +
+                        '✂️' +
+                    '</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Text bearbeiten:</label>' +
+                '<div class="rich-text-container">' +
+                    '<div id="richTextEditor" contenteditable="true" class="rich-text-editor" spellcheck="false">' +
+                        (currentHtml || currentText) +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Vorschau:</label>' +
+                '<div id="richTextPreview" class="rich-text-preview">' +
+                    (currentHtml || currentText) +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<details>' +
+                    '<summary style="cursor: pointer; font-weight: 600; margin-bottom: 0.5rem;">🔧 Erweiterte HTML-Bearbeitung</summary>' +
+                    '<textarea id="htmlSource" rows="4" style="width: 100%; font-family: monospace; font-size: 0.9rem;">' + currentHtml + '</textarea>' +
+                '</details>' +
+            '</div>';
+            
+            // Rich Text Editor Styles hinzufügen
+            if (!document.getElementById('richTextStyles')) {
+                const style = document.createElement('style');
+                style.id = 'richTextStyles';
+                style.textContent = '.rich-text-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; padding: 0.5rem; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef; } ' +
+                    '.toolbar-group { display: flex; gap: 0.25rem; align-items: center; } ' +
+                    '.toolbar-btn { padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; } ' +
+                    '.toolbar-btn:hover { background: #e9ecef; border-color: #009CE6; } ' +
+                    '.toolbar-btn.active { background: #009CE6; color: white; border-color: #063AA8; } ' +
+                    '.toolbar-select { padding: 0.4rem; border: 1px solid #ddd; border-radius: 4px; background: white; font-size: 0.85rem; height: 32px; } ' +
+                    '.rich-text-container { border: 2px solid #e9ecef; border-radius: 6px; overflow: hidden; } ' +
+                    '.rich-text-editor { min-height: 150px; padding: 1rem; font-family: "Inter", sans-serif; font-size: 1rem; line-height: 1.5; border: none; outline: none; background: white; } ' +
+                    '.rich-text-editor:focus { background: #fafbfc; } ' +
+                    '.rich-text-preview { min-height: 100px; padding: 1rem; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; font-family: "Inter", sans-serif; font-size: 1rem; line-height: 1.5; }';
+                document.head.appendChild(style);
+            }
+            
+            setupRichTextEditor();
+            popup.style.display = 'block';
+        }
+
+        // Rich Text Editor Event Setup
+        function setupRichTextEditor() {
+            const editor = document.getElementById('richTextEditor');
+            const preview = document.getElementById('richTextPreview');
+            const htmlSource = document.getElementById('htmlSource');
+            
+            function updatePreview() {
+                const content = editor.innerHTML;
+                preview.innerHTML = content;
+                htmlSource.value = content;
+            }
+            
+            editor.addEventListener('input', updatePreview);
+            editor.addEventListener('paste', function(e) {
+                setTimeout(updatePreview, 10);
+            });
+            
+            htmlSource.addEventListener('input', function() {
+                const content = htmlSource.value;
+                editor.innerHTML = content;
+                preview.innerHTML = content;
+            });
+            
+            // Toolbar Events
+            document.querySelectorAll('.toolbar-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const action = btn.dataset.action;
+                    executeRichTextCommand(action, editor);
+                    updatePreview();
+                });
+            });
+            
+            // Color & Size Events
+            const textColorSelect = document.getElementById('textColor');
+            if (textColorSelect) {
+                textColorSelect.addEventListener('change', function(e) {
+                    if (e.target.value) {
+                        document.execCommand('foreColor', false, e.target.value);
+                        updatePreview();
+                    }
+                });
+            }
+            
+            const textSizeSelect = document.getElementById('textSize');
+            if (textSizeSelect) {
+                textSizeSelect.addEventListener('change', function(e) {
+                    if (e.target.value) {
+                        const selection = window.getSelection();
+                        if (selection.rangeCount > 0) {
+                            const range = selection.getRangeAt(0);
+                            const span = document.createElement('span');
+                            span.style.fontSize = e.target.value;
+                            try {
+                                range.surroundContents(span);
+                            } catch (ex) {
+                                span.appendChild(range.extractContents());
+                                range.insertNode(span);
+                            }
+                            updatePreview();
+                        }
+                    }
+                });
+            }
+            
+            // Keyboard Shortcuts
+            editor.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch (e.key.toLowerCase()) {
+                        case 'b':
+                            e.preventDefault();
+                            executeRichTextCommand('bold', editor);
+                            updatePreview();
+                            break;
+                        case 'i':
+                            e.preventDefault();
+                            executeRichTextCommand('italic', editor);
+                            updatePreview();
+                            break;
+                        case 'u':
+                            e.preventDefault();
+                            executeRichTextCommand('underline', editor);
+                            updatePreview();
+                            break;
+                    }
+                }
+            });
+            
+            editor.focus();
+        }
+
+        // Rich Text Befehle ausführen
+        function executeRichTextCommand(action, editor) {
+            editor.focus();
+            
+            switch (action) {
+                case 'bold':
+                    document.execCommand('bold', false, null);
+                    break;
+                case 'italic':
+                    document.execCommand('italic', false, null);
+                    break;
+                case 'underline':
+                    document.execCommand('underline', false, null);
+                    break;
+                case 'strikethrough':
+                    document.execCommand('strikeThrough', false, null);
+                    break;
+                case 'highlight':
+                    document.execCommand('hiliteColor', false, '#ffeb3b');
+                    break;
+                case 'link':
+                    const url = prompt('Link-URL eingeben:', 'https://');
+                    if (url && url !== 'https://') {
+                        document.execCommand('createLink', false, url);
+                    }
+                    break;
+                case 'clear':
+                    document.execCommand('removeFormat', false, null);
+                    break;
+            }
+        }
+
+        // Icon bearbeiten
+        function editIcon(iconElement) {
+            currentEditingElement = iconElement;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = 'Icon bearbeiten';
+            
+            const currentIcon = iconElement.innerHTML;
+            const iconCurrentColor = iconElement.style.color || '#063AA8';
+            const currentSize = iconElement.style.fontSize || '1rem';
+            
+            let colorOptions = '';
+            Object.entries(iconCollections.iconColors).forEach(function(entry) {
+                const name = entry[0];
+                const color = entry[1];
+                const selected = iconCurrentColor === color ? 'selected' : '';
+                colorOptions += '<div class="color-option ' + selected + '" ' +
+                    'data-color="' + color + '" ' +
+                    'style="background-color: ' + color + ';" ' +
+                    'title="' + name + '"></div>';
+            });
+            
+            let iconOptions = '';
+            Object.entries(iconCollections.fontawesome).forEach(function(entry) {
+                const name = entry[0];
+                const unicode = entry[1];
+                iconOptions += '<div class="icon-option" data-unicode="' + unicode + '" title="' + name + '">' +
+                    '<span style="font-family: \'Font Awesome 5 Pro\'; font-size: 1.5rem;">' + unicode + '</span>' +
+                    '<div style="font-size: 0.7rem; margin-top: 0.25rem;">' + name + '</div>' +
+                    '</div>';
+            });
+            
+            content.innerHTML = '<div class="form-group">' +
+                '<label>Icon auswählen:</label>' +
+                '<div id="iconGrid" class="icon-grid" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">' +
+                iconOptions +
+                '</div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Aktuelles Icon (Unicode):</label>' +
+                '<input type="text" id="customIcon" value="' + currentIcon + '" placeholder="&#xf00c; oder 🔥">' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Icon-Farbe:</label>' +
+                '<div class="icon-color-picker">' +
+                colorOptions +
+                '</div>' +
+                '<input type="color" id="customColor" value="' + iconCurrentColor + '" style="width: 100%; margin-top: 0.5rem;">' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Icon-Größe:</label>' +
+                '<select id="iconSize" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                '<option value="0.75rem"' + (currentSize === '0.75rem' ? ' selected' : '') + '>Klein (0.75rem)</option>' +
+                '<option value="1rem"' + (currentSize === '1rem' ? ' selected' : '') + '>Normal (1rem)</option>' +
+                '<option value="1.25rem"' + (currentSize === '1.25rem' ? ' selected' : '') + '>Groß (1.25rem)</option>' +
+                '<option value="1.5rem"' + (currentSize === '1.5rem' ? ' selected' : '') + '>Sehr groß (1.5rem)</option>' +
+                '<option value="2rem"' + (currentSize === '2rem' ? ' selected' : '') + '>XXL (2rem)</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Vorschau:</label>' +
+                '<div id="iconPreview" style="padding: 1rem; background: #f8f9fa; border-radius: 4px; text-align: center; font-size: 2rem;">' +
+                '<span style="color: ' + iconCurrentColor + '; font-size: ' + currentSize + '; font-family: \'Font Awesome 5 Pro\';">' + currentIcon + '</span>' +
+                '</div>' +
+                '</div>';
+            
+            // Event Listeners für Icon-Auswahl
+            content.querySelectorAll('.icon-option').forEach(function(option) {
+                option.addEventListener('click', function() {
+                    content.querySelectorAll('.icon-option').forEach(function(opt) {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    document.getElementById('customIcon').value = option.dataset.unicode;
+                    updateIconPreview();
+                });
+            });
+            
+            // Event Listeners für Farb-Auswahl
+            content.querySelectorAll('.color-option').forEach(function(option) {
+                option.addEventListener('click', function() {
+                    content.querySelectorAll('.color-option').forEach(function(opt) {
+                        opt.classList.remove('selected');
+                    });
+                    option.classList.add('selected');
+                    document.getElementById('customColor').value = option.dataset.color;
+                    updateIconPreview();
+                });
+            });
+            
+            // Event Listeners für Eingaben
+            const customIcon = document.getElementById('customIcon');
+            const customColor = document.getElementById('customColor');
+            const iconSize = document.getElementById('iconSize');
+            
+            customIcon.addEventListener('input', updateIconPreview);
+            customColor.addEventListener('input', updateIconPreview);
+            iconSize.addEventListener('change', updateIconPreview);
+            
+            popup.style.display = 'block';
+        }
+
+        // Icon-Vorschau aktualisieren
+        function updateIconPreview() {
+            const iconPreview = document.getElementById('iconPreview');
+            const customIcon = document.getElementById('customIcon');
+            const customColor = document.getElementById('customColor');
+            const iconSize = document.getElementById('iconSize');
+            
+            if (iconPreview && customIcon && customColor && iconSize) {
+                iconPreview.innerHTML = '<span style="color: ' + customColor.value + '; font-size: ' + iconSize.value + '; font-family: \'Font Awesome 5 Pro\';">' + customIcon.value + '</span>';
+            }
+        }
+
+        // Bild bearbeiten
+        function editImage(imageElement) {
+            currentEditingElement = imageElement;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = 'Bild bearbeiten';
+            
+            const currentSrc = imageElement.src || '';
+            const currentAlt = imageElement.alt || '';
+            const currentWidth = imageElement.style.width || imageElement.width || '';
+            const currentHeight = imageElement.style.height || imageElement.height || '';
+            
+            content.innerHTML = '<div class="form-group">' +
+                '<label>Bild-URL:</label>' +
+                '<input type="url" id="imageUrl" value="' + currentSrc + '" placeholder="https://example.com/image.jpg">' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Alt-Text (Beschreibung):</label>' +
+                '<input type="text" id="imageAlt" value="' + currentAlt + '" placeholder="Beschreibung des Bildes">' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label>Bildgröße:</label>' +
+                '<div class="size-controls">' +
+                '<input type="text" id="imageWidth" value="' + currentWidth + '" placeholder="Breite (z.B. 300px, 50%)">' +
+                '<input type="text" id="imageHeight" value="' + currentHeight + '" placeholder="Höhe (z.B. 200px, auto)">' +
+                '</div>' +
+                '</div>';
+            
+            popup.style.display = 'block';
+            document.getElementById('imageUrl').focus();
+        }
+
+        // Helper-Funktionen
+        function isTextElement(element) {
+            const textTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN', 'A', 'TD', 'TH', 'LI'];
+            return textTags.includes(element.tagName);
+        }
+
+        function getCleanTextContent(element) {
+            const clone = element.cloneNode(true);
+            const controls = clone.querySelector('.element-controls');
+            if (controls) controls.remove();
+            return clone.textContent.trim();
+        }
+
+        function getCleanHtmlContent(element) {
+            const clone = element.cloneNode(true);
+            const controls = clone.querySelector('.element-controls');
+            if (controls) controls.remove();
+            clone.classList.remove('element-editable', 'selected', 'icon-editable', 'image-editable');
+            clone.removeAttribute('data-element-id');
+            clone.removeAttribute('contenteditable');
+            return clone.innerHTML;
+        }
+
+        function getElementType(element) {
+            if (element.tagName === 'IMG') return 'Bild';
+            if (element.tagName === 'A' || element.classList.contains('btn') || element.classList.contains('contact-cta')) return 'Button/Link';
+            if (element.tagName.startsWith('H')) return 'Überschrift (' + element.tagName + ')';
+            if (element.tagName === 'P') return 'Absatz';
+            if (element.tagName === 'DIV') return 'Container';
+            if (element.tagName === 'TD') return 'Tabellenzelle';
+            if (element.tagName === 'TH') return 'Tabellenkopf';
+            return element.tagName;
+        }
+
+        function duplicateElement(element) {
+            const clonedElement = element.cloneNode(true);
+            
+            // Alle Editor-spezifischen Klassen entfernen
+            clonedElement.classList.remove('element-editable', 'selected', 'icon-editable', 'image-editable', 'editing');
+            clonedElement.removeAttribute('data-element-id');
+            clonedElement.removeAttribute('contenteditable');
+            
+            // Alle Kontrollelemente entfernen
+            const controls = clonedElement.querySelectorAll('.element-controls');
+            controls.forEach(function(control) { control.remove(); });
+            
+            // Element einfügen
+            if (element.classList.contains('image-editable') && element.parentElement.classList.contains('image-container')) {
+                element.parentElement.parentNode.insertBefore(clonedElement, element.parentElement.nextSibling);
+            } else {
+                element.parentNode.insertBefore(clonedElement, element.nextSibling);
+            }
+            
+            // Nach kurzer Verzögerung das neue Element editierbar machen
+            setTimeout(function() {
+                if (clonedElement.tagName === 'IMG') {
+                    makeImageEditable(clonedElement);
+                } else {
+                    makeElementEditable(clonedElement);
+                }
+                updateCodeFromVisual();
+            }, 10);
+            
+            showNotification('✅ Element wurde dupliziert!', 'success');
+        }
+
+        function deleteElement(element) {
+            const elementType = getElementType(element);
+            const confirmation = confirm('Möchten Sie dieses Element wirklich löschen?\n\nElement: ' + elementType);
+            
+            if (confirmation) {
+                if (element.classList.contains('image-editable') && element.parentElement.classList.contains('image-container')) {
+                    element.parentElement.remove();
+                } else {
+                    element.remove();
+                }
+                updateCodeFromVisual();
+                showNotification('✅ Element wurde gelöscht!', 'success');
+            }
+        }
+
+        function saveElementEdit() {
+            // Rich Text Editor speichern
+            const richTextEditor = document.getElementById('richTextEditor');
+            if (richTextEditor) {
+                const controls = currentEditingElement.querySelector('.element-controls');
+                currentEditingElement.innerHTML = richTextEditor.innerHTML;
+                if (controls) {
+                    currentEditingElement.appendChild(controls);
+                }
+                updateCodeFromVisual();
+                closeTextEditor();
+                showNotification('✅ Rich Text wurde aktualisiert!', 'success');
+                return;
+            }
+
+            if (!currentEditingElement) return;
+            
+            // Icon speichern
+            const customIcon = document.getElementById('customIcon');
+            if (customIcon) {
+                const selectedColor = document.querySelector('.color-option.selected');
+                const color = selectedColor ? selectedColor.dataset.color : document.getElementById('customColor').value;
+                const iconSize = document.getElementById('iconSize').value;
+                
+                currentEditingElement.innerHTML = customIcon.value;
+                currentEditingElement.style.color = color;
+                currentEditingElement.style.fontSize = iconSize;
+                
+                updateCodeFromVisual();
+                closeTextEditor();
+                showNotification('✅ Icon wurde aktualisiert!', 'success');
+                return;
+            }
+
+            // Bild speichern
+            const imageUrl = document.getElementById('imageUrl');
+            if (imageUrl) {
+                const imageAlt = document.getElementById('imageAlt').value;
+                const imageWidth = document.getElementById('imageWidth').value;
+                const imageHeight = document.getElementById('imageHeight').value;
+                
+                currentEditingElement.src = imageUrl.value;
+                currentEditingElement.alt = imageAlt;
+                
+                if (imageWidth) currentEditingElement.style.width = imageWidth;
+                if (imageHeight) currentEditingElement.style.height = imageHeight;
+                
+                updateCodeFromVisual();
+                closeTextEditor();
+                showNotification('✅ Bild wurde aktualisiert!', 'success');
+                return;
+            }
+
+            // Link/Button speichern
+            const linkText = document.getElementById('linkText');
+            const linkHref = document.getElementById('linkHref');
+            if (linkText && linkHref) {
+                const linkNewTab = document.getElementById('linkNewTab').checked;
+                
+                // Text aktualisieren, aber Icons beibehalten
+                const iconElements = currentEditingElement.querySelectorAll('.icon, .contact-icon, .cta-icon');
+                const controlElements = currentEditingElement.querySelectorAll('.element-controls');
+                
+                currentEditingElement.innerHTML = '';
+                iconElements.forEach(function(icon) { currentEditingElement.appendChild(icon); });
+                currentEditingElement.appendChild(document.createTextNode(linkText.value));
+                controlElements.forEach(function(control) { currentEditingElement.appendChild(control); });
+                
+                currentEditingElement.href = linkHref.value;
+                if (linkNewTab) {
+                    currentEditingElement.target = '_blank';
+                } else {
+                    currentEditingElement.removeAttribute('target');
+                }
+                
+                updateCodeFromVisual();
+                closeTextEditor();
+                showNotification('✅ Link wurde aktualisiert!', 'success');
+                return;
+            }
+
+            // Text speichern
+            const textInput = document.getElementById('textInput');
+            const htmlInput = document.getElementById('htmlInput');
+            
+            if (textInput) {
+                const controls = currentEditingElement.querySelector('.element-controls');
+                currentEditingElement.innerHTML = textInput.value;
+                if (controls) {
+                    currentEditingElement.appendChild(controls);
+                }
+            } else if (htmlInput) {
+                const controls = currentEditingElement.querySelector('.element-controls');
+                currentEditingElement.innerHTML = htmlInput.value;
+                if (controls) {
+                    currentEditingElement.appendChild(controls);
+                }
+            }
+            
+            updateCodeFromVisual();
+            closeTextEditor();
+            showNotification('✅ Element wurde aktualisiert!', 'success');
+        }
+
+        function closeTextEditor() {
+            document.getElementById('textEditorPopup').style.display = 'none';
+            currentEditingElement = null;
+        }
+
+        function updateCodeFromVisual() {
+            const visualEditor = document.getElementById('visualEditor');
+            const codeEditor = document.getElementById('moduleCode');
+            
+            const clonedEditor = visualEditor.cloneNode(true);
+            
+            // Alle editierbar-spezifischen Klassen und Attribute entfernen
+            const editableElements = clonedEditor.querySelectorAll('[contenteditable], .element-editable, .icon-editable, .image-editable');
+            editableElements.forEach(function(el) {
+                el.removeAttribute('contenteditable');
+                el.classList.remove('element-editable', 'selected', 'icon-editable', 'image-editable');
+                el.removeAttribute('data-element-id');
+                el.removeAttribute('onclick');
+            });
+            
+            // Alle Kontrollelemente entfernen
+            const controlElements = clonedEditor.querySelectorAll('.element-controls');
+            controlElements.forEach(function(el) { el.remove(); });
+            
+            // Image container bereinigen
+            const imageContainers = clonedEditor.querySelectorAll('.image-container');
+            imageContainers.forEach(function(container) {
+                const img = container.querySelector('img');
+                if (img) {
+                    container.parentNode.insertBefore(img, container);
+                    container.remove();
+                }
+            });
+
+            codeEditor.value = clonedEditor.innerHTML;
+            updatePreview();
+        }
+
+        // Listen-Editor erweiterte Funktionen
+        function makeListEditable(listElement) {
+            listElement.classList.add('element-editable');
+            listElement.dataset.elementId = 'list-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '📝';
+            editBtn.title = 'Liste bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editList(listElement);
+            };
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'element-btn element-duplicate';
+            addBtn.innerHTML = '➕';
+            addBtn.title = 'Punkt hinzufügen';
+            addBtn.onclick = function(e) {
+                e.stopPropagation();
+                addListItem(listElement);
+            };
+            
+            const duplicateBtn = document.createElement('button');
+            duplicateBtn.className = 'element-btn element-duplicate';
+            duplicateBtn.innerHTML = '📋';
+            duplicateBtn.title = 'Liste duplizieren';
+            duplicateBtn.onclick = function(e) {
+                e.stopPropagation();
+                duplicateElement(listElement);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Liste löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(listElement);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(addBtn);
+            controls.appendChild(duplicateBtn);
+            controls.appendChild(deleteBtn);
+            listElement.appendChild(controls);
+            
+            // Liste-Items editierbar machen
+            listElement.querySelectorAll('li').forEach(function(li) {
+                if (!li.classList.contains('element-editable')) {
+                    makeListItemEditable(li);
+                }
+            });
+        }
+
+        function makeListItemEditable(liElement) {
+            liElement.classList.add('element-editable');
+            liElement.dataset.elementId = 'listitem-' + Date.now() + Math.random();
+            
+            const controls = document.createElement('div');
+            controls.className = 'element-controls';
+            controls.style.right = '25px';
+            
+            const editBtn = document.createElement('button');
+            editBtn.className = 'element-btn element-edit';
+            editBtn.innerHTML = '✏️';
+            editBtn.title = 'Punkt bearbeiten';
+            editBtn.onclick = function(e) {
+                e.stopPropagation();
+                editElement(liElement);
+            };
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'element-btn element-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Punkt löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteElement(liElement);
+            };
+            
+            controls.appendChild(editBtn);
+            controls.appendChild(deleteBtn);
+            liElement.appendChild(controls);
+        }
+
+        function editList(listElement) {
+            currentEditingElement = listElement;
+            const popup = document.getElementById('textEditorPopup');
+            const content = document.getElementById('editorContent');
+            const title = document.getElementById('editorTitle');
+            
+            title.textContent = 'Liste bearbeiten';
+            
+            const isOrderedList = listElement.tagName === 'OL';
+            const currentStyle = listElement.style.listStyleType || (isOrderedList ? 'decimal' : 'disc');
+            
+            let listStyleOptions = '';
+            Object.entries(iconCollections.listStyles).forEach(function(entry) {
+                const name = entry[0];
+                const value = entry[1];
+                const selected = currentStyle === value ? 'selected' : '';
+                listStyleOptions += '<option value="' + value + '" ' + selected + '>' + name + '</option>';
+            });
+            
+            content.innerHTML = '<div class="form-group">' +
+                '<label>Listen-Typ:</label>' +
+                '<select id="listType" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                    '<option value="ul"' + (!isOrderedList ? ' selected' : '') + '>Ungeordnete Liste (•)</option>' +
+                    '<option value="ol"' + (isOrderedList ? ' selected' : '') + '>Geordnete Liste (1.)</option>' +
+                '</select>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Listen-Stil:</label>' +
+                '<select id="customListStyle" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                    listStyleOptions +
+                '</select>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Neuen Punkt hinzufügen:</label>' +
+                '<div style="display: flex; gap: 0.5rem;">' +
+                    '<input type="text" id="newListItem" placeholder="Neuer Listenpunkt" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">' +
+                    '<button type="button" id="addListItemBtn" style="padding: 0.5rem 1rem; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">➕ Hinzufügen</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="form-group">' +
+                '<label>Vorhandene Punkte:</label>' +
+                '<div id="listItemsEditor" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 1rem;">' +
+                '</div>' +
+            '</div>';
+            
+            updateListItemsEditor();
+            
+            // Event Listeners
+            document.getElementById('listType').addEventListener('change', function(e) {
+                const newType = e.target.value;
+                const newElement = document.createElement(newType.toUpperCase());
+                
+                Array.from(listElement.attributes).forEach(function(attr) {
+                    newElement.setAttribute(attr.name, attr.value);
+                });
+                newElement.style.cssText = listElement.style.cssText;
+                newElement.innerHTML = listElement.innerHTML;
+                
+                listElement.parentNode.replaceChild(newElement, listElement);
+                currentEditingElement = newElement;
+                
+                setTimeout(function() {
+                    makeListEditable(newElement);
+                }, 10);
+            });
+            
+            document.getElementById('addListItemBtn').addEventListener('click', function() {
+                const newItemText = document.getElementById('newListItem').value.trim();
+                if (newItemText) {
+                    addListItemToList(newItemText);
+                    document.getElementById('newListItem').value = '';
+                    updateListItemsEditor();
+                }
+            });
+            
+            document.getElementById('newListItem').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('addListItemBtn').click();
+                }
+            });
+            
+            popup.style.display = 'block';
+        }
+
+        function addListItemToList(text) {
+            const newLi = document.createElement('li');
+            newLi.textContent = text;
+            currentEditingElement.appendChild(newLi);
+            makeListItemEditable(newLi);
+        }
+
+        function updateListItemsEditor() {
+            const editor = document.getElementById('listItemsEditor');
+            if (!editor || !currentEditingElement) return;
+            
+            const items = currentEditingElement.querySelectorAll('li');
+            let itemsHtml = '';
+            
+            Array.from(items).forEach(function(li, index) {
+                const text = li.textContent.trim();
+                itemsHtml += '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: #f8f9fa; border-radius: 4px;">' +
+                    '<span style="flex: 1;">' + text + '</span>' +
+                    '<button onclick="editListItemInPlace(' + index + ')" style="padding: 0.25rem 0.5rem; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">✏️</button>' +
+                    '<button onclick="deleteListItemInPlace(' + index + ')" style="padding: 0.25rem 0.5rem; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">🗑️</button>' +
+                '</div>';
+            });
+            
+            editor.innerHTML = itemsHtml;
+        }
+
+        function editListItemInPlace(index) {
+            const items = currentEditingElement.querySelectorAll('li');
+            const item = items[index];
+            if (!item) return;
+            
+            const currentText = item.textContent.trim();
+            const newText = prompt('Text bearbeiten:', currentText);
+            
+            if (newText !== null && newText.trim()) {
+                item.textContent = newText.trim();
+                updateListItemsEditor();
+                updateCodeFromVisual();
+            }
+        }
+
+        function deleteListItemInPlace(index) {
+            const items = currentEditingElement.querySelectorAll('li');
+            const item = items[index];
+            if (!item) return;
+            
+            if (confirm('Diesen Listenpunkt löschen?')) {
+                item.remove();
+                updateListItemsEditor();
+                updateCodeFromVisual();
+            }
+        }
+
+        function addListItem(listElement) {
+            const newText = prompt('Neuen Listenpunkt eingeben:');
+            if (newText && newText.trim()) {
+                const newLi = document.createElement('li');
+                newLi.textContent = newText.trim();
+                listElement.appendChild(newLi);
+                makeListItemEditable(newLi);
+                updateCodeFromVisual();
+                showNotification('✅ Neuer Listenpunkt hinzugefügt!', 'success');
+            }
+        }
+
+        // Modul-Management
+        function saveModule() {
+            if (!currentModule) return;
+
+            currentModule.name = document.getElementById('moduleName').value;
+            currentModule.description = document.getElementById('moduleDescription').value;
+            currentModule.category = document.getElementById('moduleCategory').value;
+            currentModule.tags = document.getElementById('moduleTags').value.split(',').map(function(tag) { return tag.trim(); }).filter(function(tag) { return tag; });
+            currentModule.code = document.getElementById('moduleCode').value;
+            currentModule.modified = new Date().toISOString();
+
+            renderModuleList();
+            saveToLocalStorage();
+            showNotification('✅ Modul erfolgreich gespeichert!', 'success');
+        }
+
+        function deleteModule(moduleId) {
+            moduleToDelete = moduleId;
+            document.getElementById('deleteModuleName').textContent = modules[moduleId].name;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function confirmDelete() {
+            if (!moduleToDelete) return;
+
+            if (currentModule && currentModule.id === moduleToDelete) {
+                document.getElementById('moduleEditor').style.display = 'none';
+                document.getElementById('welcomeScreen').style.display = 'block';
+                currentModule = null;
+            }
+
+            delete modules[moduleToDelete];
+            renderModuleList();
+            saveToLocalStorage();
+            document.getElementById('deleteModal').style.display = 'none';
+            moduleToDelete = null;
+            showNotification('🗑️ Modul wurde gelöscht!', 'success');
+        }
+
+        function duplicateModule() {
+            if (!currentModule) return;
+
+            moduleCounter++;
+            const newId = 'module-' + Date.now();
+            const duplicatedModule = Object.assign({}, currentModule, {
+                id: newId,
+                name: currentModule.name + ' (Kopie)',
+                created: new Date().toISOString(),
+                modified: new Date().toISOString()
+            });
+
+            modules[newId] = duplicatedModule;
+            renderModuleList();
+            loadModule(newId);
+            saveToLocalStorage();
+            showNotification('📋 Modul dupliziert', 'success');
+        }
+
+        function exportModule() {
+            if (!currentModule) return;
+
+            const dataStr = JSON.stringify(currentModule, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = currentModule.name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('📤 Modul exportiert', 'success');
+        }
+
+        function exportAllModules() {
+            const exportData = {
+                modules: modules,
+                exportDate: new Date().toISOString(),
+                version: '2.0'
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'kerberos-modules-backup.json');
+            linkElement.click();
+            
+            showNotification('📦 Vollexport heruntergeladen', 'success');
+        }
+
+        function quickBackup() {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const backupData = {
+                modules: modules,
+                created: timestamp,
+                version: '2.0'
+            };
+            
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', 'kerberos-modules-backup-' + timestamp.slice(0,10) + '.json');
+            linkElement.click();
+            
+            showNotification('💾 Schnell-Backup heruntergeladen', 'success');
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    if (importData.modules) {
+                        Object.assign(modules, importData.modules);
+                    } else if (importData.id) {
+                        modules[importData.id] = importData;
+                    }
+                    
+                    renderModuleList();
+                    saveToLocalStorage();
+                    document.getElementById('importModal').style.display = 'none';
+                    showNotification('✅ Module erfolgreich importiert!', 'success');
+                } catch (error) {
+                    showNotification('❌ Fehler beim Importieren: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function importFromText() {
+            const text = document.getElementById('importText').value;
+            if (!text.trim()) return;
+            
+            try {
+                const importData = JSON.parse(text);
+                
+                if (importData.modules) {
+                    modules = Object.assign(modules, importData.modules);
+                } else if (importData.id) {
+                    modules[importData.id] = importData;
+                }
+                
+                renderModuleList();
+                saveToLocalStorage();
+                document.getElementById('importModal').style.display = 'none';
+                showNotification('✅ Module aus Text importiert', 'success');
+            } catch (error) {
+                showNotification('❌ Ungültiger JSON-Text', 'error');
+            }
+        }
+
+        function createModuleFromTemplate(template) {
+            moduleCounter++;
+            const newId = 'module-' + Date.now();
+            
+            let newModule = {
+                id: newId,
+                name: 'Neues Modul ' + moduleCounter,
+                description: 'Beschreibung des neuen Moduls',
+                category: 'custom',
+                tags: ['neu', 'kerberos'],
+                code: '',
+                created: new Date().toISOString(),
+                modified: new Date().toISOString()
+            };
+
+            if (template === 'contact') {
+                newModule.name = 'Kontakt Modul ' + moduleCounter;
+                newModule.category = 'contact';
+                newModule.description = 'Ansprechpartner-Modul mit Kontaktdaten und Bildern';
+                newModule.code = '<div class="contact-module">' +
+                    '<h3>Ihre Ansprechpartner</h3>' +
+                    '<div class="contact-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">' +
+                        '<div class="contact-card" style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(6,58,168,0.08); overflow: hidden; padding: 1.5rem;">' +
+                            '<img src="https://via.placeholder.com/300x200/063AA8/FFFFFF?text=Foto" alt="Ansprechpartner" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">' +
+                            '<h4 style="color: #212529; font-weight: 700; margin-bottom: 0.5rem;">Max Mustermann</h4>' +
+                            '<p style="color: #6c757d; margin-bottom: 1rem;">Senior Manager</p>' +
+                            '<div class="contact-details">' +
+                                '<p><span style="color: #009CE6;">📧</span> max.mustermann@kerberos-cms.com</p>' +
+                                '<p><span style="color: #009CE6;">📞</span> +49 221 123456</p>' +
+                            '</div>' +
+                            '<a href="mailto:max.mustermann@kerberos-cms.com" style="display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">Kontakt aufnehmen</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            } else if (template === 'process') {
+                newModule.name = 'Prozess Modul ' + moduleCounter;
+                newModule.category = 'process';
+                newModule.description = 'Schritt-für-Schritt Prozessanleitung';
+                newModule.code = '<div class="process-module">' +
+                    '<h3 style="color: #063AA8; text-align: center; margin-bottom: 2rem;">Ihr Prozess in 3 Schritten</h3>' +
+                    '<div class="steps" style="display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap;">' +
+                        '<div class="step" style="flex: 1; min-width: 200px; text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                            '<div class="step-number" style="width: 50px; height: 50px; background: #063AA8; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin: 0 auto 1rem;">1</div>' +
+                            '<h4 style="color: #212529; margin-bottom: 1rem;">Erster Schritt</h4>' +
+                            '<p style="color: #6c757d;">Beschreibung des ersten Schritts in Ihrem Prozess.</p>' +
+                        '</div>' +
+                        '<div class="step" style="flex: 1; min-width: 200px; text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                            '<div class="step-number" style="width: 50px; height: 50px; background: #009CE6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin: 0 auto 1rem;">2</div>' +
+                            '<h4 style="color: #212529; margin-bottom: 1rem;">Zweiter Schritt</h4>' +
+                            '<p style="color: #6c757d;">Beschreibung des zweiten Schritts in Ihrem Prozess.</p>' +
+                        '</div>' +
+                        '<div class="step" style="flex: 1; min-width: 200px; text-align: center; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                            '<div class="step-number" style="width: 50px; height: 50px; background: #B265E9; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin: 0 auto 1rem;">3</div>' +
+                            '<h4 style="color: #212529; margin-bottom: 1rem;">Dritter Schritt</h4>' +
+                            '<p style="color: #6c757d;">Beschreibung des dritten Schritts in Ihrem Prozess.</p>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            } else if (template === 'layout-left') {
+                newModule.name = 'Bild-Text Layout (Links) ' + moduleCounter;
+                newModule.category = 'layout';
+                newModule.description = 'Professionelles Layout mit Bild links';
+                newModule.code = '<div style="display: flex; align-items: center; gap: 3rem; padding: 2rem 0;">' +
+                    '<div style="flex: 1;">' +
+                        '<img src="https://via.placeholder.com/500x350/063AA8/FFFFFF?text=Bild" alt="Beispiel Bild" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(6,58,168,0.15);">' +
+                    '</div>' +
+                    '<div style="flex: 1;">' +
+                        '<h3 style="color: #063AA8; margin-bottom: 1rem;">Überschrift</h3>' +
+                        '<p style="color: #6c757d; line-height: 1.6; margin-bottom: 1.5rem;">Beschreibungstext für Ihr Angebot oder Ihre Dienstleistung. Hier können Sie ausführlich erklären, was Sie anbieten.</p>' +
+                        '<a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600;">Mehr erfahren</a>' +
+                    '</div>' +
+                '</div>';
+            } else if (template === 'layout-right') {
+                newModule.name = 'Bild-Text Layout (Rechts) ' + moduleCounter;
+                newModule.category = 'layout';
+                newModule.description = 'Professionelles Layout mit Bild rechts';
+                newModule.code = '<div style="display: flex; align-items: center; gap: 3rem; padding: 2rem 0;">' +
+                    '<div style="flex: 1;">' +
+                        '<h3 style="color: #063AA8; margin-bottom: 1rem;">Überschrift</h3>' +
+                        '<p style="color: #6c757d; line-height: 1.6; margin-bottom: 1.5rem;">Beschreibungstext für Ihr Angebot oder Ihre Dienstleistung. Hier können Sie ausführlich erklären, was Sie anbieten.</p>' +
+                        '<a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600;">Mehr erfahren</a>' +
+                    '</div>' +
+                    '<div style="flex: 1;">' +
+                        '<img src="https://via.placeholder.com/500x350/063AA8/FFFFFF?text=Bild" alt="Beispiel Bild" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(6,58,168,0.15);">' +
+                    '</div>' +
+                '</div>';
+            } else if (template === 'api-dashboard') {
+                newModule.name = 'API Dashboard ' + moduleCounter;
+                newModule.category = 'api';
+                newModule.description = 'Status-Dashboard für API und Systeme';
+                newModule.code = '<div style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                    '<h3 style="color: #063AA8; text-align: center; margin-bottom: 2rem;">System Status</h3>' +
+                    '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">' +
+                        '<div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; text-align: center; border-left: 4px solid #28a745;">' +
+                            '<div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>' +
+                            '<h4 style="color: #212529; margin-bottom: 0.5rem;">API Status</h4>' +
+                            '<p style="color: #28a745; font-weight: 600;">Online</p>' +
+                        '</div>' +
+                        '<div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; text-align: center; border-left: 4px solid #ffc107;">' +
+                            '<div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>' +
+                            '<h4 style="color: #212529; margin-bottom: 0.5rem;">Wartung</h4>' +
+                            '<p style="color: #ffc107; font-weight: 600;">Geplant</p>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            } else {
+                // Blank template
+                newModule.code = '<div style="padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                    '<h3 style="color: #063AA8; margin-bottom: 1rem;">Ihr neues Modul</h3>' +
+                    '<p style="color: #6c757d; margin-bottom: 1.5rem;">Beginnen Sie hier mit der Erstellung Ihres eigenen Moduls.</p>' +
+                    '<div style="padding: 1.5rem; background: #F8F9FA; border-radius: 8px; border-left: 4px solid #063AA8;">' +
+                        '<h4 style="color: #212529; margin-bottom: 0.5rem;">✨ Tipp</h4>' +
+                        '<p style="color: #6c757d; font-size: 0.9rem;">Nutzen Sie den Visual Editor, um Elemente einfach zu bearbeiten.</p>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            modules[newId] = newModule;
+            renderModuleList();
+            loadModule(newId);
+            saveToLocalStorage();
+            document.getElementById('newModuleModal').style.display = 'none';
+            showNotification('✅ Neues Modul erstellt', 'success');
+        }
+
+        function clearAllModules() {
+            document.getElementById('clearAllModal').style.display = 'block';
+        }
+
+        function confirmClearAll() {
+            modules = {};
+            currentModule = null;
+            
+            // UI zurücksetzen
+            document.getElementById('moduleEditor').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'block';
+            
+            renderModuleList();
+            saveToLocalStorage();
+            document.getElementById('clearAllModal').style.display = 'none';
+            
+            showNotification('🗑️ Alle Module gelöscht', 'success');
+        }
+
+        function loadDefaultModules() {
+            const defaultModules = {
+                'sample-contact': {
+                    "id": "sample-contact",
+                    "name": "Beispiel Kontakt Modul",
+                    "description": "Responsive Ansprechpartner-Modul mit Kontaktdaten",
+                    "category": "contact",
+                    "tags": ["kontakt", "ansprechpartner", "team", "beispiel"],
+                    "code": '<div class="contact-module" style="padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                        '<h3 style="color: #063AA8; text-align: center; margin-bottom: 2rem;">Unsere Ansprechpartner</h3>' +
+                        '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">' +
+                            '<div style="background: #F8F9FA; border-radius: 8px; padding: 1.5rem; text-align: center;">' +
+                                '<img src="https://via.placeholder.com/120x120/063AA8/FFFFFF?text=M.M" alt="Max Mustermann" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover;">' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Max Mustermann</h4>' +
+                                '<p style="color: #6c757d; margin-bottom: 1rem; font-size: 0.9rem;">Senior Manager</p>' +
+                                '<div style="text-align: left; margin-bottom: 1rem;">' +
+                                    '<p style="margin: 0.25rem 0; font-size: 0.9rem;"><span style="color: #009CE6;">📧</span> max.mustermann@example.com</p>' +
+                                    '<p style="margin: 0.25rem 0; font-size: 0.9rem;"><span style="color: #009CE6;">📞</span> +49 221 123456</p>' +
+                                '</div>' +
+                                '<a href="mailto:max.mustermann@example.com" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; font-weight: 600;">' +
+                                    '<span>📧</span> Kontakt' +
+                                '</a>' +
+                            '</div>' +
+                            '<div style="background: #F8F9FA; border-radius: 8px; padding: 1.5rem; text-align: center;">' +
+                                '<img src="https://via.placeholder.com/120x120/009CE6/FFFFFF?text=A.M" alt="Anna Müller" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover;">' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Anna Müller</h4>' +
+                                '<p style="color: #6c757d; margin-bottom: 1rem; font-size: 0.9rem;">Compliance Manager</p>' +
+                                '<div style="text-align: left; margin-bottom: 1rem;">' +
+                                    '<p style="margin: 0.25rem 0; font-size: 0.9rem;"><span style="color: #009CE6;">📧</span> anna.mueller@example.com</p>' +
+                                    '<p style="margin: 0.25rem 0; font-size: 0.9rem;"><span style="color: #009CE6;">📞</span> +49 221 123457</p>' +
+                                '</div>' +
+                                '<a href="mailto:anna.mueller@example.com" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #B265E9, #9A4FD4); color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; font-weight: 600;">' +
+                                    '<span>📧</span> Kontakt' +
+                                '</a>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>',
+                    "created": new Date().toISOString(),
+                    "modified": new Date().toISOString()
+                },
+                'sample-process': {
+                    "id": "sample-process",
+                    "name": "Beispiel Prozess",
+                    "description": "Schritt-für-Schritt Anleitung mit visuellen Elementen",
+                    "category": "process",
+                    "tags": ["prozess", "anleitung", "schritte", "beispiel"],
+                    "code": '<div class="process-module" style="padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                        '<h3 style="color: #063AA8; text-align: center; margin-bottom: 2rem;">Unser Prozess in 4 Schritten</h3>' +
+                        '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">' +
+                            '<div style="text-align: center; padding: 1.5rem; border: 2px solid #E9ECEF; border-radius: 8px; position: relative;">' +
+                                '<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; margin: 0 auto 1rem;">1</div>' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Analyse</h4>' +
+                                '<p style="color: #6c757d; font-size: 0.9rem;">Wir analysieren Ihre aktuellen Prozesse und Anforderungen.</p>' +
+                            '</div>' +
+                            '<div style="text-align: center; padding: 1.5rem; border: 2px solid #E9ECEF; border-radius: 8px; position: relative;">' +
+                                '<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #009CE6, #B265E9); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; margin: 0 auto 1rem;">2</div>' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Planung</h4>' +
+                                '<p style="color: #6c757d; font-size: 0.9rem;">Gemeinsam entwickeln wir eine maßgeschneiderte Lösung.</p>' +
+                            '</div>' +
+                            '<div style="text-align: center; padding: 1.5rem; border: 2px solid #E9ECEF; border-radius: 8px; position: relative;">' +
+                                '<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #B265E9, #EF8646); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; margin: 0 auto 1rem;">3</div>' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Umsetzung</h4>' +
+                                '<p style="color: #6c757d; font-size: 0.9rem;">Wir implementieren die Lösung in Ihrem Unternehmen.</p>' +
+                            '</div>' +
+                            '<div style="text-align: center; padding: 1.5rem; border: 2px solid #E9ECEF; border-radius: 8px; position: relative;">' +
+                                '<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #EF8646, #28a745); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem; margin: 0 auto 1rem;">4</div>' +
+                                '<h4 style="color: #212529; margin-bottom: 0.5rem;">Support</h4>' +
+                                '<p style="color: #6c757d; font-size: 0.9rem;">Wir begleiten Sie auch nach der Implementierung.</p>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="text-align: center; margin-top: 2rem;">' +
+                            '<a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600;">' +
+                                '<span>📞</span> Jetzt starten' +
+                            '</a>' +
+                        '</div>' +
+                    '</div>',
+                    "created": new Date().toISOString(),
+                    "modified": new Date().toISOString()
+                },
+                'sample-layout': {
+                    "id": "sample-layout",
+                    "name": "Beispiel Layout",
+                    "description": "Flexibles Bild-Text Layout für verschiedene Inhalte",
+                    "category": "layout",
+                    "tags": ["layout", "bild", "text", "flex", "beispiel"],
+                    "code": '<div style="padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-bottom: 3rem;">' +
+                            '<div>' +
+                                '<h3 style="color: #063AA8; margin-bottom: 1rem; font-size: 1.75rem;">Innovative Lösungen für Ihr Unternehmen</h3>' +
+                                '<p style="color: #6c757d; line-height: 1.6; margin-bottom: 1.5rem;">Entdecken Sie unsere maßgeschneiderten Lösungen, die speziell für die Anforderungen moderner Unternehmen entwickelt wurden. Mit jahrelanger Erfahrung und innovativer Technologie unterstützen wir Sie dabei, Ihre Ziele zu erreichen.</p>' +
+                                '<ul style="color: #6c757d; margin-bottom: 2rem; padding-left: 0; list-style: none;">' +
+                                    '<li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">' +
+                                        '<span style="color: #28a745; font-size: 1.25rem;">✓</span> Maßgeschneiderte Lösungen' +
+                                    '</li>' +
+                                    '<li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">' +
+                                        '<span style="color: #28a745; font-size: 1.25rem;">✓</span> Erfahrenes Expertenteam' +
+                                    '</li>' +
+                                    '<li style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">' +
+                                        '<span style="color: #28a745; font-size: 1.25rem;">✓</span> Kontinuierlicher Support' +
+                                    '</li>' +
+                                '</ul>' +
+                                '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">' +
+                                    '<a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #063AA8, #009CE6); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600;">' +
+                                        '<span>🚀</span> Mehr erfahren' +
+                                    '</a>' +
+                                    '<a href="#" style="display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid #063AA8; color: #063AA8; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600;">' +
+                                        '<span>📞</span> Kontakt' +
+                                    '</a>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="text-align: center;">' +
+                                '<img src="https://via.placeholder.com/500x350/063AA8/FFFFFF?text=Ihr+Unternehmen" alt="Unternehmen" style="width: 100%; max-width: 500px; height: auto; border-radius: 12px; box-shadow: 0 8px 24px rgba(6,58,168,0.2);">' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="background: linear-gradient(135deg, #F8F9FA, #E9ECEF); padding: 2rem; border-radius: 8px; text-align: center;">' +
+                            '<h4 style="color: #063AA8; margin-bottom: 1rem;">💡 Wussten Sie schon?</h4>' +
+                            '<p style="color: #6c757d; margin: 0; font-size: 1rem;">Über 95% unserer Kunden empfehlen uns weiter und nutzen unsere Lösungen langfristig für ihren Geschäftserfolg.</p>' +
+                        '</div>' +
+                    '</div>',
+                    "created": new Date().toISOString(),
+                    "modified": new Date().toISOString()
+                }
+            };
+
+            // Module zu bestehenden hinzufügen (nicht überschreiben)
+            Object.assign(modules, defaultModules);
+            renderModuleList();
+            saveToLocalStorage();
+            showNotification('🎯 Standard-Module erfolgreich geladen!', 'success');
+        }
+
+        // Suchfunktionen
+        function searchModules(term) {
+            searchTerm = term;
+            renderModuleList();
+        }
+
+        function filterByCategory(category) {
+            selectedCategory = category;
+            renderModuleList();
+        }
+
+        // Auto-Speichern starten
+        function startAutoSave() {
+            // Auto-Speichern alle 30 Sekunden
+            autoSaveInterval = setInterval(function() {
+                if (Object.keys(modules).length > 0) {
+                    saveToLocalStorage();
+                }
+            }, 30000);
+        }
+
+        // Event Listeners initialisieren
+        function initEventListeners() {
+            // Header Buttons
+            document.getElementById('quickBackupBtn').addEventListener('click', quickBackup);
+            document.getElementById('exportAllBtn').addEventListener('click', exportAllModules);
+            document.getElementById('importBtn').addEventListener('click', function() { 
+                document.getElementById('importModal').style.display = 'block'; 
+            });
+            document.getElementById('newModuleBtn').addEventListener('click', function() { 
+                document.getElementById('newModuleModal').style.display = 'block'; 
+            });
+            document.getElementById('loadDefaultBtn').addEventListener('click', loadDefaultModules);
+            
+            // Sidebar Buttons
+            document.getElementById('restoreBtn').addEventListener('click', function() { 
+                document.getElementById('importModal').style.display = 'block'; 
+            });
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllModules);
+            
+            // Editor Buttons
+            document.getElementById('saveBtn').addEventListener('click', saveModule);
+            document.getElementById('exportBtn').addEventListener('click', exportModule);
+            document.getElementById('duplicateBtn').addEventListener('click', duplicateModule);
+            document.getElementById('deleteBtn').addEventListener('click', function() {
+                if (currentModule) deleteModule(currentModule.id);
+            });
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.addEventListener('click', function() { 
+                    switchTab(tab.dataset.tab); 
+                });
+            });
+            
+            // Modal Close Buttons
+            document.getElementById('closeNewModal').addEventListener('click', function() { 
+                document.getElementById('newModuleModal').style.display = 'none'; 
+            });
+            document.getElementById('closeImportModal').addEventListener('click', function() { 
+                document.getElementById('importModal').style.display = 'none'; 
+            });
+            document.getElementById('closeDeleteModal').addEventListener('click', function() { 
+                document.getElementById('deleteModal').style.display = 'none'; 
+            });
+            document.getElementById('closeClearAllModal').addEventListener('click', function() { 
+                document.getElementById('clearAllModal').style.display = 'none'; 
+            });
+            
+            // Template Cards
+            document.querySelectorAll('.template-card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    const template = card.dataset.template;
+                    if (template) {
+                        createModuleFromTemplate(template);
+                    }
+                });
+                card.addEventListener('mouseenter', function() {
+                    card.style.background = 'rgba(6, 58, 168, 0.05)';
+                    card.style.borderColor = 'var(--kerberos-primary)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    card.style.background = 'var(--kerberos-bg-light)';
+                    card.style.borderColor = 'var(--kerberos-border)';
+                });
+            });
+            
+            // Import File
+            document.getElementById('importFile').addEventListener('change', handleFileImport);
+            document.getElementById('importTextBtn').addEventListener('click', importFromText);
+            
+            // Delete/Clear Confirm Buttons
+            document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+            document.getElementById('cancelDeleteBtn').addEventListener('click', function() { 
+                document.getElementById('deleteModal').style.display = 'none'; 
+            });
+            document.getElementById('confirmClearAllBtn').addEventListener('click', confirmClearAll);
+            document.getElementById('cancelClearAllBtn').addEventListener('click', function() { 
+                document.getElementById('clearAllModal').style.display = 'none'; 
+            });
+            
+            // Text Editor Popup
+            document.getElementById('saveElementBtn').addEventListener('click', saveElementEdit);
+            document.getElementById('cancelElementBtn').addEventListener('click', closeTextEditor);
+            
+            // Modal Click Outside
+            window.addEventListener('click', function(event) {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(function(modal) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                const popup = document.getElementById('textEditorPopup');
+                if (event.target === popup) {
+                    closeTextEditor();
+                }
+            });
+
+            // Suchfunktion und Filter
+            const moduleSearch = document.getElementById('moduleSearch');
+            const categoryFilter = document.getElementById('categoryFilter');
+            
+            if (moduleSearch) {
+                moduleSearch.addEventListener('input', function(e) {
+                    searchModules(e.target.value);
+                });
+            }
+            
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', function(e) {
+                    filterByCategory(e.target.value);
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                const popup = document.getElementById('textEditorPopup');
+                if (popup.style.display === 'block') {
+                    if (e.key === 'Escape') {
+                        closeTextEditor();
+                    } else if (e.key === 'Enter' && e.ctrlKey) {
+                        saveElementEdit();
+                    }
+                }
+                
+                // Global shortcuts
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 's') {
+                        e.preventDefault();
+                        if (currentModule) saveModule();
+                    } else if (e.key === 'e') {
+                        e.preventDefault();
+                        if (currentModule) exportModule();
+                    } else if (e.key === 'd') {
+                        e.preventDefault();
+                        if (currentModule) duplicateModule();
+                    } else if (e.key === 'n') {
+                        e.preventDefault();
+                        document.getElementById('newModuleModal').style.display = 'block';
+                    }
+                }
+            });
+
+            // Auto-Save für Code-Editor
+            const codeEditor = document.getElementById('moduleCode');
+            if (codeEditor) {
+                let timeoutId;
+                codeEditor.addEventListener('input', function() {
+                    clearTimeout(timeoutId);
+                    timeoutId = setTimeout(function() {
+                        const activeTab = document.querySelector('.tab.active');
+                        if (activeTab && activeTab.dataset.tab === 'preview') {
+                            updatePreview();
+                        } else if (activeTab && activeTab.dataset.tab === 'visual') {
+                            updateVisualEditor();
+                        }
+                    }, 500);
+                });
+            }
+        }
+
+        // Initialisierung beim Laden der Seite
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event Listeners initialisieren
+            initEventListeners();
+            
+            // Erst versuchen aus lokalem Speicher zu laden
+            const loaded = loadFromLocalStorage();
+            
+            if (!loaded) {
+                // Wenn nichts geladen wurde, leere Initialisierung
+                renderModuleList();
+                updateBackupStatus('Initialisiert');
+            }
+            
+            startAutoSave();
+            
+            // Willkommensnachricht
+            setTimeout(function() {
+                showNotification('🎉 Kerberos Module Manager erfolgreich repariert und geladen!', 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
