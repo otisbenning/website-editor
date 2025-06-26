@@ -1133,6 +1133,292 @@
             .preview-content .element-controls {
                 display: none !important;
             }
+
+        /* Landing Page Editor Styles */
+        .landing-page-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 1.5rem;
+            height: calc(100vh - 200px);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .module-library,
+        .page-builder,
+        .page-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--kerberos-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .module-library h3,
+        .page-builder h3,
+        .page-preview h3 {
+            margin-bottom: 1rem;
+            color: var(--kerberos-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .module-search {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .available-modules {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .library-module {
+            padding: 0.75rem;
+            border: 2px solid var(--kerberos-border);
+            border-radius: 8px;
+            cursor: grab;
+            background: var(--kerberos-bg-light);
+            transition: all 0.2s ease;
+        }
+
+        .library-module:hover {
+            border-color: var(--kerberos-secondary);
+            background: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 156, 230, 0.1);
+        }
+
+        .library-module.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            transform: rotate(2deg);
+        }
+
+        .library-module-name {
+            font-weight: 600;
+            color: var(--kerberos-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .library-module-category {
+            font-size: 0.85rem;
+            color: var(--kerberos-light-gray);
+        }
+
+        .page-name-input {
+            margin-bottom: 1rem;
+        }
+
+        .landing-page-canvas {
+            flex: 1;
+            border: 2px dashed var(--kerberos-border);
+            border-radius: 8px;
+            background: #fafbfc;
+            overflow-y: auto;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .canvas-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--kerberos-light-gray);
+        }
+
+        .placeholder-content h3 {
+            color: var(--kerberos-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .placeholder-features {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .canvas-module {
+            position: relative;
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .canvas-module:hover {
+            border-color: var(--kerberos-secondary);
+            box-shadow: 0 4px 12px rgba(0, 156, 230, 0.1);
+        }
+
+        .canvas-module.selected {
+            border-color: var(--kerberos-primary);
+            box-shadow: 0 4px 16px rgba(6, 58, 168, 0.2);
+        }
+
+        .module-controls {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .canvas-module:hover .module-controls,
+        .canvas-module.selected .module-controls {
+            opacity: 1;
+        }
+
+        .module-control-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-edit {
+            background: var(--kerberos-secondary);
+            color: white;
+        }
+
+        .btn-move-up {
+            background: var(--kerberos-accent);
+            color: white;
+        }
+
+        .btn-move-down {
+            background: var(--kerberos-orange);
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--kerberos-danger);
+            color: white;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .landing-page-preview {
+            flex: 1;
+            border: 1px solid var(--kerberos-border);
+            border-radius: 8px;
+            background: white;
+            overflow: auto;
+            transition: all 0.3s ease;
+        }
+
+        .preview-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--kerberos-light-gray);
+        }
+
+        /* Responsive Preview Modes */
+        .landing-page-preview.tablet-mode {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        .landing-page-preview.mobile-mode {
+            max-width: 375px;
+            margin: 0 auto;
+        }
+
+        /* Drag and Drop Styles */
+        .canvas-drop-zone {
+            min-height: 60px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--kerberos-light-gray);
+            font-size: 0.9rem;
+        }
+
+        .canvas-drop-zone.drag-over {
+            border-color: var(--kerberos-secondary);
+            background: rgba(0, 156, 230, 0.05);
+            color: var(--kerberos-secondary);
+        }
+
+        .btn-accent {
+            background: var(--kerberos-accent);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background: #9952d1;
+        }
+
+        /* Vollbild Vorschau Modal */
+        .fullscreen-preview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .fullscreen-preview-header {
+            background: var(--kerberos-primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fullscreen-preview-content {
+            flex: 1;
+            background: white;
+            overflow: auto;
+        }
+
+        .close-fullscreen {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .close-fullscreen:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         }
 
 
@@ -1154,6 +1440,7 @@
                 <button class="btn btn-success" id="importBtn">📥 Import</button>
                 <button class="btn btn-warning" id="newModuleBtn">➕ Neues Modul</button>
                 <button class="btn btn-success" id="loadDefaultBtn">🎯 Standard-Module laden</button>
+                <button class="btn btn-accent" id="landingPageBtn">🏗️ Landing Page Editor</button>
             </div>
         </div>
     </header>
@@ -1294,6 +1581,73 @@
                             <div class="preview-container">
                                 <div class="preview-content" id="previewContent">
                                     <p>Wechseln Sie zum Code-Tab und fügen Sie HTML hinzu, um eine Vorschau zu sehen.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Landing Page Editor -->
+                <div id="landingPageEditor" style="display: none;">
+                    <div class="content-header">
+                        <h2 class="content-title">🏗️ Landing Page Editor</h2>
+                        <div class="content-actions">
+                            <button class="btn btn-success" id="saveLandingPageBtn">💾 Landing Page speichern</button>
+                            <button class="btn btn-primary" id="exportLandingPageBtn">📤 Exportieren</button>
+                            <button class="btn btn-secondary" id="previewLandingPageBtn">👁️ Vollbildvorschau</button>
+                            <button class="btn btn-warning" id="backToModulesBtn">🔙 Zurück zu Modulen</button>
+                        </div>
+                    </div>
+                    
+                    <div class="landing-page-layout">
+                        <div class="module-library">
+                            <h3>📚 Module-Bibliothek</h3>
+                            <div class="module-search">
+                                <input type="text" id="landingPageSearch" placeholder="Module suchen..." class="form-control">
+                                <select id="landingPageCategoryFilter" class="form-control">
+                                    <option value="all">🔍 Alle Kategorien</option>
+                                    <option value="header">🎪 Header & Navigation</option>
+                                    <option value="content">📄 Content Module</option>
+                                    <option value="contact">👥 Kontakt Module</option>
+                                    <option value="promo">🎯 Promotion Module</option>
+                                    <option value="blog">📰 Blog Module</option>
+                                    <option value="layout">🎨 Layout Module</option>
+                                </select>
+                            </div>
+                            <div class="available-modules" id="availableModules">
+                                <!-- Module werden hier dynamisch geladen -->
+                            </div>
+                        </div>
+                        
+                        <div class="page-builder">
+                            <h3>🏗️ Landing Page Builder</h3>
+                            <div class="page-name-input">
+                                <input type="text" id="landingPageName" placeholder="Landing Page Name..." class="form-control" value="Neue Landing Page">
+                            </div>
+                            <div class="landing-page-canvas" id="landingPageCanvas">
+                                <div class="canvas-placeholder">
+                                    <div class="placeholder-content">
+                                        <h3>🎯 Erstellen Sie Ihre Landing Page</h3>
+                                        <p>Ziehen Sie Module aus der Bibliothek hierher, um Ihre Landing Page zu erstellen.</p>
+                                        <div class="placeholder-features">
+                                            <span>📱 Responsive Design</span>
+                                            <span>🎨 Visueller Editor</span>
+                                            <span>⚡ Live-Vorschau</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="page-preview">
+                            <h3>👁️ Live-Vorschau</h3>
+                            <div class="preview-controls">
+                                <button class="btn btn-sm btn-primary" id="desktopPreview">🖥️ Desktop</button>
+                                <button class="btn btn-sm btn-secondary" id="tabletPreview">📱 Tablet</button>
+                                <button class="btn btn-sm btn-secondary" id="mobilePreview">📱 Mobile</button>
+                            </div>
+                            <div class="landing-page-preview" id="landingPagePreview">
+                                <div class="preview-placeholder">
+                                    <p>Vorschau wird hier angezeigt...</p>
                                 </div>
                             </div>
                         </div>
@@ -4549,6 +4903,440 @@
             }, 30000);
         }
 
+        // Landing Page Editor Variables
+        let currentLandingPage = null;
+        let landingPageModules = [];
+        let landingPages = JSON.parse(localStorage.getItem('kerberos-landing-pages')) || {};
+
+        // Landing Page Editor Funktionen
+        function initializeLandingPageEditor() {
+            document.getElementById('landingPageBtn').addEventListener('click', showLandingPageEditor);
+            document.getElementById('backToModulesBtn').addEventListener('click', showModuleEditor);
+            document.getElementById('saveLandingPageBtn').addEventListener('click', saveLandingPage);
+            document.getElementById('exportLandingPageBtn').addEventListener('click', exportLandingPage);
+            document.getElementById('previewLandingPageBtn').addEventListener('click', showFullscreenPreview);
+            
+            // Preview Controls
+            document.getElementById('desktopPreview').addEventListener('click', function() {
+                setPreviewMode('desktop');
+            });
+            document.getElementById('tabletPreview').addEventListener('click', function() {
+                setPreviewMode('tablet');
+            });
+            document.getElementById('mobilePreview').addEventListener('click', function() {
+                setPreviewMode('mobile');
+            });
+            
+            // Search and Filter
+            document.getElementById('landingPageSearch').addEventListener('input', filterAvailableModules);
+            document.getElementById('landingPageCategoryFilter').addEventListener('change', filterAvailableModules);
+        }
+
+        // Header-Module Templates
+        function addHeaderModules() {
+            const headerModules = [
+                {
+                    name: "Modern Business Header",
+                    category: "header",
+                    description: "Professioneller Header mit Navigation und CTA-Button",
+                    code: `<header style="background: linear-gradient(135deg, #063AA8, #009CE6); color: white; padding: 1rem 0; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 1.8rem; font-weight: 700;">Ihr Logo</div>
+                <nav style="display: flex; gap: 2rem; align-items: center;">
+                    <a href="#" style="color: white; text-decoration: none; font-weight: 500; transition: opacity 0.3s;">Startseite</a>
+                    <a href="#" style="color: white; text-decoration: none; font-weight: 500; transition: opacity 0.3s;">Über uns</a>
+                    <a href="#" style="color: white; text-decoration: none; font-weight: 500; transition: opacity 0.3s;">Leistungen</a>
+                    <a href="#" style="color: white; text-decoration: none; font-weight: 500; transition: opacity 0.3s;">Kontakt</a>
+                    <button style="background: white; color: #063AA8; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: transform 0.2s;">Jetzt starten</button>
+                </nav>
+            </div>
+        </header>`
+                },
+                {
+                    name: "Hero Section - Centered",
+                    category: "header", 
+                    description: "Großer zentrierter Hero-Bereich mit Call-to-Action",
+                    code: `<section style="background: linear-gradient(135deg, #063AA8, #009CE6); color: white; padding: 6rem 0; text-align: center;">
+            <div style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
+                <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2;">Willkommen bei Ihrem Unternehmen</h1>
+                <p style="font-size: 1.3rem; margin-bottom: 2.5rem; opacity: 0.9; line-height: 1.6;">Entdecken Sie innovative Lösungen, die Ihr Business auf die nächste Stufe bringen. Vertrauen Sie auf unsere Expertise.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button style="background: white; color: #063AA8; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s;">🚀 Jetzt starten</button>
+                    <button style="background: transparent; color: white; border: 2px solid white; padding: 1rem 2rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">📞 Kontakt aufnehmen</button>
+                </div>
+            </div>
+        </section>`
+                },
+                {
+                    name: "Minimal Header Bar",
+                    category: "header",
+                    description: "Schlanker Header mit minimalistischem Design", 
+                    code: `<header style="background: white; border-bottom: 1px solid #DEE2E6; padding: 1.5rem 0; position: sticky; top: 0; z-index: 1000;">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="width: 32px; height: 32px; background: #063AA8; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">K</div>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #063AA8;">Kerberos</span>
+                </div>
+                <nav style="display: flex; gap: 2rem; align-items: center;">
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; transition: color 0.3s;">Produkte</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; transition: color 0.3s;">Lösungen</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; transition: color 0.3s;">Support</a>
+                    <button style="background: #063AA8; color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer;">Anmelden</button>
+                </nav>
+            </div>
+        </header>`
+                },
+                {
+                    name: "Hero with Background Image",
+                    category: "header",
+                    description: "Hero-Section mit Hintergrundbild und Overlay",
+                    code: `<section style="background: linear-gradient(rgba(6,58,168,0.8), rgba(0,156,230,0.8)), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3') center/cover; color: white; padding: 8rem 0; position: relative;">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <div style="max-width: 600px;">
+                    <h1 style="font-size: 4rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.1;">Innovation trifft Expertise</h1>
+                    <p style="font-size: 1.4rem; margin-bottom: 2.5rem; opacity: 0.95; line-height: 1.6;">Wir entwickeln maßgeschneiderte Lösungen, die Ihre Geschäftsprozesse revolutionieren und nachhaltigen Erfolg schaffen.</p>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button style="background: #009CE6; color: white; border: none; padding: 1.25rem 2.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,156,230,0.3);">Mehr erfahren</button>
+                        <button style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 1.25rem 2.5rem; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);">Demo anfordern</button>
+                    </div>
+                </div>
+            </div>
+        </section>`
+                },
+                {
+                    name: "Corporate Header with Logo",
+                    category: "header", 
+                    description: "Professioneller Corporate Header mit Logo-Platz",
+                    code: `<header style="background: #FFFFFF; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 1rem 0; position: sticky; top: 0; z-index: 1000;">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #063AA8, #009CE6); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem;">K</div>
+                        <div>
+                            <div style="font-size: 1.6rem; font-weight: 700; color: #063AA8; margin: 0;">Kerberos Solutions</div>
+                            <div style="font-size: 0.9rem; color: #6C757D; margin: 0;">Compliance & Security Excellence</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <span style="color: #6C757D; font-size: 0.9rem;">📞 +49 123 456 789</span>
+                        <span style="color: #6C757D; font-size: 0.9rem;">✉️ info@kerberos.de</span>
+                    </div>
+                </div>
+                <nav style="display: flex; justify-content: center; gap: 3rem; padding: 1rem 0; border-top: 1px solid #DEE2E6;">
+                    <a href="#" style="color: #063AA8; text-decoration: none; font-weight: 600; padding: 0.5rem 0; transition: color 0.3s; border-bottom: 2px solid transparent;">🏠 Startseite</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; padding: 0.5rem 0; transition: all 0.3s; border-bottom: 2px solid transparent;">🎯 Leistungen</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; padding: 0.5rem 0; transition: all 0.3s; border-bottom: 2px solid transparent;">🏢 Über uns</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; padding: 0.5rem 0; transition: all 0.3s; border-bottom: 2px solid transparent;">📰 News</a>
+                    <a href="#" style="color: #212529; text-decoration: none; font-weight: 500; padding: 0.5rem 0; transition: all 0.3s; border-bottom: 2px solid transparent;">📞 Kontakt</a>
+                </nav>
+            </div>
+        </header>`
+                }
+            ];
+            
+            headerModules.forEach(function(headerModule) {
+                const moduleId = 'header-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                modules[moduleId] = {
+                    id: moduleId,
+                    name: headerModule.name,
+                    description: headerModule.description,
+                    category: headerModule.category,
+                    tags: ['header', 'kerberos', 'landing-page'],
+                    code: headerModule.code,
+                    created: new Date().toISOString(),
+                    modified: new Date().toISOString()
+                };
+            });
+            
+            saveToLocalStorage();
+            showNotification('🎪 5 Header-Module hinzugefügt!', 'success');
+        }
+
+        // Button für Header-Module hinzufügen
+        function addHeaderModulesButton() {
+            const actionsDiv = document.querySelector('.header-actions');
+            if (actionsDiv && !document.getElementById('addHeadersBtn')) {
+                const button = document.createElement('button');
+                button.id = 'addHeadersBtn';
+                button.className = 'btn btn-secondary';
+                button.innerHTML = '🎪 Header-Module hinzufügen';
+                button.addEventListener('click', addHeaderModules);
+                actionsDiv.appendChild(button);
+            }
+        }
+
+        // Header-Module Button nach dem DOM-Load hinzufügen
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(addHeaderModulesButton, 100);
+        });
+        
+        function showLandingPageEditor() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('moduleEditor').style.display = 'none';
+            document.getElementById('landingPageEditor').style.display = 'block';
+            
+            loadAvailableModules();
+            initializeCanvas();
+            updateLandingPagePreview();
+        }
+
+        function showModuleEditor() {
+            document.getElementById('landingPageEditor').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'block';
+            renderModuleList();
+        }
+
+        function loadAvailableModules() {
+            const container = document.getElementById('availableModules');
+            container.innerHTML = '';
+            
+            Object.values(modules).forEach(function(module) {
+                const moduleElement = document.createElement('div');
+                moduleElement.className = 'library-module';
+                moduleElement.draggable = true;
+                moduleElement.dataset.moduleId = module.id;
+                
+                moduleElement.innerHTML = 
+                    '<div class="library-module-name">' + module.name + '</div>' +
+                    '<div class="library-module-category">' + (moduleCategories[module.category] || '🔧 Custom') + '</div>';
+                
+                // Drag Events
+                moduleElement.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', module.id);
+                    moduleElement.classList.add('dragging');
+                });
+                
+                moduleElement.addEventListener('dragend', function() {
+                    moduleElement.classList.remove('dragging');
+                });
+                
+                container.appendChild(moduleElement);
+            });
+        }
+
+        function filterAvailableModules() {
+            const searchTerm = document.getElementById('landingPageSearch').value.toLowerCase();
+            const selectedCategory = document.getElementById('landingPageCategoryFilter').value;
+            const moduleElements = document.querySelectorAll('.library-module');
+            
+            moduleElements.forEach(function(element) {
+                const moduleId = element.dataset.moduleId;
+                const module = modules[moduleId];
+                
+                const matchesSearch = searchTerm === '' || 
+                    module.name.toLowerCase().includes(searchTerm) ||
+                    module.description.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = selectedCategory === 'all' || module.category === selectedCategory;
+                
+                element.style.display = (matchesSearch && matchesCategory) ? 'block' : 'none';
+            });
+        }
+
+        function initializeCanvas() {
+            const canvas = document.getElementById('landingPageCanvas');
+            
+            canvas.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                canvas.classList.add('drag-over');
+            });
+            
+            canvas.addEventListener('dragleave', function(e) {
+                if (!canvas.contains(e.relatedTarget)) {
+                    canvas.classList.remove('drag-over');
+                }
+            });
+            
+            canvas.addEventListener('drop', function(e) {
+                e.preventDefault();
+                canvas.classList.remove('drag-over');
+                
+                const moduleId = e.dataTransfer.getData('text/plain');
+                if (moduleId && modules[moduleId]) {
+                    addModuleToCanvas(moduleId);
+                }
+            });
+        }
+
+        function addModuleToCanvas(moduleId) {
+            const module = modules[moduleId];
+            if (!module) return;
+            
+            // Canvas Placeholder entfernen
+            const placeholder = document.querySelector('.canvas-placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
+            const canvasModule = {
+                id: 'canvas-' + Date.now(),
+                moduleId: moduleId,
+                module: module,
+                order: landingPageModules.length
+            };
+            
+            landingPageModules.push(canvasModule);
+            renderCanvas();
+            updateLandingPagePreview();
+        }
+
+        function renderCanvas() {
+            const canvas = document.getElementById('landingPageCanvas');
+            canvas.innerHTML = '';
+            
+            if (landingPageModules.length === 0) {
+                canvas.innerHTML = '<div class="canvas-placeholder"><div class="placeholder-content"><h3>🎯 Erstellen Sie Ihre Landing Page</h3><p>Ziehen Sie Module aus der Bibliothek hierher, um Ihre Landing Page zu erstellen.</p><div class="placeholder-features"><span>📱 Responsive Design</span><span>🎨 Visueller Editor</span><span>⚡ Live-Vorschau</span></div></div></div>';
+                return;
+            }
+            
+            landingPageModules.forEach(function(canvasModule, index) {
+                const moduleElement = document.createElement('div');
+                moduleElement.className = 'canvas-module';
+                moduleElement.dataset.canvasId = canvasModule.id;
+                
+                moduleElement.innerHTML = 
+                    '<div class="module-controls">' +
+                        '<button class="module-control-btn btn-edit" onclick="editCanvasModule(\'' + canvasModule.id + '\')" title="Bearbeiten">✏️</button>' +
+                        '<button class="module-control-btn btn-move-up" onclick="moveCanvasModule(\'' + canvasModule.id + '\', -1)" title="Nach oben">↑</button>' +
+                        '<button class="module-control-btn btn-move-down" onclick="moveCanvasModule(\'' + canvasModule.id + '\', 1)" title="Nach unten">↓</button>' +
+                        '<button class="module-control-btn btn-delete" onclick="removeCanvasModule(\'' + canvasModule.id + '\')" title="Löschen">×</button>' +
+                    '</div>' +
+                    '<div class="canvas-module-content">' + canvasModule.module.code + '</div>';
+                
+                canvas.appendChild(moduleElement);
+            });
+        }
+
+        function editCanvasModule(canvasId) {
+            const canvasModule = landingPageModules.find(function(m) { return m.id === canvasId; });
+            if (!canvasModule) return;
+            
+            // Zum normalen Module Editor wechseln
+            loadModule(canvasModule.moduleId);
+            showNotification('📝 Modul wird im Editor geöffnet. Änderungen werden automatisch übernommen.', 'info');
+        }
+
+        function moveCanvasModule(canvasId, direction) {
+            const index = landingPageModules.findIndex(function(m) { return m.id === canvasId; });
+            if (index === -1) return;
+            
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= landingPageModules.length) return;
+            
+            // Array-Elemente tauschen
+            const temp = landingPageModules[index];
+            landingPageModules[index] = landingPageModules[newIndex];
+            landingPageModules[newIndex] = temp;
+            
+            renderCanvas();
+            updateLandingPagePreview();
+        }
+
+        function removeCanvasModule(canvasId) {
+            landingPageModules = landingPageModules.filter(function(m) { return m.id !== canvasId; });
+            renderCanvas();
+            updateLandingPagePreview();
+        }
+
+        function updateLandingPagePreview() {
+            const preview = document.getElementById('landingPagePreview');
+            
+            if (landingPageModules.length === 0) {
+                preview.innerHTML = '<div class="preview-placeholder"><p>Vorschau wird hier angezeigt...</p></div>';
+                return;
+            }
+            
+            let previewHtml = '';
+            landingPageModules.forEach(function(canvasModule) {
+                previewHtml += canvasModule.module.code;
+            });
+            
+            preview.innerHTML = previewHtml;
+        }
+
+        function setPreviewMode(mode) {
+            const preview = document.getElementById('landingPagePreview');
+            const buttons = document.querySelectorAll('.preview-controls .btn');
+            
+            // Reset classes
+            preview.className = 'landing-page-preview';
+            buttons.forEach(function(btn) { btn.className = 'btn btn-sm btn-secondary'; });
+            
+            // Set new mode
+            if (mode === 'tablet') {
+                preview.classList.add('tablet-mode');
+                document.getElementById('tabletPreview').className = 'btn btn-sm btn-primary';
+            } else if (mode === 'mobile') {
+                preview.classList.add('mobile-mode');
+                document.getElementById('mobilePreview').className = 'btn btn-sm btn-primary';
+            } else {
+                document.getElementById('desktopPreview').className = 'btn btn-sm btn-primary';
+            }
+        }
+
+        function saveLandingPage() {
+            const name = document.getElementById('landingPageName').value || 'Neue Landing Page';
+            const id = 'landing-' + Date.now();
+            
+            const landingPage = {
+                id: id,
+                name: name,
+                modules: landingPageModules,
+                created: new Date().toISOString(),
+                modified: new Date().toISOString()
+            };
+            
+            landingPages[id] = landingPage;
+            localStorage.setItem('kerberos-landing-pages', JSON.stringify(landingPages));
+            
+            showNotification('✅ Landing Page "' + name + '" gespeichert!', 'success');
+        }
+
+        function exportLandingPage() {
+            const name = document.getElementById('landingPageName').value || 'Neue Landing Page';
+            
+            let htmlContent = '<!DOCTYPE html>\n<html lang="de">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>' + name + '</title>\n</head>\n<body>\n';
+            
+            landingPageModules.forEach(function(canvasModule) {
+                htmlContent += '    <!-- ' + canvasModule.module.name + ' -->\n';
+                htmlContent += '    ' + canvasModule.module.code + '\n\n';
+            });
+            
+            htmlContent += '</body>\n</html>';
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = name.toLowerCase().replace(/[^a-z0-9]/g, '-') + '.html';
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showNotification('📤 Landing Page exportiert!', 'success');
+        }
+
+        function showFullscreenPreview() {
+            // Fullscreen Modal erstellen
+            const modal = document.createElement('div');
+            modal.className = 'fullscreen-preview-modal';
+            modal.style.display = 'flex';
+            
+            let previewHtml = '';
+            landingPageModules.forEach(function(canvasModule) {
+                previewHtml += canvasModule.module.code;
+            });
+            
+            modal.innerHTML = 
+                '<div class="fullscreen-preview-header">' +
+                    '<h3>🖥️ ' + (document.getElementById('landingPageName').value || 'Landing Page Vorschau') + '</h3>' +
+                    '<button class="close-fullscreen" onclick="this.parentElement.parentElement.remove()">×</button>' +
+                '</div>' +
+                '<div class="fullscreen-preview-content">' + previewHtml + '</div>';
+            
+            document.body.appendChild(modal);
+        }
+        
         // Event Listeners initialisieren
         function initEventListeners() {
             // Header Buttons
@@ -4724,6 +5512,8 @@
                 renderModuleList();
                 updateBackupStatus('Initialisiert');
             }
+
+            initializeLandingPageEditor();
             
             startAutoSave();
             
