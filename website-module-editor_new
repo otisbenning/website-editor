@@ -497,6 +497,23 @@
             display: flex;
         }
 
+        /* FIX: Hover für Bild-Container */
+        .image-container:hover .element-controls {
+            display: flex !important;
+        }
+        
+        .image-editable:hover .element-controls {
+            display: flex !important;
+        }
+        
+        /* Sicherstellen dass Bild-Controls richtig positioniert sind */
+        .image-container .element-controls {
+            position: absolute !important;
+            top: -8px !important;
+            right: -8px !important;
+            z-index: 1000 !important;
+        }
+
         .element-btn {
             width: 18px;
             height: 18px;
@@ -2424,13 +2441,20 @@
             showNotification('🎮 Alle Slides sichtbar gemacht', 'success');
         }
         
-        // Elemente editierbar machen (reparierte Version)
+        // Elemente editierbar machen (VOLLSTÄNDIGE VERSION)
         function makeElementsEditable(container) {
+            console.log('🔧 makeElementsEditable aufgerufen mit:', container);
+            
             // Interaktive Module für Bearbeitung vorbereiten
             prepareInteractiveModulesForEditing(container);
 
             // Editor-eigene Bereiche ausschließen
             function isInEditorArea(element) {
+                // Ausschluss: Elemente im Visual Editor sind NICHT im Editor-Bereich
+                if (element.closest('#visualEditor, .visual-editor-content')) {
+                    return false;
+                }
+                
                 const editorSelectors = [
                     '.text-editor-popup', '.element-controls', '.toolbar-btn', '.element-btn',
                     '.modal-content', '.sidebar', '.header-content', '.app-header',
@@ -2456,6 +2480,7 @@
                     content.match(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/u) ||
                     (span.style.fontFamily && span.style.fontFamily.includes('Font Awesome'))) {
                     if (!span.querySelector('.element-controls') && !isInEditorArea(span)) {
+                        console.log('✅ Making icon editable:', span);
                         makeIconEditable(span);
                     }
                 }
@@ -2463,30 +2488,37 @@
             
             icons.forEach(function(icon) {
                 if (!icon.querySelector('.element-controls') && !isInEditorArea(icon)) {
+                    console.log('✅ Making icon editable:', icon);
                     makeIconEditable(icon);
                 }
             });
 
             // 2. Bilder editierbar machen
             const images = container.querySelectorAll('img');
+            console.log('🔧 Bilder gefunden:', images.length);
             images.forEach(function(image) {
                 if (!image.classList.contains('element-editable') && !isInEditorArea(image)) {
+                    console.log('✅ Making image editable:', image);
                     makeImageEditable(image);
                 }
             });
 
             // 3. Buttons/Links editierbar machen
             const links = container.querySelectorAll('a, .btn, .contact-cta, .kerberos-cta-button, .kerberos-card-button, [class*="button"], [href]');
+            console.log('🔧 Links gefunden:', links.length);
             links.forEach(function(link) {
                 if (!link.classList.contains('element-editable') && !isInEditorArea(link)) {
+                    console.log('✅ Making link editable:', link);
                     makeElementEditable(link);
                 }
             });
 
             // 4. Listen editierbar machen
             const lists = container.querySelectorAll('ul, ol');
+            console.log('🔧 Listen gefunden:', lists.length);
             lists.forEach(function(list) {
                 if (!list.classList.contains('element-editable') && !isInEditorArea(list)) {
+                    console.log('✅ Making list editable:', list);
                     makeListEditable(list);
                 }
             });
@@ -2505,6 +2537,7 @@
                 if (!element.classList.contains('element-editable') && 
                     !element.closest('.element-editable') && 
                     !isInEditorArea(element)) {
+                    console.log('✅ Making interactive element editable:', element);
                     makeElementEditable(element);
                 }
             });
@@ -2523,9 +2556,16 @@
                     !element.classList.contains('icon-editable') &&
                     !isInEditorArea(element) &&
                     element.textContent.trim()) {
+                    console.log('✅ Making text element editable:', element);
                     makeElementEditable(element);
                 }
             });
+            
+            // Finale Statistik
+            const editableCount = container.querySelectorAll('.element-editable').length;
+            const controlsCount = container.querySelectorAll('.element-controls').length;
+            const iconCount = container.querySelectorAll('.icon-editable').length;
+            console.log('🔧 Finale Zählung - Editierbare Elemente:', editableCount, 'Controls:', controlsCount, 'Icons:', iconCount);
         }
 
         // Interaktive Module für Bearbeitung vorbereiten
@@ -2668,19 +2708,19 @@
 
         // Dummy-Funktionen für die interaktiven Editoren (können später implementiert werden)
         function makeAccordionEditable(accordion) {
-            // Placeholder - kann bei Bedarf implementiert werden
+            makeElementEditable(accordion);
         }
 
         function makeTabModuleEditable(tabContainer) {
-            // Placeholder - kann bei Bedarf implementiert werden
+            makeElementEditable(tabContainer);
         }
 
         function makeModalEditable(modal) {
-            // Placeholder - kann bei Bedarf implementiert werden
+            makeElementEditable(modal);
         }
 
         function makeCarouselEditable(carousel) {
-            // Placeholder - kann bei Bedarf implementiert werden
+            makeElementEditable(carousel);
         }
         
         // Icon editierbar machen
