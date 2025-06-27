@@ -3841,7 +3841,8 @@ properties: {
             if (shouldUpdateImmediately(key)) {
                 updateStatus = 'updating';
                 showUpdateStatus('updating');
-                applyChanges();
+                // Nur Canvas aktualisieren, nicht Property Panel neu rendern
+                renderCanvas();
                 updateStatus = 'updated';
                 showUpdateStatus('updated');
                 return;
@@ -3863,7 +3864,16 @@ properties: {
             if (!selectedModule) return;
             
             renderCanvas();
-            selectModule(selectedModule.id);
+            // Nur Modul erneut auswählen, wenn es nicht gerade bearbeitet wird
+            const activeElement = document.activeElement;
+            const isEditingProperty = activeElement && (
+                activeElement.classList.contains('form-control') || 
+                activeElement.contentEditable === 'true'
+            );
+            
+            if (!isEditingProperty) {
+                selectModule(selectedModule.id);
+            }
             showNotification('✅ Änderungen übernommen');
         }
 
