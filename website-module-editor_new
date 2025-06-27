@@ -3651,6 +3651,124 @@ properties: {
         window.showCreateModuleDialog = showCreateModuleDialog;
         window.updatePropertyFromRichText = updatePropertyFromRichText;
 
+        // Create Module Dialog Functions
+        function showCreateModuleDialog() {
+            // Erstelle ein einfaches Modal für benutzerdefinierte Module
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 2000; display: flex; 
+                align-items: center; justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--kerberos-primary);">Neues Modul erstellen</h3>
+                    <p style="color: #6c757d; margin-bottom: 2rem;">Diese Funktion ist in der Vollversion verfügbar. Erstellen Sie eigene Module mit benutzerdefinierten HTML-Templates.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Modul-Name</label>
+                        <input type="text" id="newModuleName" placeholder="z.B. Mein Custom Hero" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kategorie</label>
+                        <select id="newModuleCategory" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <option value="Hero & Header">Hero & Header</option>
+                            <option value="Content & Services">Content & Services</option>
+                            <option value="Team & About">Team & About</option>
+                            <option value="Contact & CTA">Contact & CTA</option>
+                            <option value="Statistics & Numbers">Statistics & Numbers</option>
+                            <option value="Content & Images">Content & Images</option>
+                            <option value="Process & Steps">Process & Steps</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 1rem; margin-bottom: 2rem;">
+                        <h4 style="color: #856404; margin: 0 0 0.5rem 0; font-size: 0.9rem;">🚀 Vollversion Features</h4>
+                        <p style="color: #856404; margin: 0; font-size: 0.85rem;">• HTML-Editor für benutzerdefinierte Module<br>• Erweiterte Property-Typen<br>• Module-Bibliothek Verwaltung<br>• Export eigener Module</p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button onclick="closeCreateModuleDialog()" style="padding: 0.5rem 1rem; border: 1px solid #dee2e6; background: white; border-radius: 4px; cursor: pointer;">Abbrechen</button>
+                        <button onclick="createCustomModule()" style="padding: 0.5rem 1rem; border: none; background: var(--kerberos-primary); color: white; border-radius: 4px; cursor: pointer;">Erstellen (Demo)</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.id = 'createModuleModal';
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeCreateModuleDialog();
+                }
+            });
+        }
+
+        function closeCreateModuleDialog() {
+            const modal = document.getElementById('createModuleModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function createCustomModule() {
+            const name = document.getElementById('newModuleName').value.trim();
+            const category = document.getElementById('newModuleCategory').value;
+            
+            if (!name) {
+                showNotification('❌ Bitte Modul-Name eingeben');
+                return;
+            }
+            
+            // Demo: Erstelle ein einfaches Custom-Modul basierend auf einem existierenden Template
+            const customModule = {
+                id: 'kerberos-custom-' + Date.now(),
+                name: name,
+                category: category,
+                description: 'Benutzerdefiniertes Modul (Demo-Version)',
+                html: `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}}; text-align: center;">
+                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                        <div style="font-family: 'Font Awesome 5 Pro'; font-size: 3rem; color: {{iconColor}}; margin-bottom: 2rem;">{{iconClass}}</div>
+                        <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0 0 1rem 0;">{{title}}</h2>
+                        <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{textColor}}; margin: 0 0 2rem 0;">{{text}}</p>
+                        <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block;">{{buttonText}}</a>
+                    </div>
+                </section>`,
+                properties: {
+                    title: name + ' Titel',
+                    titleColor: '#063AA8',
+                    text: 'Beschreibungstext für Ihr benutzerdefiniertes Modul',
+                    textColor: '#6c757d',
+                    buttonText: 'Mehr erfahren',
+                    buttonLink: '#',
+                    buttonBgColor: '#063AA8',
+                    buttonTextColor: '#FFFFFF',
+                    iconClass: '&#xf005;',
+                    iconColor: '#063AA8',
+                    backgroundColor: '#FFFFFF',
+                    sectionSpacing: '6rem 0'
+                }
+            };
+            
+            // Füge zur Template-Liste hinzu
+            MODULE_TEMPLATES.push(customModule);
+            
+            // Lade Module-Bibliothek neu
+            loadModuleLibrary();
+            
+            closeCreateModuleDialog();
+            showNotification('✅ Custom-Modul "' + name + '" erstellt (Demo-Version)');
+        }
+
+        // Globale Funktionen definieren
+        window.showCreateModuleDialog = showCreateModuleDialog;
+        window.closeCreateModuleDialog = closeCreateModuleDialog;
+        window.createCustomModule = createCustomModule;
+
         // Event Listeners
         document.getElementById('exportPageBtn').addEventListener('click', exportPage);
         document.getElementById('savePageBtn').addEventListener('click', showSavePageDialog);
