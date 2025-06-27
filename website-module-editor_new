@@ -712,8 +712,6 @@
         </div>
     </div>
 
-    // Füge nach dem letzten Modal (vor dem Preview Modal) hinzu:
-
     <div id="moduleLibraryModal" class="modal">
         <div class="modal-content">
             <h3>📚 Module-Bibliothek verwalten</h3>
@@ -3753,8 +3751,15 @@ properties: {
                 const moduleDiv = document.createElement('div');
                 moduleDiv.style.cssText = 'border: 1px solid var(--kerberos-border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; background: white;';
                 
+                const protectedModules = [
+                    'kerberos-hero',
+                    'kerberos-hero-advanced', 
+                    'kerberos-stats',
+                    'kerberos-team-gallery'
+                ];
+
+                const isDeletable = !protectedModules.includes(template.id);
                 const isCustom = !template.id.startsWith('kerberos-') || template.customized;
-                const isDeletable = isCustom || template.category === 'Custom';
                 
                 moduleDiv.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
@@ -3784,10 +3789,16 @@ properties: {
             const template = MODULE_TEMPLATES.find(t => t.id === templateId);
             if (!template) return;
             
-            // Verhindere Löschung von Standard-Kerberos-Modulen (außer Custom)
-            const isStandardModule = template.id.startsWith('kerberos-') && template.category !== 'Custom' && !template.customized;
-            if (isStandardModule) {
-                showNotification('❌ Standard-Module können nicht gelöscht werden');
+            // Schütze nur die wichtigsten Standard-Module
+            const protectedModules = [
+                'kerberos-hero',
+                'kerberos-hero-advanced',
+                'kerberos-stats',
+                'kerberos-team-gallery'
+            ];
+            
+            if (protectedModules.includes(templateId)) {
+                showNotification('❌ Dieses Basis-Modul kann nicht gelöscht werden');
                 return;
             }
             
@@ -4315,6 +4326,39 @@ properties: {
             });
         }
 
+        // Library Filter Setup
+        function setupLibraryFilters() {
+            // Warte bis das Modal existiert, dann initialisiere Filter
+            setTimeout(() => {
+                const filterButtons = document.querySelectorAll('.library-filter-btn');
+                const searchInput = document.getElementById('librarySearchInput');
+                
+                if (filterButtons.length > 0) {
+                    filterButtons.forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const category = btn.dataset.category;
+                            
+                            filterButtons.forEach(b => {
+                                const isActive = b.dataset.category === category;
+                                b.style.background = isActive ? 'var(--kerberos-primary)' : 'transparent';
+                                b.style.color = isActive ? 'white' : 'var(--kerberos-primary)';
+                            });
+                            
+                            const searchTerm = searchInput ? searchInput.value : '';
+                            loadModuleLibraryList(category, searchTerm);
+                        });
+                    });
+                }
+                
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        const activeFilter = document.querySelector('.library-filter-btn[style*="var(--kerberos-primary)"]')?.dataset.category || 'all';
+                        loadModuleLibraryList(activeFilter, e.target.value);
+                    });
+                }
+            }, 100);
+        }
+
         // Icon Search
         document.getElementById('iconSearch').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
@@ -4500,6 +4544,15 @@ properties: {
 
         // Event Listeners
         document.getElementById('exportPageBtn').addEventListener('click', exportPage);
+        // Module Library Manager Event Listeners
+        window.showModuleLibraryManager = showModuleLibraryManager;
+        window.closeModuleLibraryModal = closeModuleLibraryModal;
+        window.loadModuleLibraryList = loadModuleLibraryList;
+        window.deleteModuleTemplate = deleteModuleTemplate;
+        window.duplicateModuleTemplate = duplicateModuleTemplate;
+        window.editModuleTemplate = editModuleTemplate;
+        window.exportModuleTemplate = exportModuleTemplate;
+        window.exportModuleLibrary = exportModuleLibrary;
         document.getElementById('savePageBtn').addEventListener('click', showSavePageDialog);
         document.getElementById('loadPageBtn').addEventListener('click', showLoadPageDialog);
         document.getElementById('importBtn').addEventListener('click', showImportModal);
@@ -4559,6 +4612,7 @@ properties: {
         document.addEventListener('DOMContentLoaded', () => {
             loadModuleLibrary();
             setupSearch();
+            setupLibraryFilters(); 
             renderPropertyPanel();
             loadSavedPages();
             
