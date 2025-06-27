@@ -909,7 +909,7 @@
                 name: 'Hero mit Bild & Icon',
                 category: 'Hero & Header',
                 description: 'Hero-Bereich mit anpassbarem Bild und Icon',
-                html: `<section style="background: linear-gradient(135deg, #063AA8, #009CE6); color: white; padding: 6rem 0; text-align: center; position: relative; overflow: hidden;">
+                html: `<section style="background: {{backgroundColor}}; color: white; padding: {{sectionSpacing}}; text-align: center; position: relative; overflow: hidden;">
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{backgroundImage}}') center/cover; opacity: 0.2;"></div>
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
         <div style="font-family: 'Font Awesome 5 Pro'; font-size: var(--large-text-size); color: {{iconColor}};">{{iconClass}}</div>
@@ -928,7 +928,9 @@
                     buttonLink: '#kontakt',
                     iconClass: '&#xf132;',
                     iconColor: '#FFFFFF',
-                    backgroundImage: ''
+                    backgroundImage: '',
+                    backgroundColor: 'linear-gradient(135deg, #063AA8, #009CE6)',
+                    sectionSpacing: '6rem 0'
                 }
             },
             {
@@ -1228,18 +1230,29 @@ properties: {
                 name: 'Kerberos Hero Section',
                 category: 'Hero & Header',
                 description: 'Hauptbereich mit Kerberos Branding',
-                html: `<section style="background: linear-gradient(135deg, #063AA8, #009CE6); color: white; padding: 6rem 0; text-align: center;">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-        <h1 style="font-family: var(--heading-font-font-family); font-size: var(--heading-1-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height);">{{title}}</h1>
-        <p style="font-family: var(--body-font-font-family); font-size: var(--large-text-size); line-height: var(--body-font-line-height); opacity: 0.9;">{{subtitle}}</p>
-        <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: rgba(255,255,255,0.2); color: white; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">{{buttonText}}</a>
-    </div>
-</section>`,
+                html: `<section style="background: {{backgroundColor}}; color: white; padding: {{sectionSpacing}}; text-align: center;">
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                    <h1 style="font-family: var(--heading-font-font-family); font-size: var(--heading-1-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin-bottom: {{titleSpacing}};">{{title}}</h1>
+                    <p style="font-family: var(--body-font-font-family); font-size: var(--large-text-size); line-height: var(--body-font-line-height); opacity: 0.9; color: {{subtitleColor}}; margin-bottom: {{buttonSpacing}};">{{subtitle}}</p>
+                    <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: {{buttonPadding}}; border-radius: {{buttonRadius}}; text-decoration: none; display: inline-block; border: {{buttonBorder}}; transition: all 0.3s ease;">{{buttonText}}</a>
+                </div>
+            </section>`,
                 properties: {
                     title: 'Compliance & Security Excellence',
+                    titleColor: '#FFFFFF',
+                    titleSpacing: '1rem',
                     subtitle: 'Professionelle Lösungen für Ihre Compliance-Anforderungen',
+                    subtitleColor: '#FFFFFF',
                     buttonText: 'Jetzt Beratung anfragen',
-                    buttonLink: '#kontakt'
+                    buttonLink: '#kontakt',
+                    buttonBgColor: 'rgba(255,255,255,0.2)',
+                    buttonTextColor: '#FFFFFF',
+                    buttonPadding: '1rem 2rem',
+                    buttonRadius: '8px',
+                    buttonBorder: '2px solid rgba(255,255,255,0.3)',
+                    buttonSpacing: '2rem',
+                    backgroundColor: 'linear-gradient(135deg, #063AA8, #009CE6)',
+                    sectionSpacing: '6rem 0'
                 }
             },
         ];
@@ -2216,31 +2229,31 @@ properties: {
             
             selectedModule.properties[key] = value;
             
-            // Sofortige Live-Vorschau für alle visuellen Properties
-            if (isVisualProperty(key)) {
-                updatePropertyLive(key, value);
+            // Spezielle Behandlung für Team Member Count
+            if (key === 'teamMemberCount') {
+                const count = parseInt(value);
+                // Automatisch die entsprechende Anzahl Mitglieder aktivieren
+                for (let i = 1; i <= 4; i++) {
+                    selectedModule.properties[`member${i}Active`] = i <= count ? 'true' : 'false';
+                }
+                // Sofort neu rendern
+                renderCanvas();
+                renderPropertyPanel();
+                showNotification(`✅ ${count} Team-Mitglieder aktiviert`);
                 return;
             }
             
-            // Debounced Update für strukturelle Änderungen
-            clearTimeout(autoApplyTimeout);
-            autoApplyTimeout = setTimeout(() => {
-                applyChanges();
-            }, 500);
-        }
-
-        // Prüfen ob Property eine sofortige Live-Vorschau braucht
-        function isVisualProperty(key) {
-            const visualProperties = [
-                'Color', 'color',
-                'Text', 'text', 'title', 'subtitle', 'buttonText',
-                'Icon', 'icon',
-                'Active', 'active',
-                'backgroundColor', 'titleColor', 'textColor', 'buttonBgColor', 'buttonTextColor',
-                'iconColor', 'nameColor', 'positionColor', 'descriptionColor'
-            ];
+            updateStatus = 'pending';
+            showUpdateStatus('pending');
             
-            return visualProperties.some(prop => key.includes(prop) || key === prop);
+        // Sofortige Updates für visuelle Properties
+        if (shouldUpdateImmediately(key)) {
+            updateStatus = 'updating';
+            showUpdateStatus('updating');
+            applyChanges();
+            updateStatus = 'updated';
+            showUpdateStatus('updated');
+            return;
         }
 
         // Live DOM-Update ohne Re-Rendering
@@ -2457,34 +2470,8 @@ properties: {
                 showUpdateStatus('updating');
                 applyChanges();
                 updateStatus = 'updated';
-                showUpdateStatus('updated');
-                return;
-            }
-            
-            // Debounced Auto-Apply für Text-Properties
-            clearTimeout(autoApplyTimeout);
-            autoApplyTimeout = setTimeout(() => {
-                updateStatus = 'updating';
-                showUpdateStatus('updating');
-                applyChanges();
-                updateStatus = 'updated';
-                showUpdateStatus('updated');
-            }, 800);
-        }
-
-        // Sofortige Updates für bestimmte Property-Typen
-        function shouldUpdateImmediately(key) {
-            const immediateUpdateKeys = [
-                'Color', 'color',           // Farben
-                'Active', 'active',         // Ein/Aus-Schalter
-                'Order', 'order',           // Reihenfolge
-                'Layout', 'layout',         // Layout-Änderungen
-                'Icon', 'icon'              // Icons
-            ];
-            
-            return immediateUpdateKeys.some(pattern => key.includes(pattern));
-        }
-
+        // Erweiterte Property-Update-Funktion mit Status
+        // (already defined above, duplicate removed)
         // Änderungen übernehmen
         function applyChanges() {
             if (!selectedModule) return;
