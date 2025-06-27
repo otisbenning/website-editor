@@ -1025,10 +1025,10 @@ properties: {
     stat4Text: 'Support',
     stat4Icon: '&#xf590;',
     stat4IconColor: '#EF8646',
-stat4NumberColor: '#EF8646',
-stat4TextColor: '#6c757d'
-}
-,
+    stat4NumberColor: '#EF8646',
+    stat4TextColor: '#6c757d'
+     }
+    },
 {
     id: 'kerberos-image-text',
     name: 'Bild-Text Kombination',
@@ -1444,15 +1444,68 @@ stat4TextColor: '#6c757d'
         }
 
         // Modul auswählen
-        function selectModule(moduleId) {
-            document.querySelectorAll('.canvas-module').forEach(el => {
-                el.classList.remove('selected');
-            });
-            
-            const moduleEl = document.querySelector(`[data-module-id="${moduleId}"]`);
-            if (moduleEl) {
-                // HTML mit Properties verarbeiten
+        // HTML mit Properties verarbeiten
                 function processModuleHTML(module) {
+                    let html = module.html;
+
+                    // Special handling for statistics module: generate statsBlocks dynamically
+                    if (module.templateId === 'kerberos-stats') {
+                        // Collect stats (assume up to 4)
+                        const stats = [];
+                        for (let i = 1; i <= 4; i++) {
+                            stats.push({
+                                icon: module.properties[`stat${i}Icon`] || '',
+                                iconColor: module.properties[`stat${i}IconColor`] || '',
+                                number: module.properties[`stat${i}Number`] || '',
+                                numberColor: module.properties[`stat${i}NumberColor`] || '',
+                                text: module.properties[`stat${i}Text`] || '',
+                                textColor: module.properties[`stat${i}TextColor`] || ''
+                            });
+                        }
+                        // Generate blocks
+                        let statsBlocks = '';
+                        stats.forEach(stat => {
+                            statsBlocks += `
+                <div style="text-align: center; padding: ${module.properties.statPadding};">
+                    <div style="margin-bottom: ${module.properties.iconSpacing};">
+                        <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${module.properties.iconSize}; color: ${stat.iconColor};">${stat.icon}</div>
+                    </div>
+                    <div style="margin-bottom: ${module.properties.numberSpacing};">
+                        <div style="font-family: var(--heading-font-font-family); font-size: ${module.properties.numberSize}; font-weight: var(--heading-font-font-weight); color: ${stat.numberColor}; line-height: 1;">${stat.number}</div>
+                    </div>
+                    <div>
+                        <p style="font-family: var(--body-font-font-family); font-size: ${module.properties.textSize}; font-weight: var(--body-font-font-weight); line-height: var(--body-font-line-height); color: ${stat.textColor}; margin: 0;">${stat.text}</p>
+                    </div>
+                </div>
+                `;
+                        });
+                        html = html.replace('{{statsBlocks}}', statsBlocks);
+                    }
+
+                    Object.entries(module.properties).forEach(([key, value]) => {
+                        const regex = new RegExp(`{{${key}}}`, 'g');
+                        html = html.replace(regex, value);
+                    });
+                    return html;
+                }
+
+                // Modul auswählen
+                function selectModule(moduleId) {
+                    document.querySelectorAll('.canvas-module').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    const moduleEl = document.querySelector(`[data-module-id="${moduleId}"]`);
+                    if (moduleEl) {
+                        moduleEl.classList.add('selected');
+                    }
+                    
+                    selectedModule = modules.find(m => m.id === moduleId);
+                    renderPropertyPanel();
+                    updateExportButtons(); // Update export buttons when module is selected
+                }
+
+                // Property Panel rendern
                     let html = module.html;
         
                     // Special handling for statistics module: generate statsBlocks dynamically
@@ -1687,7 +1740,36 @@ stat4TextColor: '#6c757d'
                 stat1NumberColor: 'Statistik 1 Zahlen-Farbe',
                 stat1TextColor: 'Statistik 1 Text-Farbe',
                 imageOrder: 'Bild-Reihenfolge (1 oder 2)',
-                textOrder: 'Text-Reihenfolge (1 oder 2)'
+                textOrder: 'Text-Reihenfolge (1 oder 2)',
+                // Spacing für Statistiken
+                titleSpacing: 'Titel-Abstand',
+                sectionSpacing: 'Bereich-Abstand',
+                statsGap: 'Statistik-Zwischenabstand',
+                statMinWidth: 'Statistik Mindestbreite',
+                statPadding: 'Statistik Innenabstand',
+                iconSize: 'Icon-Größe',
+                iconSpacing: 'Icon-Abstand',
+                numberSize: 'Zahlen-Größe',
+                numberSpacing: 'Zahlen-Abstand',
+                textSize: 'Text-Größe',
+                stat2Number: 'Statistik 2 Zahl',
+                stat2Text: 'Statistik 2 Text',
+                stat2Icon: 'Statistik 2 Icon',
+                stat2IconColor: 'Statistik 2 Icon-Farbe',
+                stat2NumberColor: 'Statistik 2 Zahlen-Farbe',
+                stat2TextColor: 'Statistik 2 Text-Farbe',
+                stat3Number: 'Statistik 3 Zahl',
+                stat3Text: 'Statistik 3 Text',
+                stat3Icon: 'Statistik 3 Icon',
+                stat3IconColor: 'Statistik 3 Icon-Farbe',
+                stat3NumberColor: 'Statistik 3 Zahlen-Farbe',
+                stat3TextColor: 'Statistik 3 Text-Farbe',
+                stat4Number: 'Statistik 4 Zahl',
+                stat4Text: 'Statistik 4 Text',
+                stat4Icon: 'Statistik 4 Icon',
+                stat4IconColor: 'Statistik 4 Icon-Farbe',
+                stat4NumberColor: 'Statistik 4 Zahlen-Farbe',
+                stat4TextColor: 'Statistik 4 Text-Farbe'
             };
             return names[key] || key.charAt(0).toUpperCase() + key.slice(1);
         }
