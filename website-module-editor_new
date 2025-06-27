@@ -5713,13 +5713,26 @@ properties: {
 
         window.deleteModule = function(moduleId) {
             if (confirm('Modul wirklich löschen?')) {
+                const module = modules.find(m => m.id === moduleId);
+                if (!module) return;
+                
+                const moduleName = module.name;
                 modules = modules.filter(m => m.id !== moduleId);
                 renderCanvas();
+                
+                // Wenn das gelöschte Modul ausgewählt war, Property Panel zurücksetzen
                 if (selectedModule && selectedModule.id === moduleId) {
                     selectedModule = null;
                     renderPropertyPanel();
                 }
-                showNotification('🗑️ Modul gelöscht');
+                
+                // Placeholder anzeigen falls keine Module mehr da sind
+                if (modules.length === 0) {
+                    const placeholder = document.querySelector('.canvas-placeholder');
+                    if (placeholder) placeholder.style.display = 'block';
+                }
+                
+                showNotification(`🗑️ Modul "${moduleName}" gelöscht`);
             }
         };
 
@@ -6278,6 +6291,6 @@ properties: {
                 showNotification('🛡️ Kerberos Module Editor (Vollversion) bereit');
             }, 500);
         });
-</script>
+    </script>
 </body>
 </html>
