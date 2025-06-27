@@ -2224,36 +2224,41 @@ properties: {
         // Property aktualisieren mit Live-Vorschau
         let autoApplyTimeout = null;
 
-        function updateProperty(key, value) {
-            if (!selectedModule) return;
+        // Update-Status verwalten
+        let updateStatus = 'idle'; // 'idle', 'pending', 'updating'
+
+        function showUpdateStatus(status) {
+            const statusElement = document.querySelector('.auto-update-status');
+            if (!statusElement) return;
             
-            selectedModule.properties[key] = value;
-            
-            // Spezielle Behandlung für Team Member Count
-            if (key === 'teamMemberCount') {
-                const count = parseInt(value);
-                // Automatisch die entsprechende Anzahl Mitglieder aktivieren
-                for (let i = 1; i <= 4; i++) {
-                    selectedModule.properties[`member${i}Active`] = i <= count ? 'true' : 'false';
-                }
-                // Sofort neu rendern
-                renderCanvas();
-                renderPropertyPanel();
-                showNotification(`✅ ${count} Team-Mitglieder aktiviert`);
-                return;
+            switch(status) {
+                case 'pending':
+                    statusElement.innerHTML = '<span style="color: #ff9800;">⏳ Änderung erkannt...</span>';
+                    break;
+                case 'updating':
+                    statusElement.innerHTML = '<span style="color: #2196f3;">🔄 Aktualisiere...</span>';
+                    break;
+                case 'updated':
+                    statusElement.innerHTML = '<span style="color: #4caf50;">✅ Aktualisiert</span>';
+                    setTimeout(() => {
+                        if (statusElement) {
+                            statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
+                        }
+                    }, 2000);
+                    break;
+                default:
+                    statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
             }
-            
-            updateStatus = 'pending';
-            showUpdateStatus('pending');
-            
-        // Sofortige Updates für visuelle Properties
-        if (shouldUpdateImmediately(key)) {
-            updateStatus = 'updating';
-            showUpdateStatus('updating');
-            applyChanges();
-            updateStatus = 'updated';
-            showUpdateStatus('updated');
-            return;
+        }
+
+        // Hilfsfunktion: Bestimmt ob Property sofort aktualisiert werden soll
+        function shouldUpdateImmediately(key) {
+            const immediateKeys = [
+                'title', 'subtitle', 'text', 'buttonText', 'description',
+                'titleColor', 'textColor', 'backgroundColor', 'iconColor',
+                'iconClass', 'buttonIcon', 'imageUrl'
+            ];
+            return immediateKeys.some(pattern => key.includes(pattern));
         }
 
         // Live DOM-Update ohne Re-Rendering
@@ -2429,44 +2434,7 @@ properties: {
             });
         }
 
-        // Update-Status verwalten
-        let updateStatus = 'idle'; // 'idle', 'pending', 'updating'
-
-        function showUpdateStatus(status) {
-            const statusElement = document.querySelector('.auto-update-status');
-            if (!statusElement) return;
-            
-            switch(status) {
-                case 'pending':
-                    statusElement.innerHTML = '<span style="color: #ff9800;">⏳ Änderung erkannt...</span>';
-                    break;
-                case 'updating':
-                    statusElement.innerHTML = '<span style="color: #2196f3;">🔄 Aktualisiere...</span>';
-                    break;
-                case 'updated':
-                    statusElement.innerHTML = '<span style="color: #4caf50;">✅ Aktualisiert</span>';
-                    setTimeout(() => {
-                        if (statusElement) {
-                            statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
-                        }
-                    }, 2000);
-                    break;
-                default:
-                    statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
-            }
-        }
-
-        // Hilfsfunktion: Bestimmt ob Property sofort aktualisiert werden soll
-        function shouldUpdateImmediately(key) {
-            const immediateKeys = [
-                'title', 'subtitle', 'text', 'buttonText', 'description',
-                'titleColor', 'textColor', 'backgroundColor', 'iconColor',
-                'iconClass', 'buttonIcon', 'imageUrl'
-            ];
-            return immediateKeys.some(pattern => key.includes(pattern));
-        }
-
-        // Erweiterte Property-Update-Funktion mit Status
+        // Hauptfunktion: Property aktualisieren
         function updateProperty(key, value) {
             if (!selectedModule) return;
             
