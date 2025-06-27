@@ -620,7 +620,7 @@
                 <h4>Globale Abstände</h4>
                 <div class="form-group">
                     <label class="form-label">Section Padding</label>
-                    <select class="form-control" id="sectionPaddingSelect" onchange="updateSpacing('sectionPadding', this.value)">
+                    <select class="form-control" id="sectionPaddingSelect" oninput="updateSpacing('sectionPadding', this.value)">
                         <option value="4rem 0">Klein (4rem 0)</option>
                         <option value="6rem 0" selected>Standard (6rem 0)</option>
                         <option value="8rem 0">Groß (8rem 0)</option>
@@ -629,7 +629,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Element-Abstände</label>
-                    <select class="form-control" id="elementSpacingSelect" onchange="updateSpacing('elementSpacing', this.value)">
+                    <select class="form-control" id="elementSpacingSelect" oninput="updateSpacing('elementSpacing', this.value)">
                         <option value="1rem">Klein (1rem)</option>
                         <option value="2rem" selected>Standard (2rem)</option>
                         <option value="3rem">Groß (3rem)</option>
@@ -638,7 +638,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Text-Abstände</label>
-                    <select class="form-control" id="textSpacingSelect" onchange="updateSpacing('textSpacing', this.value)">
+                    <select class="form-control" id="textSpacingSelect" oninput="updateSpacing('textSpacing', this.value)">
                         <option value="0.5rem">Klein (0.5rem)</option>
                         <option value="1rem" selected>Standard (1rem)</option>
                         <option value="1.5rem">Groß (1.5rem)</option>
@@ -892,12 +892,14 @@
 
         // Stock Images (Placeholder URLs - in Produktion echte URLs verwenden)
         const STOCK_IMAGES = [
-            'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
-            'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400',
-            'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400',
-            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-            'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=400',
-            'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400'
+            'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=500&h=350&fit=crop',
+            'https://images.unsplash.com/photo-1486312338219-ce68e2c6b525?w=500&h=350&fit=crop'
         ];
 
         // Erweiterte Module Templates
@@ -933,42 +935,60 @@
                 id: 'kerberos-team-gallery',
                 name: 'Team Galerie',
                 category: 'Team & About',
-                description: 'Mitarbeiter-Galerie mit Bildern',
+                description: 'Mitarbeiter-Galerie mit Bildern und Fallback-Avatars',
                 html: `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}};">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-        <div style="text-align: center;">
-            <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}};">{{title}}</h2>
-            <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{subtitleColor}}; max-width: 600px; margin: 0 auto;">{{subtitle}}</p>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-            <div style="background: white; border-radius: 8px; padding: 2rem; text-align: center; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
-                <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto; background: url('{{member1Image}}') center/cover; background-color: #E9ECEF;"></div>
-                <h4 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{nameColor}};">{{member1Name}}</h4>
-                <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: {{positionColor}};">{{member1Position}}</p>
-                <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: {{descriptionColor}};">{{member1Description}}</p>
-            </div>
-            <div style="background: white; border-radius: 8px; padding: 2rem; text-align: center; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
-                <div style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto; background: url('{{member2Image}}') center/cover; background-color: #E9ECEF;"></div>
-                <h4 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{nameColor}};">{{member2Name}}</h4>
-                <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: {{positionColor}};">{{member2Position}}</p>
-                <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: {{descriptionColor}};">{{member2Description}}</p>
-            </div>
-        </div>
-    </div>
-</section>`,
+                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                        <div style="text-align: center; margin-bottom: {{titleSpacing}};">
+                            <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0 0 1rem 0;">{{title}}</h2>
+                            <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{subtitleColor}}; max-width: 600px; margin: 0 auto;">{{subtitle}}</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: {{teamGap}}; max-width: {{maxColumns}};">
+                            {{teamMembers}}
+                        </div>
+                    </div>
+                </section>`,
                 properties: {
                     title: 'Unser Expertenteam',
                     titleColor: '#063AA8',
+                    titleSpacing: '3rem',
                     subtitle: 'Professionelle Compliance-Beratung von erfahrenen Spezialisten',
                     subtitleColor: '#6c757d',
+                    backgroundColor: '#FFFFFF',
+                    sectionSpacing: '6rem 0',
+                    teamGap: '2rem',
+                    cardPadding: '2rem',
+                    avatarSize: '120px',
+                    maxColumns: '1200px',
+                    teamMemberCount: '2',
+                    // Person 1
                     member1Name: 'Dr. Michael Kerberos',
                     member1Position: 'Senior Compliance Consultant',
                     member1Description: 'Über 15 Jahre Erfahrung in Geldwäsche-Prävention und Compliance-Management.',
                     member1Image: '',
+                    member1InitialBg: 'linear-gradient(135deg, #063AA8, #009CE6)',
+                    member1Active: 'true',
+                    // Person 2
                     member2Name: 'Anna Schmidt',
                     member2Position: 'DSGVO & Datenschutz Spezialistin',
                     member2Description: 'Expertin für Datenschutzrecht und DSGVO-konforme Implementierungen.',
                     member2Image: '',
+                    member2InitialBg: 'linear-gradient(135deg, #B265E9, #EF8646)',
+                    member2Active: 'true',
+                    // Person 3
+                    member3Name: 'Thomas Müller',
+                    member3Position: 'IT-Security Experte',
+                    member3Description: 'Spezialist für Cybersecurity und technische Compliance-Implementierung.',
+                    member3Image: '',
+                    member3InitialBg: 'linear-gradient(135deg, #EF8646, #28a745)',
+                    member3Active: 'false',
+                    // Person 4
+                    member4Name: 'Sarah Weber',
+                    member4Position: 'Legal Consultant',
+                    member4Description: 'Rechtsanwältin mit Fokus auf Compliance und Unternehmensrecht.',
+                    member4Image: '',
+                    member4InitialBg: 'linear-gradient(135deg, #28a745, #063AA8)',
+                    member4Active: 'false',
+                    // Styling
                     nameColor: '#212529',
                     positionColor: '#6c757d',
                     descriptionColor: '#6c757d'
@@ -1029,27 +1049,17 @@ properties: {
     stat4TextColor: '#6c757d'
      }
     },
-{
-    id: 'kerberos-image-text',
-    name: 'Bild-Text Kombination',
-    description: 'Kombination aus Bild und Text mit Icon und Button',
-    category: 'Content & Images',
-    html: `<section style="background: {{backgroundColor}}; padding: {{sectionSpacing}};">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: {{contentGap}}; align-items: center;">
-            <div style="order: {{imageOrder}};">
-                <img src="{{imageUrl}}" alt="{{imageAlt}}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
-            </div>
-            <div style="order: {{textOrder}};">
-                <div style="font-family: 'Font Awesome 5 Pro'; font-size: var(--large-text-size); color: {{iconColor}};">{{iconClass}}</div>
-                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}};">{{title}}</h3>
-                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{textColor}};">{{text}}</p>
-                <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; display: inline-block;">{{buttonText}}</a>
-            </div>
+    {
+        id: 'kerberos-image-text',
+        name: 'Bild-Text Kombination',
+        description: 'Kombination aus Bild und Text mit Icon und Button',
+        category: 'Content & Images',
+        html: `<section style="background: {{backgroundColor}}; padding: {{sectionSpacing}};">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            {{layoutContent}}
         </div>
-    </div>
-</section>`,
-    properties: {
+    </section>`,
+        properties: {
             title: 'Professionelle Compliance-Lösungen',
             titleColor: '#063AA8',
             text: 'Wir unterstützen Sie bei der Umsetzung aller Compliance-Anforderungen. Von der Erstberatung bis zur vollständigen Implementierung stehen wir Ihnen zur Seite.',
@@ -1063,12 +1073,11 @@ properties: {
             iconClass: '&#xf132;',
             iconColor: '#063AA8',
             backgroundColor: '#FFFFFF',
-            imageOrder: '1',
-            textOrder: '2',
+            layoutType: 'image-left',
             sectionSpacing: '6rem 0',
             contentGap: '4rem'
         }
-},
+    },
             // Moderne Module aus Artifact integrieren
             {
                 id: 'kerberos-image-text-modern',
@@ -1076,34 +1085,33 @@ properties: {
                 category: 'Content & Images',
                 description: 'Vollständig responsives Bild-Text Layout mit modernen Design-Elementen',
                 html: `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}};">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: {{contentGap}}; align-items: center; min-height: 400px;">
-            <div style="order: {{imageOrder}}; position: relative;">
-                <div style="position: relative; overflow: hidden; border-radius: {{imageRadius}}; box-shadow: {{imageShadow}}; transform: translateY(0); transition: all 0.3s ease;">
-                    <img src="{{imageUrl}}" alt="{{imageAlt}}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: {{imageOverlay}}; opacity: 0; transition: opacity 0.3s ease;"></div>
+                <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: {{contentGap}}; align-items: center; min-height: 400px;">
+                        <div style="order: {{imageOrder}};">
+                            <div style="position: relative; overflow: hidden; border-radius: {{imageRadius}}; box-shadow: {{imageShadow}};">
+                                <img src="{{imageUrl}}" alt="{{imageAlt}}" style="width: 100%; height: auto; object-fit: cover;">
+                            </div>
+                        </div>
+                        <div style="order: {{textOrder}}; padding: {{contentPadding}};">
+                            <div style="margin-bottom: {{iconSpacing}};">
+                                <div style="font-family: 'Font Awesome 5 Pro'; font-size: {{iconSize}}; color: {{iconColor}}; display: inline-flex; align-items: center; justify-content: center; width: {{iconContainerSize}}; height: {{iconContainerSize}}; background: {{iconBackground}}; border-radius: {{iconRadius}};">{{iconClass}}</div>
+                            </div>
+                            <div style="margin-bottom: {{titleSpacing}};">
+                                <h3 style="font-family: var(--heading-font-font-family); font-size: {{titleSize}}; font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0;">{{title}}</h3>
+                            </div>
+                            <div style="margin-bottom: {{textSpacing}};">
+                                <p style="font-family: var(--body-font-font-family); font-size: {{textSize}}; line-height: var(--body-font-line-height); color: {{textColor}}; margin: 0;">{{text}}</p>
+                            </div>
+                            <div style="margin-top: {{buttonSpacing}};">
+                                <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: {{buttonPadding}}; border-radius: {{buttonRadius}}; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: {{buttonBorder}}; box-shadow: {{buttonShadow}};">
+                                    {{buttonText}}
+                                    <span style="font-family: 'Font Awesome 5 Pro';">{{buttonIcon}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div style="order: {{textOrder}}; padding: {{contentPadding}};">
-                <div style="margin-bottom: {{iconSpacing}};">
-                    <div style="font-family: 'Font Awesome 5 Pro'; font-size: {{iconSize}}; color: {{iconColor}}; display: inline-flex; align-items: center; justify-content: center; width: {{iconContainerSize}}; height: {{iconContainerSize}}; background: {{iconBackground}}; border-radius: {{iconRadius}};">{{iconClass}}</div>
-                </div>
-                <div style="margin-bottom: {{titleSpacing}};">
-                    <h3 style="font-family: var(--heading-font-font-family); font-size: {{titleSize}}; font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0;">{{title}}</h3>
-                </div>
-                <div style="margin-bottom: {{textSpacing}};">
-                    <p style="font-family: var(--body-font-font-family); font-size: {{textSize}}; line-height: var(--body-font-line-height); color: {{textColor}}; margin: 0;">{{text}}</p>
-                </div>
-                <div style="margin-top: {{buttonSpacing}};">
-                    <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: {{buttonPadding}}; border-radius: {{buttonRadius}}; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: {{buttonBorder}}; transition: all 0.3s ease; box-shadow: {{buttonShadow}};">
-                        {{buttonText}}
-                        <span style="font-family: 'Font Awesome 5 Pro'; transition: transform 0.3s ease;">{{buttonIcon}}</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>`,
+            </section>`,
                 properties: {
                     title: 'Professionelle Compliance-Lösungen',
                     titleColor: '#063AA8',
@@ -1123,24 +1131,23 @@ properties: {
                     buttonShadow: '0 4px 12px rgba(6,58,168,0.2)',
                     buttonSpacing: '2rem',
                     buttonIcon: '&#xf061;',
-                    imageUrl: '',
+                    imageUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500',
                     imageAlt: 'Compliance Beratung',
                     imageRadius: '12px',
                     imageShadow: '0 8px 32px rgba(6,58,168,0.15)',
-                    imageOverlay: 'linear-gradient(45deg, rgba(6,58,168,0.1), rgba(0,156,230,0.1))',
                     iconClass: '&#xf132;',
                     iconColor: '#063AA8',
                     iconSize: '2rem',
-                    iconPadding: '1rem',
                     iconBackground: 'rgba(6,58,168,0.1)',
                     iconRadius: '50%',
                     iconSpacing: '1rem',
+                    iconContainerSize: '60px',
                     backgroundColor: '#FFFFFF',
                     imageOrder: '1',
                     textOrder: '2',
                     sectionSpacing: '6rem 0',
                     contentGap: '4rem',
-                    contentPadding: '2rem'
+                    contentPadding: '0'
                 }
             },
             {
@@ -1438,11 +1445,251 @@ properties: {
         // HTML mit Properties verarbeiten
         function processModuleHTML(module) {
             let html = module.html;
+            
+            // Universelle Template-Verarbeitung für alle Module
+            html = processUniversalModule(module, html);
+            
+            // Standard Property-Ersetzung
             Object.entries(module.properties).forEach(([key, value]) => {
                 const regex = new RegExp(`{{${key}}}`, 'g');
                 html = html.replace(regex, value);
             });
+            
             return html;
+        }
+
+        // Spezielle Verarbeitung für Statistik-Module
+        function processStatsModule(module, html) {
+            const props = module.properties;
+            let statsBlocks = '';
+            
+            // Dynamische Generierung der Statistik-Blöcke
+            for (let i = 1; i <= 4; i++) {
+                const number = props[`stat${i}Number`];
+                const text = props[`stat${i}Text`];
+                const icon = props[`stat${i}Icon`];
+                const iconColor = props[`stat${i}IconColor`];
+                const numberColor = props[`stat${i}NumberColor`];
+                const textColor = props[`stat${i}TextColor`];
+                
+                if (number && text) {
+                    statsBlocks += `
+                        <div style="text-align: center; padding: ${props.statPadding || '2rem'}; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
+                            <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize || '3rem'}; color: ${iconColor || '#063AA8'}; margin-bottom: ${props.iconSpacing || '1rem'};">${icon || '&#xf005;'}</div>
+                            <div style="font-size: ${props.numberSize || '3rem'}; font-weight: 700; color: ${numberColor || '#063AA8'}; margin-bottom: ${props.numberSpacing || '0.5rem'};">${number}</div>
+                            <div style="font-size: ${props.textSize || '1rem'}; color: ${textColor || '#6c757d'};">${text}</div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{statsBlocks}}', statsBlocks);
+        }
+
+        // Spezielle Verarbeitung für Team-Gallery-Module
+        function processTeamGalleryModule(module, html) {
+            const props = module.properties;
+            let teamMembers = '';
+            
+            // Dynamische Generierung der Team-Mitglieder (bis zu 4)
+            for (let i = 1; i <= 4; i++) {
+                const name = props[`member${i}Name`];
+                const position = props[`member${i}Position`];
+                const description = props[`member${i}Description`];
+                const image = props[`member${i}Image`];
+                const initialBg = props[`member${i}InitialBg`] || 'linear-gradient(135deg, #063AA8, #009CE6)';
+                const isActive = props[`member${i}Active`] === 'true';
+                
+                if (name && isActive) {
+                    const initial = name.charAt(0).toUpperCase();
+                    const avatarStyle = image ? 
+                        `background: url('${image}') center/cover; background-color: #E9ECEF;` : 
+                        `background: ${initialBg}; background-color: #E9ECEF; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700;`;
+                    
+                    const avatarContent = image ? '' : initial;
+                    
+                    teamMembers += `
+                        <div style="background: white; border-radius: 8px; padding: ${props.cardPadding || '2rem'}; text-align: center; box-shadow: 0 4px 12px rgba(6,58,168,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <div style="width: ${props.avatarSize || '120px'}; height: ${props.avatarSize || '120px'}; border-radius: 50%; margin: 0 auto 1rem auto; ${avatarStyle} transition: transform 0.3s ease;">${avatarContent}</div>
+                            <h4 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.nameColor || '#212529'}; margin: 0 0 0.5rem 0;">${name}</h4>
+                            <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: ${props.positionColor || '#6c757d'}; margin: 0 0 1rem 0; font-weight: 600;">${position}</p>
+                            <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: ${props.descriptionColor || '#6c757d'}; margin: 0;">${description}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{teamMembers}}', teamMembers);
+        }
+
+        // Spezielle Verarbeitung für Bild-Text-Module
+        function processImageTextModule(module, html) {
+            const props = module.properties;
+            const layoutType = props.layoutType || 'image-left';
+            let layoutContent = '';
+            
+            // Icon und Text Content
+            const iconElement = props.iconClass ? 
+                `<div style="font-family: 'Font Awesome 5 Pro'; font-size: var(--large-text-size); color: ${props.iconColor}; margin-bottom: 1rem;">${props.iconClass}</div>` : '';
+            
+            const textContent = `
+                ${iconElement}
+                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.titleColor}; margin: 0 0 1rem 0;">${props.title}</h3>
+                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.textColor}; margin: 0 0 2rem 0;">${props.text}</p>
+                <a href="${props.buttonLink}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${props.buttonBgColor}; color: ${props.buttonTextColor}; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; display: inline-block;">${props.buttonText}</a>
+            `;
+            
+            const imageContent = props.imageUrl ? 
+                `<img src="${props.imageUrl}" alt="${props.imageAlt}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">` : 
+                `<div style="width: 100%; height: 300px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 1.2rem;">📸 Bild hinzufügen</div>`;
+            
+            // Layout-spezifischer Content
+            switch(layoutType) {
+                case 'image-left':
+                    layoutContent = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.contentGap}; align-items: center;">
+                            <div>${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+                    break;
+                    
+                case 'image-right':
+                    layoutContent = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.contentGap}; align-items: center;">
+                            <div style="order: 2;">${imageContent}</div>
+                            <div style="order: 1;">${textContent}</div>
+                        </div>`;
+                    break;
+                    
+                case 'image-top':
+                    layoutContent = `
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: ${props.contentGap};">${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+                    break;
+                    
+                case 'image-bottom':
+                    layoutContent = `
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: ${props.contentGap};">${textContent}</div>
+                            <div>${imageContent}</div>
+                        </div>`;
+                    break;
+                    
+                default:
+                    layoutContent = `
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.contentGap}; align-items: center;">
+                            <div>${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+            }
+            
+            return html.replace('{{layoutContent}}', layoutContent);
+        }
+
+        // Universelle Modul-Verarbeitung für alle aktuellen und zukünftigen Module
+        function processUniversalModule(module, html) {
+            const props = module.properties;
+            
+            // 1. Spezielle Module (falls vorhanden)
+            if (module.templateId === 'kerberos-stats') {
+                html = processStatsModule(module, html);
+            } else if (module.templateId === 'kerberos-team-gallery') {
+                html = processTeamGalleryModule(module, html);
+            }
+            
+            // 2. Universelle Layout-Verarbeitung für Bild+Text Module
+            if (html.includes('{{layoutContent}}')) {
+                html = processUniversalLayout(module, html);
+            }
+            
+            // 3. Standard Property-Ersetzung für alle anderen Properties
+            Object.entries(props).forEach(([key, value]) => {
+                const regex = new RegExp(`{{${key}}}`, 'g');
+                html = html.replace(regex, value);
+            });
+            
+            return html;
+        }
+
+        // Universelle Layout-Verarbeitung für alle Bild+Text-Kombinationen
+        function processUniversalLayout(module, html) {
+            const props = module.properties;
+            const layoutType = props.layoutType || props.layout || 'image-left';
+            
+            // Content-Blöcke intelligend erkennen
+            const hasImage = props.imageUrl || html.includes('{{imageUrl}}');
+            const hasIcon = props.iconClass || html.includes('{{iconClass}}');
+            const hasButton = props.buttonText || html.includes('{{buttonText}}');
+            
+            // Icon Element (falls vorhanden)
+            const iconElement = hasIcon ? 
+                `<div style="margin-bottom: ${props.iconSpacing || '1rem'};">
+                    <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize || '2rem'}; color: ${props.iconColor || '#063AA8'}; display: inline-flex; align-items: center; justify-content: center; width: ${props.iconContainerSize || '60px'}; height: ${props.iconContainerSize || '60px'}; background: ${props.iconBackground || 'rgba(6,58,168,0.1)'}; border-radius: ${props.iconRadius || '50%'};">${props.iconClass || '&#xf132;'}</div>
+                </div>` : '';
+            
+            // Text Content
+            const textContent = `
+                ${iconElement}
+                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.titleColor || '#063AA8'}; margin: 0 0 ${props.titleSpacing || '1rem'} 0;">${props.title || 'Titel'}</h3>
+                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.textColor || '#6c757d'}; margin: 0 0 ${props.textSpacing || '2rem'} 0;">${props.text || 'Text'}</p>
+                ${hasButton ? `<a href="${props.buttonLink || '#'}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${props.buttonBgColor || '#063AA8'}; color: ${props.buttonTextColor || '#FFFFFF'}; padding: ${props.buttonPadding || '0.75rem 1.5rem'}; border-radius: ${props.buttonRadius || '6px'}; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: ${props.buttonShadow || '0 4px 12px rgba(6,58,168,0.2)'};">${props.buttonText || 'Button'}${props.buttonIcon ? `<span style="font-family: 'Font Awesome 5 Pro';">${props.buttonIcon}</span>` : ''}</a>` : ''}
+            `;
+            
+            // Image Content (falls vorhanden)
+            const imageContent = hasImage ? 
+                (props.imageUrl ? 
+                    `<div style="position: relative; overflow: hidden; border-radius: ${props.imageRadius || '8px'}; box-shadow: ${props.imageShadow || '0 4px 12px rgba(6,58,168,0.1)'};">
+                        <img src="${props.imageUrl}" alt="${props.imageAlt || 'Bild'}" style="width: 100%; height: auto; object-fit: cover;">
+                    </div>` : 
+                    `<div style="width: 100%; height: 300px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: ${props.imageRadius || '8px'}; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 1.2rem;">📸 Bild hinzufügen</div>`) : '';
+            
+            // Layout-Logik (funktioniert für alle Module)
+            let layoutContent = '';
+            const gap = props.contentGap || '4rem';
+            
+            if (!hasImage) {
+                // Nur Text (zentriert)
+                layoutContent = `<div style="text-align: center; max-width: 800px; margin: 0 auto;">${textContent}</div>`;
+            } else {
+                // Bild + Text Kombinationen
+                switch(layoutType) {
+                    case 'image-left':
+                        layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
+                            <div>${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+                        break;
+                        
+                    case 'image-right':
+                        layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
+                            <div style="order: 2;">${imageContent}</div>
+                            <div style="order: 1;">${textContent}</div>
+                        </div>`;
+                        break;
+                        
+                    case 'image-top':
+                        layoutContent = `<div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                            <div style="margin-bottom: ${gap};">${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+                        break;
+                        
+                    case 'image-bottom':
+                        layoutContent = `<div style="text-align: center; max-width: 800px; margin: 0 auto;">
+                            <div style="margin-bottom: ${gap};">${textContent}</div>
+                            <div>${imageContent}</div>
+                        </div>`;
+                        break;
+                        
+                    default:
+                        layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
+                            <div>${imageContent}</div>
+                            <div>${textContent}</div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{layoutContent}}', layoutContent);
         }
 
         // Modul auswählen
@@ -1460,6 +1707,27 @@ properties: {
             renderPropertyPanel();
             updateExportButtons(); // Update export buttons when module is selected
         }
+
+        // Properties die ausgeblendet werden (übernimmt Squarespace CSS)
+        function shouldHideProperty(key) {
+            const hiddenProperties = [
+                // Größen (übernimmt Squarespace)
+                'titleSize', 'textSize', 'buttonTextSize', 'numberSize', 'iconSize',
+                'headingSize', 'subtitleSize', 'largeTextSize', 'smallTextSize',
+                
+                // Fonts (übernimmt Squarespace)
+                'titleFont', 'textFont', 'buttonFont', 'headingFont', 'bodyFont',
+                
+                // Veraltete Layout-Properties (ersetzt durch layoutType)
+                'imageOrder', 'textOrder',
+                
+                // Interne Properties
+                'templateId', 'moduleId', 'version'
+            ];
+            
+            return hiddenProperties.includes(key);
+        }
+
         function renderPropertyPanel() {
             const panel = document.getElementById('propertyPanel');
             
@@ -1476,6 +1744,11 @@ properties: {
             `;
             
             Object.entries(selectedModule.properties).forEach(([key, value]) => {
+                // Properties ausblenden die Squarespace übernimmt oder veraltet sind
+                if (shouldHideProperty(key)) {
+                    return; // Skip this property
+                }
+                
                 const fieldType = getFieldType(key, value);
                 const label = formatPropertyName(key);
                 
@@ -1491,9 +1764,11 @@ properties: {
                 } else if (fieldType === 'spacing') {
                     html += renderSpacingPicker(key, value);
                 } else if (fieldType === 'textarea') {
-                    html += `<textarea class="form-control" onchange="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
+                    html += `<textarea class="form-control" oninput="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
+                } else if (fieldType === 'select') {
+                    html += renderSelectPicker(key, value);
                 } else {
-                    html += `<input type="text" class="form-control" value="${value}" onchange="updateProperty('${key}', this.value)">`;
+                    html += `<input type="text" class="form-control" value="${value}" oninput="updateProperty('${key}', this.value)">`;
                 }
                 
                 html += `</div>`;
@@ -1501,7 +1776,11 @@ properties: {
             
             html += `
                 <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--kerberos-border);">
-                    <button class="btn btn-success" onclick="applyChanges()" style="width: 100%; margin-bottom: 0.5rem;">💾 Änderungen übernehmen</button>
+                    <div style="background: #e3f2fd; border: 1px solid #2196f3; border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; text-align: center;">
+                        <span style="color: #1976d2;">⚡ Auto-Update aktiv</span><br>
+                        <small style="color: #666;">Änderungen werden automatisch übernommen</small>
+                    </div>
+                    <button class="btn btn-success" onclick="applyChanges()" style="width: 100%; margin-bottom: 0.5rem;">🔄 Sofort aktualisieren</button>
                     <button class="btn btn-secondary" onclick="copyModuleCode('${selectedModule.id}')" style="width: 100%; margin-bottom: 0.5rem;">📋 Code kopieren</button>
                     <button class="btn btn-warning" onclick="duplicateModule('${selectedModule.id}')" style="width: 100%; margin-bottom: 0.5rem;">📄 Duplizieren</button>
                 </div>
@@ -1518,38 +1797,135 @@ properties: {
             panel.innerHTML = html;
         }
 
-        // Feld-Typ bestimmen
+        // Generische Property-Type-Erkennung für alle Module
         function getFieldType(key, value) {
+            // Farben (immer Color Picker)
             if (key.includes('Color') || key.includes('color')) return 'color';
-            if (key.includes('Icon') || key.includes('icon')) return 'icon';
-            if (key.includes('Image') || key.includes('image') || key.includes('Url')) return 'image';
-            if (key.includes('Spacing') || key.includes('spacing') || key.includes('Margin') || key.includes('margin') || key.includes('Padding') || key.includes('padding') || key.includes('Gap') || key.includes('gap')) return 'spacing';
-            if (key.includes('text') && value.length > 50) return 'textarea';
+            
+            // Icons (immer Icon Picker)  
+            if (key.includes('Icon') || key.includes('icon') && key !== 'iconSize' && key !== 'iconSpacing' && key !== 'iconRadius' && key !== 'iconBackground' && key !== 'iconContainerSize') return 'icon';
+            
+            // Bilder (nur echte URLs)
+            if ((key.includes('Image') || key.includes('image') || key.endsWith('Url')) && !key.includes('Alt') && !key.includes('Order') && !key.includes('Radius') && !key.includes('Shadow') && !key.includes('Background')) return 'image';
+            
+            // Dropdowns für Optionen
+            if (key.includes('Order') || key.includes('order') || 
+                key.includes('Active') || key.includes('active') || 
+                key.includes('Count') || key.includes('count') || 
+                key.includes('Layout') || key.includes('layout') ||
+                key.includes('Type') || key.includes('type') ||
+                key.endsWith('Alt') || key === 'imageAlt' ||
+                key.includes('Border') || key.includes('border')) return 'select';
+            
+            // Abstände (vereinfacht)
+            if (key.includes('Spacing') || key.includes('spacing') || 
+                key.includes('Margin') || key.includes('margin') || 
+                key.includes('Padding') || key.includes('padding') || 
+                key.includes('Gap') || key.includes('gap')) return 'spacing';
+            
+            // ENTFERNT: Size Properties (übernimmt Squarespace CSS)
+            
+            // Textarea für längere Texte
+            if ((key.includes('text') || key.includes('Description') || key.includes('description')) && value.length > 50) return 'textarea';
+            
+            // Default: Text input
             return 'text';
         }
 
-        // Spacing Picker rendern
+        // Vereinfachte Spacing-Auswahl
         function renderSpacingPicker(key, currentValue) {
             const spacingOptions = [
-                { label: 'Keine', value: '0' },
-                { label: 'Extra Klein', value: '0.25rem' },
-                { label: 'Klein', value: '0.5rem' },
-                { label: 'Standard', value: '1rem' },
-                { label: 'Mittel', value: '1.5rem' },
-                { label: 'Groß', value: '2rem' },
-                { label: 'Extra Groß', value: '3rem' },
-                { label: 'XXL', value: '4rem' }
+                { label: 'Eng', value: '1rem' },
+                { label: 'Normal', value: '2rem' },
+                { label: 'Weit', value: '3rem' },
+                { label: 'Sehr weit', value: '4rem' },
+                { label: 'Extrem weit', value: '6rem' }
             ];
             
-            let html = `<select class="form-control" onchange="updateProperty('${key}', this.value)">`;
+            // Spezielle Optionen für Section Spacing
+            if (key.includes('section') || key.includes('Section')) {
+                spacingOptions.forEach(option => {
+                    option.value = option.value + ' 0'; // z.B. "2rem 0"
+                });
+            }
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
             
             spacingOptions.forEach(option => {
-                const selected = option.value === currentValue ? 'selected' : '';
-                html += `<option value="${option.value}" ${selected}>${option.label} (${option.value})</option>`;
+                const selected = option.value === currentValue || option.value.replace(' 0', '') === currentValue ? 'selected' : '';
+                html += `<option value="${option.value}" ${selected}>${option.label}</option>`;
             });
             
             html += `</select>`;
-            html += `<input type="text" class="form-control" value="${currentValue}" onchange="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Benutzerdefiniert (z.B. 2.5rem)">`;
+            
+            return html;
+        }
+
+        // Select Picker rendern (erweitert für alle Module)
+        function renderSelectPicker(key, currentValue) {
+            let options = [];
+            
+            // Layout-Optionen (universell für alle Module mit Bild+Text)
+            if (key === 'layoutType' || key === 'layout' || key.includes('Layout')) {
+                options = [
+                    { value: 'image-left', label: '🖼️ Bild links' },
+                    { value: 'image-right', label: '🖼️ Bild rechts' },
+                    { value: 'image-top', label: '🖼️ Bild oben' },
+                    { value: 'image-bottom', label: '🖼️ Bild unten' }
+                ];
+            }
+            // Reihenfolge
+            else if (key.includes('Order') || key.includes('order')) {
+                options = [
+                    { value: '1', label: 'Erste Position' },
+                    { value: '2', label: 'Zweite Position' }
+                ];
+            }
+            // Aktiv/Inaktiv
+            else if (key.includes('Active') || key.includes('active')) {
+                options = [
+                    { value: 'true', label: 'Anzeigen' },
+                    { value: 'false', label: 'Ausblenden' }
+                ];
+            }
+            // Anzahl
+            else if (key.includes('Count') || key.includes('count')) {
+                options = [
+                    { value: '1', label: '1 Element' },
+                    { value: '2', label: '2 Elemente' },
+                    { value: '3', label: '3 Elemente' },
+                    { value: '4', label: '4 Elemente' }
+                ];
+            }
+            // Alt-Text Vorschläge
+            else if (key === 'imageAlt' || key.includes('Alt')) {
+                options = [
+                    { value: 'Compliance Beratung', label: 'Compliance Beratung' },
+                    { value: 'Business Consulting', label: 'Business Consulting' },
+                    { value: 'Team Meeting', label: 'Team Meeting' },
+                    { value: 'Office Building', label: 'Office Building' },
+                    { value: 'Technology Solutions', label: 'Technology Solutions' },
+                    { value: 'Professional Services', label: 'Professional Services' }
+                ];
+            }
+            // Button Border
+            else if (key.includes('Border') || key.includes('border')) {
+                options = [
+                    { value: 'none', label: 'Kein Rahmen' },
+                    { value: '1px solid #063AA8', label: 'Dünner Rahmen' },
+                    { value: '2px solid #063AA8', label: 'Dicker Rahmen' },
+                    { value: '1px solid rgba(255,255,255,0.3)', label: 'Transparenter Rahmen' }
+                ];
+            }
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            options.forEach(option => {
+                const selected = option.value === currentValue ? 'selected' : '';
+                html += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+            });
+            
+            html += `</select>`;
             
             return html;
         }
@@ -1565,7 +1941,7 @@ properties: {
             });
             
             html += `</div>`;
-            html += `<input type="text" class="form-control" value="${currentValue}" onchange="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Hex-Code oder Farbname">`;
+            html += `<input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Hex-Code oder Farbname">`;
             
             return html;
         }
@@ -1579,7 +1955,7 @@ properties: {
                     </div>
                     <button type="button" class="btn btn-primary" onclick="showIconPicker('${key}')" style="flex: 1;">Icon auswählen</button>
                 </div>
-                <input type="text" class="form-control" value="${currentValue}" onchange="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Unicode (z.B. &#xf132;)">
+                <input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Unicode (z.B. &#xf132;)">
             `;
         }
 
@@ -1588,7 +1964,7 @@ properties: {
             const preview = currentValue ? `<img src="${currentValue}" class="image-preview" alt="Vorschau">` : '';
             
             return `
-                <input type="text" class="form-control" value="${currentValue}" onchange="updateProperty('${key}', this.value)" placeholder="Squarespace Bild-URL eingeben..." style="margin-bottom: 0.5rem;">
+                <input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" placeholder="Squarespace Bild-URL eingeben..." style="margin-bottom: 0.5rem;">
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <button type="button" class="btn btn-secondary" onclick="showImagePicker('${key}')" style="flex: 1;">📸 Bild hochladen/Stock</button>
                     <button type="button" class="btn btn-secondary" onclick="updateProperty('${key}', '')" style="min-width: auto;">🗑️</button>
@@ -1598,144 +1974,515 @@ properties: {
             `;
         }
 
-        // Property Name formatieren
+        // Property Name formatieren - Vollständige deutsche Übersetzung
         function formatPropertyName(key) {
             const names = {
-                title: 'Haupttitel',
-                titleColor: 'Titel-Farbe',
-                // Spacing Properties
-                titleSpacing: 'Titel-Abstand',
-                subtitleSpacing: 'Untertitel-Abstand',
-                textSpacing: 'Text-Abstand',
-                buttonSpacing: 'Button-Abstand',
-                iconSpacing: 'Icon-Abstand',
-                imageSpacing: 'Bild-Abstand',
-                elementSpacing: 'Element-Abstand',
-                sectionSpacing: 'Bereich-Abstand',
-                contentSpacing: 'Inhalt-Abstand',
-                marginTop: 'Abstand oben',
-                marginBottom: 'Abstand unten',
-                marginLeft: 'Abstand links',
-                marginRight: 'Abstand rechts',
-                paddingTop: 'Innenabstand oben',
-                paddingBottom: 'Innenabstand unten',
-                gap: 'Zwischenabstand',
-                subtitle: 'Untertitel',
-                subtitleColor: 'Untertitel-Farbe',
-                buttonText: 'Button Text',
-                buttonColor: 'Button Farbe',
-                buttonBgColor: 'Button Hintergrund',
-                buttonTextColor: 'Button Text-Farbe',
-                buttonLink: 'Button Link',
+                // === TITEL & TEXT ===
+                title: 'Titel',
+                subtitle: 'Untertitel', 
                 text: 'Text',
+                description: 'Beschreibung',
+                
+                // === FARBEN ===
+                titleColor: 'Titel-Farbe',
+                subtitleColor: 'Untertitel-Farbe',
                 textColor: 'Text-Farbe',
-                iconClass: 'Icon',
-                iconColor: 'Icon-Farbe',
-                backgroundImage: 'Hintergrundbild',
-                imageUrl: 'Bild-URL',
-                imageAlt: 'Bild-Alt-Text',
-                backgroundColor: 'Hintergrundfarbe',
+                backgroundColor: 'Hintergrund-Farbe',
                 nameColor: 'Name-Farbe',
                 positionColor: 'Position-Farbe',
                 descriptionColor: 'Beschreibung-Farbe',
-                member1Name: 'Person 1 Name',
-                member1Position: 'Person 1 Position',
-                member1Description: 'Person 1 Beschreibung',
-                member1Image: 'Person 1 Bild',
-                member2Name: 'Person 2 Name',
-                member2Position: 'Person 2 Position',
-                member2Description: 'Person 2 Beschreibung',
-                member2Image: 'Person 2 Bild',
-                stat1Number: 'Statistik 1 Zahl',
-                stat1Text: 'Statistik 1 Text',
-                stat1Icon: 'Statistik 1 Icon',
-                stat1IconColor: 'Statistik 1 Icon-Farbe',
-                stat1NumberColor: 'Statistik 1 Zahlen-Farbe',
-                stat1TextColor: 'Statistik 1 Text-Farbe',
-                imageOrder: 'Bild-Reihenfolge (1 oder 2)',
-                textOrder: 'Text-Reihenfolge (1 oder 2)',
-                // Spacing für Statistiken
-                titleSpacing: 'Titel-Abstand',
-                sectionSpacing: 'Bereich-Abstand',
-                statsGap: 'Statistik-Zwischenabstand',
-                statMinWidth: 'Statistik Mindestbreite',
-                statPadding: 'Statistik Innenabstand',
-                iconSize: 'Icon-Größe',
-                iconSpacing: 'Icon-Abstand',
-                numberSize: 'Zahlen-Größe',
-                numberSpacing: 'Zahlen-Abstand',
-                textSize: 'Text-Größe',
-                stat2Number: 'Statistik 2 Zahl',
-                stat2Text: 'Statistik 2 Text',
-                stat2Icon: 'Statistik 2 Icon',
-                stat2IconColor: 'Statistik 2 Icon-Farbe',
-                stat2NumberColor: 'Statistik 2 Zahlen-Farbe',
-                stat2TextColor: 'Statistik 2 Text-Farbe',
-                stat3Number: 'Statistik 3 Zahl',
-                stat3Text: 'Statistik 3 Text',
-                stat3Icon: 'Statistik 3 Icon',
-                stat3IconColor: 'Statistik 3 Icon-Farbe',
-                stat3NumberColor: 'Statistik 3 Zahlen-Farbe',
-                stat3TextColor: 'Statistik 3 Text-Farbe',
-                stat4Number: 'Statistik 4 Zahl',
-                stat4Text: 'Statistik 4 Text',
-                stat4Icon: 'Statistik 4 Icon',
-                stat4IconColor: 'Statistik 4 Icon-Farbe',
-                stat4NumberColor: 'Statistik 4 Zahlen-Farbe',
-                stat4TextColor: 'Statistik 4 Text-Farbe',
-                // Layout Properties
-                contentGap: 'Inhalt-Zwischenabstand',
-                iconContainerSize: 'Icon-Container Größe',
-                // CTA Properties
-                primaryButtonText: 'Hauptbutton Text',
-                primaryButtonLink: 'Hauptbutton Link',
-                primaryButtonBg: 'Hauptbutton Hintergrund',
-                primaryButtonColor: 'Hauptbutton Farbe',
-                primaryButtonPadding: 'Hauptbutton Padding',
-                primaryButtonBorder: 'Hauptbutton Rahmen',
-                primaryButtonShadow: 'Hauptbutton Schatten',
-                primaryButtonIcon: 'Hauptbutton Icon',
-                secondaryButtonText: 'Zweitbutton Text',
-                secondaryButtonLink: 'Zweitbutton Link',
-                secondaryButtonBg: 'Zweitbutton Hintergrund',
-                secondaryButtonColor: 'Zweitbutton Farbe',
-                secondaryButtonPadding: 'Zweitbutton Padding',
-                secondaryButtonBorder: 'Zweitbutton Rahmen',
-                secondaryButtonShadow: 'Zweitbutton Schatten',
-                secondaryButtonIcon: 'Zweitbutton Icon',
-                buttonRadius: 'Button Rundung',
-                buttonTextSize: 'Button Text-Größe',
-                buttonGap: 'Button-Abstand',
-                backgroundPattern: 'Hintergrund-Muster',
-                // Modern Layout Properties
-                titleSize: 'Titel-Größe',
-                textSize: 'Text-Größe',
-                buttonPadding: 'Button-Padding',
+                
+                // === BUTTONS ===
+                buttonText: 'Button-Text',
+                buttonLink: 'Button-Link',
+                buttonBgColor: 'Button-Farbe',
+                buttonTextColor: 'Button-Text-Farbe',
+                buttonPadding: 'Button-Innenabstand',
                 buttonRadius: 'Button-Rundung',
                 buttonBorder: 'Button-Rahmen',
                 buttonShadow: 'Button-Schatten',
+                buttonSpacing: 'Button-Abstand',
                 buttonIcon: 'Button-Icon',
+                
+                // === CTA BUTTONS (für moderne Module) ===
+                primaryButtonText: 'Haupt-Button Text',
+                primaryButtonLink: 'Haupt-Button Link',
+                primaryButtonBg: 'Haupt-Button Farbe',
+                primaryButtonColor: 'Haupt-Button Text-Farbe',
+                secondaryButtonText: 'Zweit-Button Text', 
+                secondaryButtonLink: 'Zweit-Button Link',
+                secondaryButtonBg: 'Zweit-Button Farbe',
+                secondaryButtonColor: 'Zweit-Button Text-Farbe',
+                
+                // === BILDER ===
+                imageUrl: 'Bild-URL',
+                imageAlt: 'Bild-Beschreibung',
                 imageRadius: 'Bild-Rundung',
                 imageShadow: 'Bild-Schatten',
                 imageOverlay: 'Bild-Overlay',
-                iconSize: 'Icon-Größe',
-                iconPadding: 'Icon-Padding',
+                backgroundImage: 'Hintergrundbild',
+                
+                // === ICONS ===
+                iconClass: 'Icon',
+                iconColor: 'Icon-Farbe',
                 iconBackground: 'Icon-Hintergrund',
                 iconRadius: 'Icon-Rundung',
-                contentPadding: 'Inhalt-Padding'
+                iconSpacing: 'Icon-Abstand',
+                iconContainerSize: 'Icon-Container-Größe',
+                
+                // === LAYOUT & ABSTÄNDE ===
+                layoutType: 'Layout',
+                layout: 'Layout',
+                sectionSpacing: 'Bereich-Abstand',
+                contentGap: 'Inhalt-Abstand',
+                contentPadding: 'Inhalt-Innenabstand',
+                titleSpacing: 'Titel-Abstand',
+                textSpacing: 'Text-Abstand',
+                elementSpacing: 'Element-Abstand',
+                
+                // === TEAM MODULE ===
+                teamGap: 'Team-Abstand',
+                cardPadding: 'Karten-Innenabstand',
+                avatarSize: 'Avatar-Größe',
+                maxColumns: 'Max. Spalten',
+                teamMemberCount: 'Anzahl Personen',
+                
+                // Team Member 1
+                member1Name: 'Person 1: Name',
+                member1Position: 'Person 1: Position',
+                member1Description: 'Person 1: Beschreibung',
+                member1Image: 'Person 1: Bild',
+                member1InitialBg: 'Person 1: Avatar-Farbe',
+                member1Active: 'Person 1: Anzeigen',
+                
+                // Team Member 2
+                member2Name: 'Person 2: Name',
+                member2Position: 'Person 2: Position', 
+                member2Description: 'Person 2: Beschreibung',
+                member2Image: 'Person 2: Bild',
+                member2InitialBg: 'Person 2: Avatar-Farbe',
+                member2Active: 'Person 2: Anzeigen',
+                
+                // Team Member 3
+                member3Name: 'Person 3: Name',
+                member3Position: 'Person 3: Position',
+                member3Description: 'Person 3: Beschreibung', 
+                member3Image: 'Person 3: Bild',
+                member3InitialBg: 'Person 3: Avatar-Farbe',
+                member3Active: 'Person 3: Anzeigen',
+                
+                // Team Member 4
+                member4Name: 'Person 4: Name',
+                member4Position: 'Person 4: Position',
+                member4Description: 'Person 4: Beschreibung',
+                member4Image: 'Person 4: Bild', 
+                member4InitialBg: 'Person 4: Avatar-Farbe',
+                member4Active: 'Person 4: Anzeigen',
+                
+                // === STATISTIKEN MODULE ===
+                statsGap: 'Statistik-Abstand',
+                statMinWidth: 'Statistik-Breite',
+                statPadding: 'Statistik-Innenabstand',
+                
+                // Statistik 1
+                stat1Number: 'Statistik 1: Zahl',
+                stat1Text: 'Statistik 1: Text',
+                stat1Icon: 'Statistik 1: Icon',
+                stat1IconColor: 'Statistik 1: Icon-Farbe',
+                stat1NumberColor: 'Statistik 1: Zahlen-Farbe',
+                stat1TextColor: 'Statistik 1: Text-Farbe',
+                
+                // Statistik 2
+                stat2Number: 'Statistik 2: Zahl',
+                stat2Text: 'Statistik 2: Text',
+                stat2Icon: 'Statistik 2: Icon',
+                stat2IconColor: 'Statistik 2: Icon-Farbe',
+                stat2NumberColor: 'Statistik 2: Zahlen-Farbe',
+                stat2TextColor: 'Statistik 2: Text-Farbe',
+                
+                // Statistik 3
+                stat3Number: 'Statistik 3: Zahl',
+                stat3Text: 'Statistik 3: Text',
+                stat3Icon: 'Statistik 3: Icon',
+                stat3IconColor: 'Statistik 3: Icon-Farbe',
+                stat3NumberColor: 'Statistik 3: Zahlen-Farbe',
+                stat3TextColor: 'Statistik 3: Text-Farbe',
+                
+                // Statistik 4
+                stat4Number: 'Statistik 4: Zahl',
+                stat4Text: 'Statistik 4: Text',
+                stat4Icon: 'Statistik 4: Icon',
+                stat4IconColor: 'Statistik 4: Icon-Farbe',
+                stat4NumberColor: 'Statistik 4: Zahlen-Farbe',
+                stat4TextColor: 'Statistik 4: Text-Farbe',
+                
+                // === VERALTETE PROPERTIES (versteckt) ===
+                imageOrder: 'Bild-Position',
+                textOrder: 'Text-Position',
+                
+                // === GENERISCHE FALLBACKS ===
+                // Automatische Patterns für unbekannte Properties
             };
-            return names[key] || key.charAt(0).toUpperCase() + key.slice(1);
+            
+            // Direkte Übersetzung falls vorhanden
+            if (names[key]) {
+                return names[key];
+            }
+            
+            // Generische Pattern-Erkennung für unbekannte Properties
+            let formattedName = key;
+            
+            // Color -> Farbe
+            if (key.endsWith('Color') || key.endsWith('color')) {
+                formattedName = key.replace(/Color$|color$/, '-Farbe');
+            }
+            
+            // Spacing -> Abstand
+            if (key.endsWith('Spacing') || key.endsWith('spacing')) {
+                formattedName = key.replace(/Spacing$|spacing$/, '-Abstand');
+            }
+            
+            // Padding -> Innenabstand
+            if (key.endsWith('Padding') || key.endsWith('padding')) {
+                formattedName = key.replace(/Padding$|padding$/, '-Innenabstand');
+            }
+            
+            // Margin -> Außenabstand  
+            if (key.endsWith('Margin') || key.endsWith('margin')) {
+                formattedName = key.replace(/Margin$|margin$/, '-Außenabstand');
+            }
+            
+            // Gap -> Abstand
+            if (key.endsWith('Gap') || key.endsWith('gap')) {
+                formattedName = key.replace(/Gap$|gap$/, '-Abstand');
+            }
+            
+            // Size -> Größe
+            if (key.endsWith('Size') || key.endsWith('size')) {
+                formattedName = key.replace(/Size$|size$/, '-Größe');
+            }
+            
+            // Radius -> Rundung
+            if (key.endsWith('Radius') || key.endsWith('radius')) {
+                formattedName = key.replace(/Radius$|radius$/, '-Rundung');
+            }
+            
+            // Shadow -> Schatten
+            if (key.endsWith('Shadow') || key.endsWith('shadow')) {
+                formattedName = key.replace(/Shadow$|shadow$/, '-Schatten');
+            }
+            
+            // Border -> Rahmen
+            if (key.endsWith('Border') || key.endsWith('border')) {
+                formattedName = key.replace(/Border$|border$/, '-Rahmen');
+            }
+            
+            // Background -> Hintergrund
+            if (key.endsWith('Background') || key.endsWith('background')) {
+                formattedName = key.replace(/Background$|background$/, '-Hintergrund');
+            }
+            
+            // Image -> Bild
+            if (key.endsWith('Image') || key.endsWith('image')) {
+                formattedName = key.replace(/Image$|image$/, '-Bild');
+            }
+            
+            // Icon -> Icon
+            if (key.endsWith('Icon') || key.endsWith('icon')) {
+                formattedName = key.replace(/Icon$|icon$/, '-Icon');
+            }
+            
+            // Button -> Button
+            if (key.startsWith('button') || key.startsWith('Button')) {
+                formattedName = key.replace(/^button|^Button/, 'Button-');
+            }
+            
+            // CamelCase in Bindestriche umwandeln und ersten Buchstaben groß machen
+            formattedName = formattedName
+                .replace(/([a-z])([A-Z])/g, '$1-$2')
+                .toLowerCase()
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join('-');
+            
+            return formattedName;
         }
 
-        // Property aktualisieren
+        // Property aktualisieren mit Live-Vorschau
+        let autoApplyTimeout = null;
+
         function updateProperty(key, value) {
-            if (selectedModule) {
-                selectedModule.properties[key] = value;
-                // Live-Update für Farben
-                if (key.includes('Color') || key.includes('color')) {
-                    applyChanges();
+            if (!selectedModule) return;
+            
+            selectedModule.properties[key] = value;
+            
+            // Sofortige Live-Vorschau für alle visuellen Properties
+            if (isVisualProperty(key)) {
+                updatePropertyLive(key, value);
+                return;
+            }
+            
+            // Debounced Update für strukturelle Änderungen
+            clearTimeout(autoApplyTimeout);
+            autoApplyTimeout = setTimeout(() => {
+                applyChanges();
+            }, 500);
+        }
+
+        // Prüfen ob Property eine sofortige Live-Vorschau braucht
+        function isVisualProperty(key) {
+            const visualProperties = [
+                'Color', 'color',
+                'Text', 'text', 'title', 'subtitle', 'buttonText',
+                'Icon', 'icon',
+                'Active', 'active',
+                'backgroundColor', 'titleColor', 'textColor', 'buttonBgColor', 'buttonTextColor',
+                'iconColor', 'nameColor', 'positionColor', 'descriptionColor'
+            ];
+            
+            return visualProperties.some(prop => key.includes(prop) || key === prop);
+        }
+
+        // Live DOM-Update ohne Re-Rendering
+        function updatePropertyLive(key, value) {
+            if (!selectedModule) return;
+            
+            const moduleElement = document.querySelector(`[data-module-id="${selectedModule.id}"] .module-content`);
+            if (!moduleElement) return;
+            
+            try {
+                // Text-Updates
+                if (key === 'title') {
+                    const titleElements = moduleElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                    titleElements.forEach(el => {
+                        if (el.textContent.includes(selectedModule.properties.title) || el.textContent.trim() !== '') {
+                            el.textContent = value;
+                        }
+                    });
+                }
+                
+                // Button-Text Updates
+                else if (key === 'buttonText') {
+                    const buttons = moduleElement.querySelectorAll('a[href], button');
+                    buttons.forEach(btn => {
+                        if (btn.textContent.trim() === selectedModule.properties.buttonText || btn.textContent.trim() !== '') {
+                            btn.textContent = value;
+                        }
+                    });
+                }
+                
+                // Text-Content Updates
+                else if (key === 'text' || key === 'description' || key === 'subtitle') {
+                    const paragraphs = moduleElement.querySelectorAll('p');
+                    paragraphs.forEach(p => {
+                        if (p.textContent.includes(selectedModule.properties[key]) || p.textContent.length > 20) {
+                            p.textContent = value;
+                        }
+                    });
+                }
+                
+                // Farb-Updates
+                else if (key.includes('Color') || key.includes('color')) {
+                    updateColorsLive(moduleElement, key, value);
+                }
+                
+                // Icon-Updates
+                else if (key.includes('Icon') || key.includes('icon')) {
+                    updateIconsLive(moduleElement, key, value);
+                }
+                
+                // Background-Updates
+                else if (key === 'backgroundColor') {
+                    const section = moduleElement.closest('.canvas-module').querySelector('section');
+                    if (section) {
+                        section.style.background = value;
+                    }
+                }
+
+                // Fallback: Versuche komplexe Module
+                else if (updateComplexModuleLive(selectedModule.id, key, value)) {
+                    // Erfolgreich mit speziellem Handler behandelt
+                    return;
+                }
+                
+            } catch (error) {
+                console.warn('Live-Update fehlgeschlagen, fallback zu vollständigem Update:', error);
+                // Fallback zu komplettem Update
+                clearTimeout(autoApplyTimeout);
+                autoApplyTimeout = setTimeout(() => applyChanges(), 100);
+            }
+        }
+
+        // Spezielle Live-Updates für komplexe Module
+        function updateComplexModuleLive(moduleId, key, value) {
+            const module = modules.find(m => m.id === moduleId);
+            if (!module) return false;
+            
+            // Team Gallery Live-Updates
+            if (module.templateId === 'kerberos-team-gallery') {
+                return updateTeamGalleryLive(moduleId, key, value);
+            }
+            
+            // Stats Module Live-Updates
+            if (module.templateId === 'kerberos-stats') {
+                return updateStatsModuleLive(moduleId, key, value);
+            }
+            
+            return false; // Kein spezielles Handling gefunden
+        }
+
+        // Live-Updates für Team Gallery
+        function updateTeamGalleryLive(moduleId, key, value) {
+            const moduleElement = document.querySelector(`[data-module-id="${moduleId}"] .module-content`);
+            if (!moduleElement) return false;
+            
+            // Member Name Updates
+            if (key.startsWith('member') && key.includes('Name')) {
+                const memberIndex = key.match(/member(\d+)/)[1];
+                const nameElement = moduleElement.querySelector(`h4:nth-of-type(${memberIndex})`);
+                if (nameElement) {
+                    nameElement.textContent = value;
+                    return true;
                 }
             }
+            
+            // Member Position Updates
+            if (key.startsWith('member') && key.includes('Position')) {
+                const memberIndex = key.match(/member(\d+)/)[1];
+                const positionElements = moduleElement.querySelectorAll('p[style*="font-weight: 600"]');
+                if (positionElements[memberIndex - 1]) {
+                    positionElements[memberIndex - 1].textContent = value;
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Live-Updates für Stats Module
+        function updateStatsModuleLive(moduleId, key, value) {
+            const moduleElement = document.querySelector(`[data-module-id="${moduleId}"] .module-content`);
+            if (!moduleElement) return false;
+            
+            // Statistik Number Updates
+            if (key.includes('Number')) {
+                const statIndex = key.match(/stat(\d+)/)?.[1];
+                if (statIndex) {
+                    const numberElements = moduleElement.querySelectorAll('[style*="font-size"][style*="font-weight: 700"]');
+                    if (numberElements[statIndex - 1]) {
+                        numberElements[statIndex - 1].textContent = value;
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+
+        // Live Farb-Updates
+        function updateColorsLive(moduleElement, key, value) {
+            const colorMappings = {
+                'titleColor': 'h1, h2, h3, h4, h5, h6',
+                'textColor': 'p:not([style*="font-weight: 600"])',
+                'buttonBgColor': 'a[href], button',
+                'buttonTextColor': 'a[href], button',
+                'iconColor': '[style*="Font Awesome"]',
+                'nameColor': 'h4',
+                'positionColor': 'p[style*="font-weight: 600"]',
+                'descriptionColor': 'p:not([style*="font-weight: 600"])'
+            };
+            
+            const selector = colorMappings[key];
+            if (selector) {
+                const elements = moduleElement.querySelectorAll(selector);
+                elements.forEach(el => {
+                    if (key.includes('Bg') || key.includes('background')) {
+                        el.style.backgroundColor = value;
+                        el.style.background = value;
+                    } else {
+                        el.style.color = value;
+                    }
+                });
+            }
+        }
+
+        // Live Icon-Updates
+        function updateIconsLive(moduleElement, key, value) {
+            const iconElements = moduleElement.querySelectorAll('[style*="Font Awesome"]');
+            iconElements.forEach(el => {
+                if (el.textContent.includes('&#x') || el.innerHTML.includes('&#x')) {
+                    el.innerHTML = value;
+                }
+            });
+        }
+
+        // Update-Status verwalten
+        let updateStatus = 'idle'; // 'idle', 'pending', 'updating'
+
+        function showUpdateStatus(status) {
+            const statusElement = document.querySelector('.auto-update-status');
+            if (!statusElement) return;
+            
+            switch(status) {
+                case 'pending':
+                    statusElement.innerHTML = '<span style="color: #ff9800;">⏳ Änderung erkannt...</span>';
+                    break;
+                case 'updating':
+                    statusElement.innerHTML = '<span style="color: #2196f3;">🔄 Aktualisiere...</span>';
+                    break;
+                case 'updated':
+                    statusElement.innerHTML = '<span style="color: #4caf50;">✅ Aktualisiert</span>';
+                    setTimeout(() => {
+                        if (statusElement) {
+                            statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
+                        }
+                    }, 2000);
+                    break;
+                default:
+                    statusElement.innerHTML = '<span style="color: #1976d2;">⚡ Auto-Update aktiv</span>';
+            }
+        }
+
+        // Erweiterte Property-Update-Funktion mit Status
+        function updateProperty(key, value) {
+            if (!selectedModule) return;
+            
+            selectedModule.properties[key] = value;
+            updateStatus = 'pending';
+            showUpdateStatus('pending');
+            
+            // Sofortige Updates für visuelle Properties
+            if (shouldUpdateImmediately(key)) {
+                updateStatus = 'updating';
+                showUpdateStatus('updating');
+                applyChanges();
+                updateStatus = 'updated';
+                showUpdateStatus('updated');
+                return;
+            }
+            
+            // Debounced Auto-Apply für Text-Properties
+            clearTimeout(autoApplyTimeout);
+            autoApplyTimeout = setTimeout(() => {
+                updateStatus = 'updating';
+                showUpdateStatus('updating');
+                applyChanges();
+                updateStatus = 'updated';
+                showUpdateStatus('updated');
+            }, 800);
+        }
+
+        // Sofortige Updates für bestimmte Property-Typen
+        function shouldUpdateImmediately(key) {
+            const immediateUpdateKeys = [
+                'Color', 'color',           // Farben
+                'Active', 'active',         // Ein/Aus-Schalter
+                'Order', 'order',           // Reihenfolge
+                'Layout', 'layout',         // Layout-Änderungen
+                'Icon', 'icon'              // Icons
+            ];
+            
+            return immediateUpdateKeys.some(pattern => key.includes(pattern));
         }
 
         // Änderungen übernehmen
