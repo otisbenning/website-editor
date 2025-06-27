@@ -3074,8 +3074,9 @@ properties: {
             document.head.appendChild(style);
             
             console.log('✨ Universelle Button-Hover-Effekte aktiviert!');
+        } // <- Diese schließende Klammer fehlte!
 
-        // 7️⃣ ALIAS FUNKTION für Live-Rendering
+        // 7️⃣ ALIAS FUNKTION für Live-Rendering (jetzt AUSSERHALB der anderen Funktion)
         function renderCanvasWithInteractivity() {
             renderCanvas(); // Das macht jetzt automatisch die Interaktivität
         }
@@ -6084,6 +6085,7 @@ properties: {
         window.switchPropertyTab = switchPropertyTab;
         window.groupPropertiesByContext = groupPropertiesByContext;
         window.renderPlanQuickSetup = renderPlanQuickSetup;
+        window.renderCanvasWithInteractivity = renderCanvasWithInteractivity;
 
         // Create Module Dialog Functions
         function showCreateModuleDialog() {
