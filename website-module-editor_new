@@ -2456,6 +2456,16 @@ properties: {
             }
         }
 
+        // Hilfsfunktion: Bestimmt ob Property sofort aktualisiert werden soll
+        function shouldUpdateImmediately(key) {
+            const immediateKeys = [
+                'title', 'subtitle', 'text', 'buttonText', 'description',
+                'titleColor', 'textColor', 'backgroundColor', 'iconColor',
+                'iconClass', 'buttonIcon', 'imageUrl'
+            ];
+            return immediateKeys.some(pattern => key.includes(pattern));
+        }
+
         // Erweiterte Property-Update-Funktion mit Status
         function updateProperty(key, value) {
             if (!selectedModule) return;
@@ -2464,14 +2474,41 @@ properties: {
             updateStatus = 'pending';
             showUpdateStatus('pending');
             
+            // Spezielle Behandlung für Team Member Count
+            if (key === 'teamMemberCount') {
+                const count = parseInt(value);
+                // Automatisch die entsprechende Anzahl Mitglieder aktivieren
+                for (let i = 1; i <= 4; i++) {
+                    selectedModule.properties[`member${i}Active`] = i <= count ? 'true' : 'false';
+                }
+                // Sofort neu rendern
+                renderCanvas();
+                renderPropertyPanel();
+                showNotification(`✅ ${count} Team-Mitglieder aktiviert`);
+                return;
+            }
+            
             // Sofortige Updates für visuelle Properties
             if (shouldUpdateImmediately(key)) {
                 updateStatus = 'updating';
                 showUpdateStatus('updating');
                 applyChanges();
                 updateStatus = 'updated';
-        // Erweiterte Property-Update-Funktion mit Status
-        // (already defined above, duplicate removed)
+                showUpdateStatus('updated');
+                return;
+            }
+            
+            // Standard Updates mit Delay
+            clearTimeout(autoApplyTimeout);
+            autoApplyTimeout = setTimeout(() => {
+                updateStatus = 'updating';
+                showUpdateStatus('updating');
+                applyChanges();
+                updateStatus = 'updated';
+                showUpdateStatus('updated');
+            }, 500);
+        }
+
         // Änderungen übernehmen
         function applyChanges() {
             if (!selectedModule) return;
