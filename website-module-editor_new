@@ -427,11 +427,12 @@
                 <h1 style="font-size: 1.5rem;">🛡️ Kerberos Module Editor</h1>
                 <p style="font-size: 0.9rem; opacity: 0.9; margin: 0;">Erweiterte Version • www.kerberos-compliance.com</p>
             </div>
-            <div style="display: flex; gap: 0.75rem;">
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                 <button class="btn btn-success" id="exportPageBtn">📄 Seite exportieren</button>
                 <button class="btn btn-primary" id="savePageBtn">💾 Seite speichern</button>
                 <button class="btn btn-secondary" id="loadPageBtn">📂 Seite laden</button>
                 <button class="btn btn-warning" id="importBtn">📥 Import</button>
+                <button class="btn btn-success" id="exportAllModulesBtn">📦 Alle Module exportieren</button>
                 <button class="btn btn-secondary" id="settingsBtn">⚙️ Einstellungen</button>
                 <button class="btn btn-warning" id="clearBtn">🗑️ Leeren</button>
                 <button class="btn btn-secondary" id="previewBtn">👁️ Vorschau</button>
@@ -649,11 +650,16 @@
             </div>
             
             <div id="settingsModulesTab" class="tab-content">
-                <h4>Benutzerdefinierte Module</h4>
+                <h4>Module verwalten</h4>
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-success" onclick="showCreateModuleDialog()" style="flex: 1; min-width: 200px;">+ Neues Modul erstellen</button>
+                        <button class="btn btn-warning" onclick="showModuleLibraryManager()" style="flex: 1; min-width: 200px;">📚 Bibliothek verwalten</button>
+                    </div>
+                </div>
                 <div id="customModulesList">
                     <!-- Custom modules -->
                 </div>
-                <button class="btn btn-success" onclick="showCreateModuleDialog()" style="width: 100%; margin-top: 1rem;">+ Neues Modul erstellen</button>
             </div>
             
             <div style="margin-top: 1rem; text-align: right;">
@@ -702,6 +708,30 @@
             </div>
             <div style="flex: 1; overflow: auto;">
                 <div id="previewContent"></div>
+            </div>
+        </div>
+    </div>
+
+    // Füge nach dem letzten Modal (vor dem Preview Modal) hinzu:
+
+    <div id="moduleLibraryModal" class="modal">
+        <div class="modal-content">
+            <h3>📚 Module-Bibliothek verwalten</h3>
+            <div style="margin-bottom: 1rem;">
+                <input type="text" class="form-control" placeholder="🔍 Module suchen..." id="librarySearchInput" style="margin-bottom: 1rem;">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <button class="library-filter-btn" data-category="all" style="padding: 0.5rem 1rem; border: 2px solid var(--kerberos-primary); background: var(--kerberos-primary); color: white; border-radius: 20px; cursor: pointer; font-size: 0.85rem;">Alle</button>
+                    <button class="library-filter-btn" data-category="Hero & Header" style="padding: 0.5rem 1rem; border: 2px solid var(--kerberos-primary); background: transparent; color: var(--kerberos-primary); border-radius: 20px; cursor: pointer; font-size: 0.85rem;">Hero & Header</button>
+                    <button class="library-filter-btn" data-category="Content & Services" style="padding: 0.5rem 1rem; border: 2px solid var(--kerberos-primary); background: transparent; color: var(--kerberos-primary); border-radius: 20px; cursor: pointer; font-size: 0.85rem;">Content & Services</button>
+                    <button class="library-filter-btn" data-category="Custom" style="padding: 0.5rem 1rem; border: 2px solid var(--kerberos-primary); background: transparent; color: var(--kerberos-primary); border-radius: 20px; cursor: pointer; font-size: 0.85rem;">Custom</button>
+                </div>
+            </div>
+            <div id="moduleLibraryList" style="max-height: 400px; overflow-y: auto; border: 1px solid var(--kerberos-border); border-radius: 6px; padding: 1rem;">
+                <!-- Module-Liste wird hier geladen -->
+            </div>
+            <div style="margin-top: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="btn btn-warning" onclick="exportModuleLibrary()">📤 Bibliothek exportieren</button>
+                <button class="btn btn-secondary" onclick="closeModuleLibraryModal()">Schließen</button>
             </div>
         </div>
     </div>
@@ -1435,10 +1465,268 @@ properties: {
             return html.replace('{{timelineSteps}}', timelineSteps);
         }
 
+        // === NEUE PROCESSOR-FUNKTIONEN ===
+
+        function processKerberosFeaturesModern(module, html) {
+            const props = module.properties;
+            let featureCards = '';
+            
+            for (let i = 1; i <= 6; i++) {
+                const title = props[`feature${i}Title`];
+                const description = props[`feature${i}Description`];
+                const icon = props[`feature${i}Icon`];
+                const color = props[`feature${i}Color`];
+                const badge = props[`feature${i}Badge`];
+                const badgeColor = props[`feature${i}BadgeColor`];
+                const isActive = props[`feature${i}Active`] === 'true';
+                
+                if (title && description && isActive) {
+                    const badgeHtml = badge ? `<div style="position: absolute; top: 1rem; right: 1rem; background: ${badgeColor}; color: ${props.badgeTextColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">${badge}</div>` : '';
+                    
+                    featureCards += `
+                        <div class="kerberos-feature-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;">
+                            ${badgeHtml}
+                            <div class="feature-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, ${color}10, ${color}05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="position: relative; z-index: 2;">
+                                <div class="feature-icon" style="font-family: 'Font Awesome 5 Pro'; font-size: 2.5rem; color: ${color}; margin-bottom: 1.5rem; transition: all 0.3s ease;">${icon}</div>
+                                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); color: ${props.textColor}; margin: 0 0 1rem 0;">${title}</h3>
+                                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.subtitleColor}; margin: 0;">${description}</p>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{featureCards}}', featureCards);
+        }
+
+        function processKerberosApiDocumentation(module, html) {
+            const props = module.properties;
+            let apiEndpoints = '';
+            
+            for (let i = 1; i <= 4; i++) {
+                const method = props[`endpoint${i}Method`];
+                const path = props[`endpoint${i}Path`];
+                const title = props[`endpoint${i}Title`];
+                const description = props[`endpoint${i}Description`];
+                const status = props[`endpoint${i}Status`];
+                const statusColor = props[`endpoint${i}StatusColor`];
+                const isActive = props[`endpoint${i}Active`] === 'true';
+                
+                if (method && path && title && isActive) {
+                    const methodColor = method === 'GET' ? '#28A745' : method === 'POST' ? '#063AA8' : '#EF8646';
+                    
+                    apiEndpoints += `
+                        <div class="api-endpoint-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 8px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <span style="background: ${methodColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">${method}</span>
+                                <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">${status}</span>
+                            </div>
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.textColor}; margin: 0 0 0.5rem 0; font-size: 1.1rem;">${title}</h4>
+                            <p style="font-family: 'Monaco', 'Consolas', monospace; color: ${props.primaryColor}; font-size: 0.9rem; margin: 0 0 1rem 0;">${path}</p>
+                            <p style="font-family: var(--body-font-font-family); color: ${props.textColor}; font-size: 0.9rem; margin: 0; opacity: 0.8;">${description}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{apiEndpoints}}', apiEndpoints);
+        }
+
+        function processKerberosPricingInteractive(module, html) {
+            const props = module.properties;
+            let pricingPlans = '';
+            let featureRows = '';
+            let mobileFeatureCards = '';
+            
+            // Pricing Plans generieren (RESPONSIVE KORRIGIERT)
+            for (let i = 1; i <= 3; i++) {
+                const name = props[`plan${i}Name`];
+                const price = props[`plan${i}Price`];
+                const period = props[`plan${i}Period`];
+                const description = props[`plan${i}Description`];
+                const buttonText = props[`plan${i}ButtonText`];
+                const buttonLink = props[`plan${i}ButtonLink`];
+                const isPopular = props[`plan${i}Popular`] === 'true';
+                const color = props[`plan${i}Color`];
+                const isActive = props[`plan${i}Active`] === 'true';
+                
+                if (name && price && isActive) {
+                    const popularBadge = isPopular ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${props.popularBadgeColor}; color: ${props.badgeTextColor}; padding: 0.5rem 1.5rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; z-index: 10;">${props.popularBadge}</div>` : '';
+                    const cardStyle = isPopular ? `transform: scale(1.05); border: 2px solid ${color}; box-shadow: 0 16px 40px rgba(6,58,168,0.2);` : `border: 1px solid ${props.cardBorder};`;
+                    
+                    pricingPlans += `
+                        <div class="pricing-plan" style="background: ${props.cardBackground}; ${cardStyle} border-radius: 12px; padding: 2rem; text-align: center; position: relative; transition: all 0.3s ease; max-width: 100%; box-sizing: border-box;">
+                            ${popularBadge}
+                            <h3 style="font-family: var(--heading-font-font-family); color: ${color}; margin: 0 0 1rem 0; font-size: 1.5rem;">${name}</h3>
+                            <div style="margin-bottom: 1rem;">
+                                <span class="price" style="font-family: var(--heading-font-font-family); font-size: 2.5rem; font-weight: 700; color: ${props.textColor};">${price}</span>
+                                <span style="color: ${props.subtitleColor}; font-size: 1rem;">${period}</span>
+                            </div>
+                            <p style="color: ${props.subtitleColor}; margin: 0 0 2rem 0; line-height: 1.5;">${description}</p>
+                            <a href="${buttonLink}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${color}; color: white; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; display: inline-block; width: calc(100% - 3rem); max-width: 250px; transition: all 0.3s ease; box-sizing: border-box; white-space: nowrap; text-align: center;">${buttonText}</a>
+                        </div>`;
+                }
+            }
+            
+            // Feature-Vergleichstabelle generieren
+            for (let i = 1; i <= 6; i++) {
+                const featureName = props[`feature${i}Name`];
+                const plan1Feature = props[`feature${i}Plan1`];
+                const plan2Feature = props[`feature${i}Plan2`];
+                const plan3Feature = props[`feature${i}Plan3`];
+                
+                if (featureName && plan1Feature && plan2Feature && plan3Feature) {
+                    const rowBg = i % 2 === 0 ? props.tableRowAlt || '#F8F9FA' : 'white';
+                    featureRows += `
+                        <tr style="background: ${rowBg};">
+                            <td style="padding: 1rem; font-family: var(--body-font-font-family); color: ${props.tableText}; font-weight: 600;">${featureName}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan1Feature}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan2Feature}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan3Feature}</td>
+                        </tr>`;
+                    
+                    // Mobile Feature Cards generieren
+                    mobileFeatureCards += `
+                        <div style="background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid ${props.featureBorder};">
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.featureTitle}; margin: 0 0 1rem 0; font-size: 1.1rem;">${featureName}</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan1Color}; margin-bottom: 0.5rem;">${props.plan1Name}</div>
+                                    <div style="color: ${props.tableText};">${plan1Feature}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan2Color}; margin-bottom: 0.5rem;">${props.plan2Name}</div>
+                                    <div style="color: ${props.tableText};">${plan2Feature}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan3Color}; margin-bottom: 0.5rem;">${props.plan3Name}</div>
+                                    <div style="color: ${props.tableText};">${plan3Feature}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            html = html.replace('{{pricingPlans}}', pricingPlans);
+            html = html.replace('{{featureRows}}', featureRows);
+            html = html.replace('{{mobileFeatureCards}}', mobileFeatureCards);
+            
+            return html;
+        }
+
+        function processKerberosNewsletterModern(module, html) {
+            const props = module.properties;
+            let benefitItems = '';
+            
+            for (let i = 1; i <= 4; i++) {
+                const icon = props[`benefit${i}Icon`];
+                const text = props[`benefit${i}Text`];
+                const color = props[`benefit${i}Color`];
+                const isActive = props[`benefit${i}Active`] === 'true';
+                
+                if (icon && text && isActive) {
+                    benefitItems += `
+                        <div style="text-align: center;">
+                            <div style="font-family: 'Font Awesome 5 Pro'; font-size: 2rem; color: ${color}; margin-bottom: 1rem;">${icon}</div>
+                            <p style="font-family: var(--body-font-font-family); color: ${props.textColor}; margin: 0; font-weight: 600;">${text}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{benefitItems}}', benefitItems);
+        }
+
+        function processKerberosProductShowcase(module, html) {
+            const props = module.properties;
+            let featureList = '';
+            let additionalScreenshots = '';
+            let mainContent = '';
+            
+            // Feature-Liste generieren
+            for (let i = 1; i <= 4; i++) {
+                const text = props[`feature${i}Text`];
+                const icon = props[`feature${i}Icon`];
+                const color = props[`feature${i}Color`];
+                const isActive = props[`feature${i}Active`] === 'true';
+                
+                if (text && icon && isActive) {
+                    featureList += `
+                        <li style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="font-family: 'Font Awesome 5 Pro'; font-size: 1.25rem; color: ${color}; width: 24px;">${icon}</div>
+                            <span style="font-family: var(--body-font-font-family); color: ${props.textColor};">${text}</span>
+                        </li>`;
+                }
+            }
+            
+            // Haupt-Content (Bild oder Video)
+            if (props.contentType === 'video' && props.videoUrl) {
+                mainContent = `<video controls style="width: 100%; height: auto;" poster="${props.mainImage}">
+                    <source src="${props.videoUrl}" type="video/mp4">
+                    Ihr Browser unterstützt keine Videos.
+                </video>`;
+            } else {
+                mainContent = `<img src="${props.mainImage}" alt="${props.mainImageAlt}" style="width: 100%; height: auto; object-fit: cover;">`;
+            }
+            
+            // Screenshots generieren
+            for (let i = 1; i <= 3; i++) {
+                const image = props[`screenshot${i}Image`];
+                const title = props[`screenshot${i}Title`];
+                const description = props[`screenshot${i}Description`];
+                const isActive = props[`screenshot${i}Active`] === 'true';
+                
+                if (image && title && isActive) {
+                    additionalScreenshots += `
+                        <div class="screenshot-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; cursor: pointer;">
+                            <img src="${image}" alt="${title}" style="width: 100%; height: 200px; object-fit: cover;">
+                            <div style="padding: 1rem;">
+                                <h4 style="font-family: var(--heading-font-font-family); color: ${props.textColor}; margin: 0 0 0.5rem 0; font-size: 1.1rem;">${title}</h4>
+                                <p style="font-family: var(--body-font-font-family); color: ${props.subtitleColor}; margin: 0; font-size: 0.9rem;">${description}</p>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            html = html.replace('{{mainContent}}', mainContent);
+            html = html.replace('{{featureList}}', featureList);
+            html = html.replace('{{additionalScreenshots}}', additionalScreenshots);
+            
+            return html;
+        }
+
+        function processKerberosIntegrationsGrid(module, html) {
+            const props = module.properties;
+            let integrationCards = '';
+            
+            for (let i = 1; i <= 8; i++) {
+                const name = props[`integration${i}Name`];
+                const category = props[`integration${i}Category`];
+                const description = props[`integration${i}Description`];
+                const logo = props[`integration${i}Logo`];
+                const status = props[`integration${i}Status`];
+                const statusColor = props[`integration${i}StatusColor`];
+                const isActive = props[`integration${i}Active`] === 'true';
+                
+                if (name && category && description && isActive) {
+                    integrationCards += `
+                        <div class="integration-card" data-category="${category}" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 8px; padding: 1.5rem; text-align: center; transition: all 0.3s ease; cursor: pointer;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">${logo}</div>
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.textColor}; margin: 0 0 0.5rem 0; font-size: 1.1rem;">${name}</h4>
+                            <div style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700; display: inline-block; margin-bottom: 1rem;">${status}</div>
+                            <p style="font-family: var(--body-font-font-family); color: ${props.textColor}; margin: 0; font-size: 0.9rem; opacity: 0.8;">${description}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{integrationCards}}', integrationCards);
+        }
+
         // Module Bibliothek laden
         function loadModuleLibrary() {
             const library = document.getElementById('moduleLibrary');
             library.innerHTML = '';
+            
+            // Custom Templates laden (HIER EINFÜGEN)
+            loadCustomTemplates();
             
             const categories = [...new Set(MODULE_TEMPLATES.map(t => t.category))];
             
@@ -1616,9 +1904,10 @@ properties: {
                         <button class="control-btn btn-edit" onclick="selectModule('${module.id}')" title="Bearbeiten">✏️</button>
                         <button class="control-btn btn-edit" onclick="editModuleInfo('${module.id}')" title="Modul-Info bearbeiten">ℹ️</button>
                         <button class="control-btn btn-copy" onclick="copyModuleCode('${module.id}')" title="Code kopieren">📋</button>
+                        <button class="control-btn btn-copy" onclick="exportSingleModule('${module.id}')" title="Modul exportieren">📤</button>
                         <button class="control-btn btn-move" onclick="moveModule('${module.id}', -1)" title="Nach oben">↑</button>
                         <button class="control-btn btn-move" onclick="moveModule('${module.id}', 1)" title="Nach unten">↓</button>
-                        <button class="control-btn btn-delete" onclick="deleteModule('${module.id}')" title="Löschen">×</button>
+                        <button class="control-btn btn-delete" onclick="deleteIndividualModule('${module.id}')" title="Löschen">🗑️</button>
                     </div>
                     <div style="padding: 0.5rem; background: rgba(6,58,168,0.02); border-radius: 4px; margin-bottom: 0.5rem; font-size: 0.8rem; color: #6c757d; border: 1px solid rgba(6,58,168,0.1);">
                         📄 ${module.name} <span style="opacity: 0.7;">| ${module.category || 'Uncategorized'}</span>
@@ -1837,7 +2126,7 @@ properties: {
                 });
             });
             
-            // Timeline Steps Intersection Observer
+            // Timeline Steps Intersection Observer (KORRIGIERT)
             const timelineSteps = document.querySelectorAll('.timeline-step');
             if (timelineSteps.length > 0) {
                 const observer = new IntersectionObserver((entries) => {
@@ -1855,22 +2144,106 @@ properties: {
                     step.style.transition = `all 0.6s ease ${index * 0.2}s`;
                     observer.observe(step);
                     
-                    // Hover effects
+                    // KORRIGIERTE Hover effects - behalten translateX(-50%) bei
                     step.addEventListener('mouseenter', () => {
                         const card = step.querySelector('.timeline-card');
                         const dot = step.querySelector('.timeline-dot');
                         if (card) card.style.transform = 'scale(1.02)';
-                        if (dot) dot.style.transform = 'scale(1.2)';
+                        if (dot) dot.style.transform = 'translateX(-50%) scale(1.2)'; // FIX: translateX beibehalten
                     });
                     
                     step.addEventListener('mouseleave', () => {
                         const card = step.querySelector('.timeline-card');
                         const dot = step.querySelector('.timeline-dot');
                         if (card) card.style.transform = 'scale(1)';
-                        if (dot) dot.style.transform = 'scale(1)';
+                        if (dot) dot.style.transform = 'translateX(-50%) scale(1)'; // FIX: translateX beibehalten
                     });
                 });
             }
+        
+            // === NEUE MODULE INTERAKTIVITÄT ===
+
+            // API Documentation Tab-Switching
+            const apiTabs = document.querySelectorAll('.api-lang-tab');
+            const codeBlocks = document.querySelectorAll('.api-code-block');
+            apiTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const lang = tab.dataset.lang;
+                    
+                    // Update tabs
+                    apiTabs.forEach(t => {
+                        t.style.background = t.dataset.lang === lang ? '{{primaryColor}}' : '{{inactiveTabBg}}';
+                        t.style.color = t.dataset.lang === lang ? 'white' : '{{inactiveTabColor}}';
+                    });
+                    
+                    // Update code blocks
+                    codeBlocks.forEach(block => {
+                        block.style.display = block.dataset.lang === lang ? 'block' : 'none';
+                    });
+                });
+            });
+
+            // Integration Filter
+            const integrationFilters = document.querySelectorAll('.integration-filter');
+            const integrationCards = document.querySelectorAll('.integration-card');
+            integrationFilters.forEach(filter => {
+                filter.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const category = filter.dataset.category;
+                    
+                    // Update filter buttons
+                    integrationFilters.forEach(f => {
+                        const isActive = f.dataset.category === category;
+                        f.style.background = isActive ? '{{primaryColor}}' : 'transparent';
+                        f.style.color = isActive ? 'white' : '{{primaryColor}}';
+                    });
+                    
+                    // Filter cards
+                    integrationCards.forEach(card => {
+                        const cardCategory = card.dataset.category;
+                        const shouldShow = category === 'all' || cardCategory === category;
+                        card.style.display = shouldShow ? 'block' : 'none';
+                    });
+                });
+            });
+
+            // Enhanced Hover Effects für neue Module
+            const apiEndpointCards = document.querySelectorAll('.api-endpoint-card');
+            apiEndpointCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-4px)';
+                    card.style.boxShadow = '0 8px 24px rgba(6,58,168,0.15)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = 'none';
+                });
+            });
+
+            const pricingPlans = document.querySelectorAll('.pricing-plan');
+            pricingPlans.forEach(plan => {
+                plan.addEventListener('mouseenter', () => {
+                    plan.style.transform = plan.style.transform.includes('scale(1.05)') ? 
+                        plan.style.transform.replace('scale(1.05)', 'scale(1.08)') : 'scale(1.03)';
+                });
+                plan.addEventListener('mouseleave', () => {
+                    plan.style.transform = plan.style.transform.includes('scale(1.08)') ? 
+                        plan.style.transform.replace('scale(1.08)', 'scale(1.05)') : 'scale(1)';
+                });
+            });
+
+            const screenshotCards = document.querySelectorAll('.screenshot-card');
+            screenshotCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                    card.style.boxShadow = '0 12px 32px rgba(6,58,168,0.15)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = 'none';
+                });
+            });            
             
             console.log('✅ Module-Interaktivität aktiviert!');
         }
@@ -2052,8 +2425,22 @@ properties: {
                 html = processKerberosTestimonials(module, html);
             } else if (module.templateId === 'kerberos-features-grid') {
                 html = processKerberosFeatures(module, html);
-            } else if (module.templateId === 'kerberos-process-timeline') {
+            } else if (module.templateId === 'kerberos-process-timeline' || module.templateId === 'kerberos-process-timeline-fixed') {
                 html = processKerberosTimeline(module, html);
+            }
+            // === NEUE MODULE ===
+            else if (module.templateId === 'kerberos-features-modern') {
+                html = processKerberosFeaturesModern(module, html);
+            } else if (module.templateId === 'kerberos-api-documentation') {
+                html = processKerberosApiDocumentation(module, html);
+            } else if (module.templateId === 'kerberos-pricing-interactive') {
+                html = processKerberosPricingInteractive(module, html);
+            } else if (module.templateId === 'kerberos-newsletter-modern') {
+                html = processKerberosNewsletterModern(module, html);
+            } else if (module.templateId === 'kerberos-product-showcase') {
+                html = processKerberosProductShowcase(module, html);
+            } else if (module.templateId === 'kerberos-integrations-grid') {
+                html = processKerberosIntegrationsGrid(module, html);
             }
             
             // 2. Universelle Layout-Verarbeitung für Bild+Text Module
@@ -3334,6 +3721,217 @@ properties: {
             document.getElementById('settingsModal').style.display = 'none';
         }
 
+        // === MODULE-BIBLIOTHEK VERWALTUNG ===
+
+        function showModuleLibraryManager() {
+            document.getElementById('moduleLibraryModal').style.display = 'block';
+            loadModuleLibraryList();
+        }
+
+        function closeModuleLibraryModal() {
+            document.getElementById('moduleLibraryModal').style.display = 'none';
+        }
+
+        function loadModuleLibraryList(filterCategory = 'all', searchTerm = '') {
+            const container = document.getElementById('moduleLibraryList');
+            container.innerHTML = '';
+            
+            const filteredModules = MODULE_TEMPLATES.filter(template => {
+                const matchesCategory = filterCategory === 'all' || template.category === filterCategory;
+                const matchesSearch = searchTerm === '' || 
+                    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    template.description.toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+            
+            if (filteredModules.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 2rem;">Keine Module gefunden</p>';
+                return;
+            }
+            
+            filteredModules.forEach(template => {
+                const moduleDiv = document.createElement('div');
+                moduleDiv.style.cssText = 'border: 1px solid var(--kerberos-border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; background: white;';
+                
+                const isCustom = !template.id.startsWith('kerberos-') || template.customized;
+                const isDeletable = isCustom || template.category === 'Custom';
+                
+                moduleDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <h5 style="margin: 0 0 0.5rem 0; color: var(--kerberos-primary); font-size: 1rem;">${template.name}</h5>
+                            <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; color: #6c757d;">${template.description}</p>
+                            <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: #999;">
+                                <span>📂 ${template.category}</span>
+                                <span>🆔 ${template.id}</span>
+                                ${isCustom ? '<span style="background: #28a745; color: white; padding: 0.1rem 0.4rem; border-radius: 10px;">CUSTOM</span>' : '<span style="background: #063AA8; color: white; padding: 0.1rem 0.4rem; border-radius: 10px;">STANDARD</span>'}
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 120px;">
+                            <button class="btn btn-secondary" onclick="editModuleTemplate('${template.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">✏️ Bearbeiten</button>
+                            <button class="btn btn-warning" onclick="exportModuleTemplate('${template.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">📤 Export</button>
+                            <button class="btn btn-success" onclick="duplicateModuleTemplate('${template.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">📋 Kopie</button>
+                            ${isDeletable ? `<button class="btn btn-delete" onclick="deleteModuleTemplate('${template.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; background: #dc3545; color: white;">🗑️ Löschen</button>` : '<div style="padding: 0.4rem; text-align: center; font-size: 0.7rem; color: #999;">Standard-Modul</div>'}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(moduleDiv);
+            });
+        }
+
+        function deleteModuleTemplate(templateId) {
+            const template = MODULE_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+            
+            // Verhindere Löschung von Standard-Kerberos-Modulen (außer Custom)
+            const isStandardModule = template.id.startsWith('kerberos-') && template.category !== 'Custom' && !template.customized;
+            if (isStandardModule) {
+                showNotification('❌ Standard-Module können nicht gelöscht werden');
+                return;
+            }
+            
+            if (confirm(`Modul-Template "${template.name}" wirklich aus der Bibliothek löschen?\n\nDieses Template steht dann nicht mehr zur Verfügung.\nVorhandene Module auf Seiten bleiben erhalten.`)) {
+                // Template aus Array entfernen
+                const index = MODULE_TEMPLATES.findIndex(t => t.id === templateId);
+                if (index > -1) {
+                    MODULE_TEMPLATES.splice(index, 1);
+                }
+                
+                // Module-Bibliothek neu laden
+                loadModuleLibrary();
+                loadModuleLibraryList();
+                
+                showNotification(`🗑️ Template "${template.name}" gelöscht`);
+                
+                // Speichere Custom Templates in LocalStorage
+                saveCustomTemplates();
+            }
+        }
+
+        function duplicateModuleTemplate(templateId) {
+            const template = MODULE_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+            
+            const newTemplate = {
+                ...template,
+                id: `${template.id}-copy-${Date.now()}`,
+                name: `${template.name} (Kopie)`,
+                category: 'Custom',
+                customized: true
+            };
+            
+            MODULE_TEMPLATES.push(newTemplate);
+            loadModuleLibrary();
+            loadModuleLibraryList();
+            saveCustomTemplates();
+            
+            showNotification(`📋 Template "${newTemplate.name}" erstellt`);
+        }
+
+        function editModuleTemplate(templateId) {
+            const template = MODULE_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+            
+            // Öffne den normalen Module-Edit Dialog mit Template-Daten
+            document.getElementById('editModuleName').value = template.name;
+            document.getElementById('editModuleCategory').value = template.category;
+            document.getElementById('editModuleDescription').value = template.description;
+            
+            document.getElementById('moduleEditModal').style.display = 'block';
+            document.getElementById('moduleEditModal').dataset.templateId = templateId;
+            document.getElementById('moduleEditModal').dataset.isTemplate = 'true';
+        }
+
+        function exportModuleTemplate(templateId) {
+            const template = MODULE_TEMPLATES.find(t => t.id === templateId);
+            if (!template) return;
+            
+            const exportData = {
+                name: `Template: ${template.name}`,
+                description: `Module-Template Export: ${template.name}`,
+                template: template,
+                created: new Date().toISOString(),
+                type: 'module-template',
+                version: '2.0'
+            };
+            
+            const jsonData = JSON.stringify(exportData, null, 2);
+            const filename = `template-${template.id}.json`;
+            downloadJSON(jsonData, filename);
+            
+            showNotification(`📤 Template "${template.name}" exportiert`);
+        }
+
+        function exportModuleLibrary() {
+            const customTemplates = MODULE_TEMPLATES.filter(t => t.customized || t.category === 'Custom');
+            
+            if (customTemplates.length === 0) {
+                showNotification('❌ Keine benutzerdefinierten Templates zum Exportieren');
+                return;
+            }
+            
+            const exportData = {
+                name: 'Kerberos Custom Module Library',
+                description: `Export aller ${customTemplates.length} benutzerdefinierten Module`,
+                templates: customTemplates,
+                created: new Date().toISOString(),
+                type: 'custom-library',
+                version: '2.0'
+            };
+            
+            const jsonData = JSON.stringify(exportData, null, 2);
+            downloadJSON(jsonData, 'kerberos-custom-library.json');
+            
+            showNotification(`📤 ${customTemplates.length} Custom Templates exportiert`);
+        }
+
+        function saveCustomTemplates() {
+            const customTemplates = MODULE_TEMPLATES.filter(t => t.customized || t.category === 'Custom');
+            localStorage.setItem('kerberos-custom-templates', JSON.stringify(customTemplates));
+        }
+
+        function loadCustomTemplates() {
+            try {
+                const saved = localStorage.getItem('kerberos-custom-templates');
+                if (saved) {
+                    const customTemplates = JSON.parse(saved);
+                    customTemplates.forEach(template => {
+                        if (!MODULE_TEMPLATES.find(t => t.id === template.id)) {
+                            MODULE_TEMPLATES.push(template);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Fehler beim Laden der Custom Templates:', e);
+            }
+        }
+
+        // Library Filter & Search
+        function setupLibraryFilters() {
+            // Filter Buttons
+            document.querySelectorAll('.library-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    
+                    document.querySelectorAll('.library-filter-btn').forEach(b => {
+                        const isActive = b.dataset.category === category;
+                        b.style.background = isActive ? 'var(--kerberos-primary)' : 'transparent';
+                        b.style.color = isActive ? 'white' : 'var(--kerberos-primary)';
+                    });
+                    
+                    const searchTerm = document.getElementById('librarySearchInput').value;
+                    loadModuleLibraryList(category, searchTerm);
+                });
+            });
+            
+            // Search Input
+            document.getElementById('librarySearchInput')?.addEventListener('input', (e) => {
+                const activeFilter = document.querySelector('.library-filter-btn[style*="var(--kerberos-primary)"]')?.dataset.category || 'all';
+                loadModuleLibraryList(activeFilter, e.target.value);
+            });
+        }
+
         function switchSettingsTab(tabName) {
             document.querySelectorAll('#settingsModal .tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('#settingsModal .tab-content').forEach(content => content.classList.remove('active'));
@@ -3392,17 +3990,38 @@ properties: {
         }
 
         function saveModuleInfo() {
-            const moduleId = document.getElementById('moduleEditModal').dataset.moduleId;
-            const module = modules.find(m => m.id === moduleId);
-            if (!module) return;
+            const modal = document.getElementById('moduleEditModal');
+            const moduleId = modal.dataset.moduleId;
+            const isTemplate = modal.dataset.isTemplate === 'true';
             
-            module.name = document.getElementById('editModuleName').value;
-            module.category = document.getElementById('editModuleCategory').value;
-            module.description = document.getElementById('editModuleDescription').value;
+            if (isTemplate) {
+                // Template bearbeiten
+                const template = MODULE_TEMPLATES.find(t => t.id === moduleId);
+                if (template) {
+                    template.name = document.getElementById('editModuleName').value;
+                    template.category = document.getElementById('editModuleCategory').value;
+                    template.description = document.getElementById('editModuleDescription').value;
+                    template.customized = true;
+                    
+                    loadModuleLibrary();
+                    loadModuleLibraryList();
+                    saveCustomTemplates();
+                    showNotification('✅ Template aktualisiert');
+                }
+            } else {
+                // Normales Modul bearbeiten (bestehende Funktionalität)
+                const module = modules.find(m => m.id === moduleId);
+                if (module) {
+                    module.name = document.getElementById('editModuleName').value;
+                    module.category = document.getElementById('editModuleCategory').value;
+                    module.description = document.getElementById('editModuleDescription').value;
+                    
+                    renderCanvas();
+                    showNotification('✅ Modul-Info aktualisiert');
+                }
+            }
             
-            renderCanvas();
             closeModuleEditModal();
-            showNotification('✅ Modul-Info aktualisiert');
         }
 
         // Import File Handler
@@ -3512,6 +4131,112 @@ properties: {
             URL.revokeObjectURL(url);
             
             showNotification('📄 Squarespace-optimierte Seite exportiert');
+        }
+
+        // === NEUE EXPORT/LÖSCH FUNKTIONEN ===
+
+        function exportAllCurrentModules() {
+            if (modules.length === 0) {
+                showNotification('❌ Keine Module zum Exportieren vorhanden');
+                return;
+            }
+            
+            const pageName = document.getElementById('pageNameInput').value || 'Kerberos-Module';
+            const exportData = {
+                name: `Alle Module von "${pageName}"`,
+                description: `Backup aller ${modules.length} Module vom ${new Date().toLocaleString('de-DE')}`,
+                modules: modules.map(module => ({
+                    templateId: module.templateId,
+                    name: module.name,
+                    category: module.category,
+                    description: module.description,
+                    properties: module.properties,
+                    customized: true
+                })),
+                created: new Date().toISOString(),
+                type: 'module-backup',
+                version: '2.0'
+            };
+            
+            const jsonData = JSON.stringify(exportData, null, 2);
+            const filename = `kerberos-module-backup-${Date.now()}.json`;
+            downloadJSON(jsonData, filename);
+            
+            showNotification(`📦 ${modules.length} Module erfolgreich exportiert`);
+        }
+
+        function deleteIndividualModule(moduleId) {
+            const module = modules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            const moduleName = module.name || 'Unbenanntes Modul';
+            
+            if (confirm(`Modul "${moduleName}" wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)) {
+                modules = modules.filter(m => m.id !== moduleId);
+                
+                // Canvas neu rendern
+                renderCanvas();
+                
+                // Wenn das gelöschte Modul ausgewählt war, Property Panel zurücksetzen
+                if (selectedModule && selectedModule.id === moduleId) {
+                    selectedModule = null;
+                    renderPropertyPanel();
+                }
+                
+                // Placeholder anzeigen falls keine Module mehr da sind
+                if (modules.length === 0) {
+                    const placeholder = document.querySelector('.canvas-placeholder');
+                    if (placeholder) placeholder.style.display = 'block';
+                }
+                
+                showNotification(`🗑️ Modul "${moduleName}" gelöscht`);
+            }
+        }
+
+        function showModuleQuickActions(moduleId) {
+            const module = modules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            const actions = `
+                <div style="position: absolute; top: 100%; right: 0; background: white; border: 1px solid #DEE2E6; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 200px;">
+                    <div style="padding: 0.5rem;">
+                        <button onclick="selectModule('${moduleId}')" style="width: 100%; padding: 0.5rem; border: none; background: transparent; text-align: left; cursor: pointer; border-radius: 4px;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">✏️ Bearbeiten</button>
+                        <button onclick="duplicateModule('${moduleId}')" style="width: 100%; padding: 0.5rem; border: none; background: transparent; text-align: left; cursor: pointer; border-radius: 4px;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">📋 Duplizieren</button>
+                        <button onclick="exportSingleModule('${moduleId}')" style="width: 100%; padding: 0.5rem; border: none; background: transparent; text-align: left; cursor: pointer; border-radius: 4px;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">📤 Exportieren</button>
+                        <hr style="margin: 0.5rem 0; border: none; border-top: 1px solid #DEE2E6;">
+                        <button onclick="deleteIndividualModule('${moduleId}')" style="width: 100%; padding: 0.5rem; border: none; background: transparent; text-align: left; cursor: pointer; border-radius: 4px; color: #dc3545;" onmouseover="this.style.background='#fee'" onmouseout="this.style.background='transparent'">🗑️ Löschen</button>
+                    </div>
+                </div>`;
+            
+            return actions;
+        }
+
+        function exportSingleModule(moduleId) {
+            const module = modules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            const template = MODULE_TEMPLATES.find(t => t.id === module.templateId);
+            const exportData = {
+                name: module.name,
+                description: `Einzelmodul-Export: ${module.name}`,
+                module: {
+                    templateId: module.templateId,
+                    name: module.name,
+                    category: module.category || template?.category || 'Custom',
+                    description: module.description || template?.description || '',
+                    properties: module.properties,
+                    customized: true
+                },
+                created: new Date().toISOString(),
+                type: 'single-module',
+                version: '2.0'
+            };
+            
+            const jsonData = JSON.stringify(exportData, null, 2);
+            const filename = `${module.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-modul.json`;
+            downloadJSON(jsonData, filename);
+            
+            showNotification(`📤 Modul "${module.name}" exportiert`);
         }
 
         function showPreview() {
@@ -3650,6 +4375,10 @@ properties: {
         window.saveModuleInfo = saveModuleInfo;
         window.showCreateModuleDialog = showCreateModuleDialog;
         window.updatePropertyFromRichText = updatePropertyFromRichText;
+        // Ergänze diese zu den bestehenden window.functionName Zuweisungen:
+        window.exportAllCurrentModules = exportAllCurrentModules;
+        window.deleteIndividualModule = deleteIndividualModule;
+        window.exportSingleModule = exportSingleModule;
 
         // Create Module Dialog Functions
         function showCreateModuleDialog() {
@@ -3777,6 +4506,7 @@ properties: {
         document.getElementById('settingsBtn').addEventListener('click', showSettingsModal);
         document.getElementById('clearBtn').addEventListener('click', clearAll);
         document.getElementById('previewBtn').addEventListener('click', showPreview);
+        document.getElementById('exportAllModulesBtn').addEventListener('click', exportAllCurrentModules);
 
         // Modal close
         document.getElementById('previewModal').addEventListener('click', (e) => {
