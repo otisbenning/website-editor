@@ -904,35 +904,38 @@
 
         // Erweiterte Module Templates
         const MODULE_TEMPLATES = [
-            {
-                id: 'kerberos-hero-advanced',
-                name: 'Hero mit Bild & Icon',
-                category: 'Hero & Header',
-                description: 'Hero-Bereich mit anpassbarem Bild und Icon',
-                html: `<section style="background: {{backgroundColor}}; color: white; padding: {{sectionSpacing}}; text-align: center; position: relative; overflow: hidden;">
+{
+    id: 'kerberos-hero-advanced',
+    name: 'Hero mit Bild & Icon',
+    category: 'Hero & Header',
+    description: 'Hero-Bereich mit anpassbarem Bild und Icon',
+    html: `<section style="background: {{backgroundColor}}; color: white; padding: {{sectionSpacing}}; text-align: center; position: relative; overflow: hidden;">
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{backgroundImage}}') center/cover; opacity: 0.2;"></div>
     <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
-        <div style="font-family: 'Font Awesome 5 Pro'; font-size: var(--large-text-size); color: {{iconColor}};">{{iconClass}}</div>
-        <h1 style="font-family: var(--heading-font-font-family); font-size: var(--heading-1-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}};">{{title}}</h1>
-        <p style="font-family: var(--body-font-font-family); font-size: var(--large-text-size); line-height: var(--body-font-line-height); opacity: 0.9; color: {{subtitleColor}};">{{subtitle}}</p>
+        <div style="font-family: 'Font Awesome 5 Pro'; font-size: var(--large-text-size); color: {{iconColor}}; margin-bottom: {{iconSpacing}};">{{iconClass}}</div>
+        <h1 style="font-family: var(--heading-font-font-family); font-size: var(--heading-1-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin-bottom: {{titleSpacing}};">{{title}}</h1>
+        <p style="font-family: var(--body-font-font-family); font-size: var(--large-text-size); line-height: var(--body-font-line-height); opacity: 0.9; color: {{subtitleColor}}; margin-bottom: {{textSpacing}};">{{subtitle}}</p>
         <a href="{{buttonLink}}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: rgba(255,255,255,0.2); color: {{buttonColor}}; padding: 1rem 2rem; border-radius: 8px; text-decoration: none; display: inline-block; border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s ease;">{{buttonText}}</a>
     </div>
 </section>`,
-                properties: {
-                    title: 'Compliance & Security Excellence',
-                    titleColor: '#FFFFFF',
-                    subtitle: 'Professionelle Lösungen für Ihre Compliance-Anforderungen',
-                    subtitleColor: '#FFFFFF',
-                    buttonText: 'Jetzt Beratung anfragen',
-                    buttonColor: '#FFFFFF',
-                    buttonLink: '#kontakt',
-                    iconClass: '&#xf132;',
-                    iconColor: '#FFFFFF',
-                    backgroundImage: '',
-                    backgroundColor: 'linear-gradient(135deg, #063AA8, #009CE6)',
-                    sectionSpacing: '6rem 0'
-                }
-            },
+    properties: {
+        title: 'Compliance & Security Excellence',
+        titleColor: '#FFFFFF',
+        subtitle: 'Professionelle Lösungen für Ihre Compliance-Anforderungen',
+        subtitleColor: '#FFFFFF',
+        buttonText: 'Jetzt Beratung anfragen',
+        buttonColor: '#FFFFFF',
+        buttonLink: '#kontakt',
+        iconClass: '&#xf132;',
+        iconColor: '#FFFFFF',
+        backgroundImage: '',
+        backgroundColor: 'linear-gradient(135deg, #063AA8, #009CE6)',
+        sectionSpacing: '6rem 0',
+        iconSpacing: '1.5rem',
+        titleSpacing: '1rem',
+        textSpacing: '2rem'
+    }
+},
             {
                 id: 'kerberos-team-gallery',
                 name: 'Team Galerie',
