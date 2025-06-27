@@ -1258,7 +1258,182 @@ properties: {
                     sectionSpacing: '6rem 0'
                 }
             },
+
+            
+
+            
         ];
+
+        // === NEUE PROZESSORFUNKTIONEN ===
+
+        function processKerberosFAQ(module, html) {
+            const props = module.properties;
+            let faqItems = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                const question = props[`faq${i}Question`];
+                const answer = props[`faq${i}Answer`];
+                const isActive = props[`faq${i}Active`] === 'true';
+                
+                if (question && answer && isActive) {
+                    faqItems += `
+                        <div class="kerberos-faq-item" style="margin-bottom: 1rem; border: 1px solid ${props.borderColor}; border-radius: 8px; background: ${props.cardBackground}; transition: all 0.3s ease; cursor: pointer;">
+                            <div class="faq-header" style="padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); color: ${props.titleColor}; margin: 0; font-weight: 600;">${question}</h3>
+                                <div class="faq-icon" style="font-family: 'Font Awesome 5 Pro'; font-size: 1.25rem; color: ${props.hoverColor}; transition: transform 0.3s ease;">&#xf067;</div>
+                            </div>
+                            <div class="faq-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                                <div style="padding: 0 1.5rem 1.5rem 1.5rem; color: ${props.subtitleColor}; line-height: 1.6;">${answer}</div>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{faqItems}}', faqItems);
+        }
+
+        function processKerberosDashboard(module, html) {
+            const props = module.properties;
+            let dashboardCards = '';
+            
+            for (let i = 1; i <= 4; i++) {
+                const title = props[`card${i}Title`];
+                const value = props[`card${i}Value`];
+                const icon = props[`card${i}Icon`];
+                const color = props[`card${i}Color`];
+                
+                if (title && value) {
+                    dashboardCards += `
+                        <div class="kerberos-dashboard-card" style="background: white; border-radius: 8px; padding: 1.5rem; border: 1px solid ${props.borderColor}; transition: all 0.3s ease; cursor: pointer;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                                <div style="font-family: 'Font Awesome 5 Pro'; font-size: 1.5rem; color: ${color};">${icon}</div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: ${color};">${value}</div>
+                                </div>
+                            </div>
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.textColor}; margin: 0; font-size: 0.9rem; font-weight: 500;">${title}</h4>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{dashboardCards}}', dashboardCards);
+        }
+
+        function processKerberosTestimonials(module, html) {
+            const props = module.properties;
+            let testimonialSlides = '';
+            let navigationDots = '';
+            let slideCount = 0;
+            
+            for (let i = 1; i <= 3; i++) {
+                const text = props[`testimonial${i}Text`];
+                const author = props[`testimonial${i}Author`];
+                const position = props[`testimonial${i}Position`];
+                const company = props[`testimonial${i}Company`];
+                const image = props[`testimonial${i}Image`];
+                const rating = props[`testimonial${i}Rating`] || '5';
+                const isActive = props[`testimonial${i}Active`] === 'true';
+                
+                if (text && author && isActive) {
+                    const initial = author.charAt(0).toUpperCase();
+                    const avatarStyle = image ? 
+                        `background: url('${image}') center/cover;` : 
+                        `background: linear-gradient(135deg, ${props.primaryColor}, #009CE6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
+                    
+                    const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
+                    
+                    testimonialSlides += `
+                        <div class="testimonial-slide" style="min-width: 100%; background: ${props.cardBackground}; border-radius: 12px; padding: 3rem 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1);">
+                            <div style="font-size: 1.5rem; color: ${props.starColor}; margin-bottom: 1.5rem;">${stars}</div>
+                            <blockquote style="font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 1.6; color: ${props.textColor}; margin: 0 0 2rem 0; font-style: italic;">${text}</blockquote>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; ${avatarStyle}">${image ? '' : initial}</div>
+                                <div style="text-align: left;">
+                                    <div style="font-family: var(--heading-font-font-family); font-weight: 600; color: ${props.authorColor}; margin-bottom: 0.25rem;">${author}</div>
+                                    <div style="font-size: 0.9rem; color: ${props.subtitleColor};">${position}</div>
+                                    <div style="font-size: 0.85rem; color: ${props.subtitleColor}; opacity: 0.8;">${company}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    
+                    navigationDots += `
+                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" data-slide="${slideCount}"></button>`;
+                    
+                    slideCount++;
+                }
+            }
+            
+            html = html.replace('{{testimonialSlides}}', testimonialSlides);
+            html = html.replace('{{navigationDots}}', navigationDots);
+            
+            return html;
+        }
+
+        function processKerberosFeatures(module, html) {
+            const props = module.properties;
+            let featureCards = '';
+            
+            for (let i = 1; i <= 6; i++) {
+                const title = props[`feature${i}Title`];
+                const description = props[`feature${i}Description`];
+                const icon = props[`feature${i}Icon`];
+                const color = props[`feature${i}Color`];
+                const isActive = props[`feature${i}Active`] === 'true';
+                
+                if (title && description && isActive) {
+                    featureCards += `
+                        <div class="kerberos-feature-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;">
+                            <div class="feature-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, ${color}10, ${color}05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
+                            <div style="position: relative; z-index: 2;">
+                                <div class="feature-icon" style="font-family: 'Font Awesome 5 Pro'; font-size: 2.5rem; color: ${color}; margin-bottom: 1.5rem; transition: all 0.3s ease;">${icon}</div>
+                                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); color: ${props.textColor}; margin: 0 0 1rem 0;">${title}</h3>
+                                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.subtitleColor}; margin: 0;">${description}</p>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{featureCards}}', featureCards);
+        }
+
+        function processKerberosTimeline(module, html) {
+            const props = module.properties;
+            let timelineSteps = '';
+            
+            for (let i = 1; i <= 4; i++) {
+                const title = props[`step${i}Title`];
+                const description = props[`step${i}Description`];
+                const icon = props[`step${i}Icon`];
+                const color = props[`step${i}Color`];
+                const number = props[`step${i}Number`];
+                const position = props[`step${i}Position`] || (i % 2 === 0 ? 'left' : 'right');
+                const isActive = props[`step${i}Active`] === 'true';
+                
+                if (title && description && isActive) {
+                    const isRight = position === 'right';
+                    const marginTop = i === 1 ? '0' : '4rem';
+                    
+                    timelineSteps += `
+                        <div class="timeline-step" style="position: relative; margin-top: ${marginTop};">
+                            <!-- Dot -->
+                            <div class="timeline-dot" style="position: absolute; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 12px rgba(6,58,168,0.2); transition: transform 0.3s ease;">
+                                <span style="font-family: 'Font Awesome 5 Pro'; color: white; font-size: 1.25rem;">${icon}</span>
+                            </div>
+                            
+                            <!-- Card -->
+                            <div class="timeline-card" style="width: 45%; ${isRight ? 'margin-left: 55%;' : 'margin-right: 55%;'} background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 12px; padding: 2rem; box-shadow: 0 8px 24px rgba(6,58,168,0.08); transition: transform 0.3s ease;">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="background: ${color}; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">${number}</div>
+                                    <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); color: ${color}; margin: 0; font-weight: 600;">${title}</h3>
+                                </div>
+                                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.textColor}; margin: 0;">${description}</p>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{timelineSteps}}', timelineSteps);
+        }
 
         // Module Bibliothek laden
         function loadModuleLibrary() {
@@ -1444,6 +1619,7 @@ properties: {
                     </div>
                     <div style="padding: 0.5rem; background: rgba(6,58,168,0.02); border-radius: 4px; margin-bottom: 0.5rem; font-size: 0.8rem; color: #6c757d; border: 1px solid rgba(6,58,168,0.1);">
                         📄 ${module.name} <span style="opacity: 0.7;">| ${module.category || 'Uncategorized'}</span>
+                        <span style="background: #28a745; color: white; padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.7rem; margin-left: 0.5rem;">LIVE</span>
                     </div>
                     <div class="module-content">${processModuleHTML(module)}</div>
                 `;
@@ -1456,6 +1632,227 @@ properties: {
                 
                 canvas.appendChild(moduleDiv);
             });
+            
+            // 🎮 INTERAKTIVITÄT AKTIVIEREN
+            setTimeout(() => {
+                activateModuleInteractivity();
+            }, 100);
+        }
+
+        // 6️⃣ NEUE FUNKTION: Live-Interaktivität aktivieren
+        function activateModuleInteractivity() {
+            console.log('🎮 Aktiviere Module-Interaktivität...');
+            
+            // FAQ Accordion Interaktivität
+            const faqItems = document.querySelectorAll('.kerberos-faq-item');
+            faqItems.forEach(item => {
+                const header = item.querySelector('.faq-header');
+                const content = item.querySelector('.faq-content');
+                const icon = item.querySelector('.faq-icon');
+                
+                if (header && content && icon) {
+                    // Remove existing listeners
+                    header.replaceWith(header.cloneNode(true));
+                    const newHeader = item.querySelector('.faq-header');
+                    
+                    newHeader.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent module selection
+                        
+                        const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+                        
+                        // Close all others in this module
+                        item.parentElement.querySelectorAll('.kerberos-faq-item').forEach(otherItem => {
+                            const otherContent = otherItem.querySelector('.faq-content');
+                            const otherIcon = otherItem.querySelector('.faq-icon');
+                            if (otherContent && otherIcon) {
+                                otherContent.style.maxHeight = '0px';
+                                otherIcon.style.transform = 'rotate(0deg)';
+                                otherItem.style.background = '#FFFFFF';
+                            }
+                        });
+                        
+                        // Toggle current
+                        if (!isOpen) {
+                            content.style.maxHeight = content.scrollHeight + 'px';
+                            icon.style.transform = 'rotate(45deg)';
+                            item.style.background = 'rgba(6,58,168,0.02)';
+                        }
+                    });
+                }
+            });
+            
+            // Dashboard Card Hover Effects
+            const dashboardCards = document.querySelectorAll('.kerberos-dashboard-card');
+            dashboardCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-4px)';
+                    card.style.boxShadow = '0 8px 24px rgba(6,58,168,0.15)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = '0 2px 8px rgba(6,58,168,0.08)';
+                });
+            });
+            
+            // Chart Area Click Effect
+            const chartAreas = document.querySelectorAll('.kerberos-chart-area');
+            chartAreas.forEach(chartArea => {
+                chartArea.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    chartArea.style.background = 'rgba(6,58,168,0.02)';
+                    setTimeout(() => {
+                        chartArea.style.background = 'white';
+                    }, 200);
+                });
+            });
+            
+            // Testimonials Carousel
+            const testimonialTracks = document.querySelectorAll('.kerberos-testimonials-track');
+            testimonialTracks.forEach(track => {
+                const trackContainer = track.closest('.canvas-module');
+                if (!trackContainer) return;
+                
+                const slides = track.querySelectorAll('.testimonial-slide');
+                const dots = trackContainer.querySelectorAll('.testimonial-dot');
+                const prevBtn = trackContainer.querySelector('.kerberos-prev');
+                const nextBtn = trackContainer.querySelector('.kerberos-next');
+                
+                if (slides.length === 0 || dots.length === 0) return;
+                
+                let currentSlide = 0;
+                let autoPlay = true;
+                let autoPlayInterval;
+                
+                function goToSlide(index) {
+                    currentSlide = index;
+                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    
+                    dots.forEach((dot, i) => {
+                        dot.style.background = i === currentSlide ? '#063AA8' : '#DEE2E6';
+                    });
+                }
+                
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    goToSlide(currentSlide);
+                }
+                
+                function prevSlide() {
+                    currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                    goToSlide(currentSlide);
+                }
+                
+                // Event listeners
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        nextSlide();
+                        autoPlay = false;
+                        clearInterval(autoPlayInterval);
+                    });
+                }
+                
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        prevSlide();
+                        autoPlay = false;
+                        clearInterval(autoPlayInterval);
+                    });
+                }
+                
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        goToSlide(index);
+                        autoPlay = false;
+                        clearInterval(autoPlayInterval);
+                    });
+                });
+                
+                // Auto-play
+                autoPlayInterval = setInterval(() => {
+                    if (autoPlay) nextSlide();
+                }, 5000);
+                
+                // Pause on hover
+                track.addEventListener('mouseenter', () => {
+                    autoPlay = false;
+                    clearInterval(autoPlayInterval);
+                });
+                track.addEventListener('mouseleave', () => {
+                    autoPlay = true;
+                    autoPlayInterval = setInterval(() => {
+                        if (autoPlay) nextSlide();
+                    }, 5000);
+                });
+                
+                // Initialize
+                goToSlide(0);
+            });
+            
+            // Feature Cards Hover Effects
+            const featureCards = document.querySelectorAll('.kerberos-feature-card');
+            featureCards.forEach(card => {
+                const icon = card.querySelector('.feature-icon');
+                const overlay = card.querySelector('.feature-overlay');
+                
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                    card.style.boxShadow = '0 16px 40px rgba(6,58,168,0.15)';
+                    if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+                    if (overlay) overlay.style.opacity = '1';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                    card.style.boxShadow = '0 4px 12px rgba(6,58,168,0.08)';
+                    if (icon) icon.style.transform = 'scale(1) rotate(0deg)';
+                    if (overlay) overlay.style.opacity = '0';
+                });
+            });
+            
+            // Timeline Steps Intersection Observer
+            const timelineSteps = document.querySelectorAll('.timeline-step');
+            if (timelineSteps.length > 0) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, { threshold: 0.3 });
+                
+                timelineSteps.forEach((step, index) => {
+                    step.style.opacity = '0';
+                    step.style.transform = 'translateY(20px)';
+                    step.style.transition = `all 0.6s ease ${index * 0.2}s`;
+                    observer.observe(step);
+                    
+                    // Hover effects
+                    step.addEventListener('mouseenter', () => {
+                        const card = step.querySelector('.timeline-card');
+                        const dot = step.querySelector('.timeline-dot');
+                        if (card) card.style.transform = 'scale(1.02)';
+                        if (dot) dot.style.transform = 'scale(1.2)';
+                    });
+                    
+                    step.addEventListener('mouseleave', () => {
+                        const card = step.querySelector('.timeline-card');
+                        const dot = step.querySelector('.timeline-dot');
+                        if (card) card.style.transform = 'scale(1)';
+                        if (dot) dot.style.transform = 'scale(1)';
+                    });
+                });
+            }
+            
+            console.log('✅ Module-Interaktivität aktiviert!');
+        }
+
+        // 7️⃣ ALIAS FUNKTION für Live-Rendering
+        function renderCanvasWithInteractivity() {
+            renderCanvas(); // Das macht jetzt automatisch die Interaktivität
         }
 
         // HTML mit Properties verarbeiten
@@ -1611,6 +2008,16 @@ properties: {
                 html = processStatsModule(module, html);
             } else if (module.templateId === 'kerberos-team-gallery') {
                 html = processTeamGalleryModule(module, html);
+            } else if (module.templateId === 'kerberos-faq-accordion') {
+                html = processKerberosFAQ(module, html);
+            } else if (module.templateId === 'kerberos-dashboard-showcase') {
+                html = processKerberosDashboard(module, html);
+            } else if (module.templateId === 'kerberos-testimonials-carousel') {
+                html = processKerberosTestimonials(module, html);
+            } else if (module.templateId === 'kerberos-features-grid') {
+                html = processKerberosFeatures(module, html);
+            } else if (module.templateId === 'kerberos-process-timeline') {
+                html = processKerberosTimeline(module, html);
             }
             
             // 2. Universelle Layout-Verarbeitung für Bild+Text Module
@@ -1779,6 +2186,8 @@ properties: {
                     html += renderImagePicker(key, value);
                 } else if (fieldType === 'spacing') {
                     html += renderSpacingPicker(key, value);
+                } else if (fieldType === 'richtext') {
+                    html += renderRichTextEditor(key, value);
                 } else if (fieldType === 'textarea') {
                     html += `<textarea class="form-control" oninput="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
                 } else if (fieldType === 'select') {
@@ -1839,10 +2248,14 @@ properties: {
                 key.includes('Padding') || key.includes('padding') || 
                 key.includes('Gap') || key.includes('gap')) return 'spacing';
             
-            // ENTFERNT: Size Properties (übernimmt Squarespace CSS)
+            // 🆕 RICH TEXT für längere Texte und spezielle Felder
+            if (key.includes('Question') || key.includes('Answer') || 
+                key.includes('Description') || key.includes('Text') ||
+                key.includes('Content') || key.includes('text') ||
+                (typeof value === 'string' && value.length > 100)) return 'richtext';
             
-            // Textarea für längere Texte
-            if ((key.includes('text') || key.includes('Description') || key.includes('description')) && value.length > 50) return 'textarea';
+            // Normale Textarea für mittlere Texte
+            if ((key.includes('text') || key.includes('Description') || key.includes('description')) && value.length > 50 && value.length <= 100) return 'textarea';
             
             // Default: Text input
             return 'text';
@@ -2222,6 +2635,110 @@ properties: {
                 .join('-');
             
             return formattedName;
+        }
+
+        function renderRichTextEditor(key, currentValue) {
+            const editorId = `richtext-${key}-${Date.now()}`;
+            
+            return `
+                <div class="richtext-editor-container" style="border: 1px solid var(--kerberos-border); border-radius: 4px; overflow: hidden;">
+                    <!-- Toolbar -->
+                    <div class="richtext-toolbar" style="background: #f8f9fa; border-bottom: 1px solid var(--kerberos-border); padding: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                        <button type="button" class="rt-btn rt-bold" data-command="bold" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-weight: bold;" title="Fett">B</button>
+                        <button type="button" class="rt-btn rt-italic" data-command="italic" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; font-style: italic;" title="Kursiv">I</button>
+                        <button type="button" class="rt-btn rt-underline" data-command="underline" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer; text-decoration: underline;" title="Unterstrichen">U</button>
+                        <div style="width: 1px; background: #dee2e6; margin: 0 0.25rem;"></div>
+                        <button type="button" class="rt-btn rt-link" data-command="createLink" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer;" title="Link">🔗</button>
+                        <button type="button" class="rt-btn rt-unlink" data-command="unlink" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer;" title="Link entfernen">🔗❌</button>
+                        <div style="width: 1px; background: #dee2e6; margin: 0 0.25rem;"></div>
+                        <button type="button" class="rt-btn rt-ul" data-command="insertUnorderedList" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer;" title="Liste">• Liste</button>
+                        <button type="button" class="rt-btn rt-clear" data-command="removeFormat" style="padding: 0.25rem 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 3px; cursor: pointer;" title="Formatierung entfernen">🧹</button>
+                    </div>
+                    
+                    <!-- Editor -->
+                    <div id="${editorId}" 
+                        contenteditable="true" 
+                        class="richtext-editor"
+                        data-property="${key}"
+                        style="min-height: 120px; padding: 0.75rem; background: white; outline: none; line-height: 1.5;"
+                        placeholder="Text eingeben...">${currentValue}</div>
+                </div>
+                
+                <script>
+                    (function() {
+                        const editor = document.getElementById('${editorId}');
+                        const toolbar = editor.parentElement.querySelector('.richtext-toolbar');
+                        
+                        // Toolbar Events
+                        toolbar.addEventListener('click', (e) => {
+                            if (e.target.classList.contains('rt-btn')) {
+                                e.preventDefault();
+                                const command = e.target.dataset.command;
+                                
+                                if (command === 'createLink') {
+                                    const url = prompt('Link-URL eingeben:', 'https://');
+                                    if (url) {
+                                        document.execCommand(command, false, url);
+                                    }
+                                } else {
+                                    document.execCommand(command, false, null);
+                                }
+                                
+                                editor.focus();
+                                updatePropertyFromRichText('${key}', editor.innerHTML);
+                            }
+                        });
+                        
+                        // Content Changes
+                        editor.addEventListener('input', () => {
+                            updatePropertyFromRichText('${key}', editor.innerHTML);
+                        });
+                        
+                        // Paste as plain text (optional)
+                        editor.addEventListener('paste', (e) => {
+                            e.preventDefault();
+                            const text = (e.clipboardData || window.clipboardData).getData('text');
+                            document.execCommand('insertText', false, text);
+                        });
+                        
+                        // Update active toolbar buttons
+                        editor.addEventListener('keyup', updateToolbarState);
+                        editor.addEventListener('mouseup', updateToolbarState);
+                        
+                        function updateToolbarState() {
+                            toolbar.querySelectorAll('.rt-btn').forEach(btn => {
+                                btn.style.background = 'white';
+                            });
+                            
+                            if (document.queryCommandState('bold')) {
+                                toolbar.querySelector('.rt-bold').style.background = '#e3f2fd';
+                            }
+                            if (document.queryCommandState('italic')) {
+                                toolbar.querySelector('.rt-italic').style.background = '#e3f2fd';
+                            }
+                            if (document.queryCommandState('underline')) {
+                                toolbar.querySelector('.rt-underline').style.background = '#e3f2fd';
+                            }
+                        }
+                    })();
+                </script>
+            `;
+        }
+
+        // 3️⃣ RICH TEXT PROPERTY UPDATE FUNKTION
+        // Füge diese neue globale Funktion hinzu:
+
+        function updatePropertyFromRichText(key, htmlValue) {
+            if (!selectedModule) return;
+            
+            selectedModule.properties[key] = htmlValue;
+            
+            // Live-Update mit Debouncing
+            clearTimeout(window.richTextTimeout);
+            window.richTextTimeout = setTimeout(() => {
+                renderCanvasWithInteractivity();
+                showNotification('✅ Text aktualisiert');
+            }, 500);
         }
 
         // Property aktualisieren mit Live-Vorschau
