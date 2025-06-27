@@ -1593,6 +1593,9 @@ properties: {
             const canvas = document.getElementById('canvas');
             const placeholder = canvas.querySelector('.canvas-placeholder');
             
+            // Alte Event Listener entfernen
+            removeModuleEventListeners();
+            
             const moduleElements = canvas.querySelectorAll('.canvas-module');
             moduleElements.forEach(el => el.remove());
             
@@ -1637,6 +1640,28 @@ properties: {
             setTimeout(() => {
                 activateModuleInteractivity();
             }, 100);
+        }
+
+        // Event Listener Management
+        let moduleEventListeners = new Map();
+
+        function removeModuleEventListeners() {
+            moduleEventListeners.forEach((listeners, moduleId) => {
+                listeners.forEach(({ element, event, handler }) => {
+                    if (element && element.removeEventListener) {
+                        element.removeEventListener(event, handler);
+                    }
+                });
+            });
+            moduleEventListeners.clear();
+        }
+
+        function addModuleEventListener(moduleId, element, event, handler) {
+            if (!moduleEventListeners.has(moduleId)) {
+                moduleEventListeners.set(moduleId, []);
+            }
+            moduleEventListeners.get(moduleId).push({ element, event, handler });
+            element.addEventListener(event, handler);
         }
 
         // 6️⃣ NEUE FUNKTION: Live-Interaktivität aktivieren
@@ -1859,16 +1884,27 @@ properties: {
         function processModuleHTML(module) {
             let html = module.html;
             
-            // Universelle Template-Verarbeitung für alle Module
-            html = processUniversalModule(module, html);
-            
-            // Standard Property-Ersetzung
-            Object.entries(module.properties).forEach(([key, value]) => {
-                const regex = new RegExp(`{{${key}}}`, 'g');
-                html = html.replace(regex, value);
-            });
-            
-            return html;
+            try {
+                // Universelle Template-Verarbeitung für alle Module
+                html = processUniversalModule(module, html);
+                
+                // Standard Property-Ersetzung mit Escape für HTML
+                Object.entries(module.properties).forEach(([key, value]) => {
+                    const regex = new RegExp(`{{${key}}}`, 'g');
+                    // Sichere HTML-Ersetzung
+                    const safeValue = typeof value === 'string' ? value.replace(/'/g, "&#39;").replace(/"/g, "&quot;") : value;
+                    html = html.replace(regex, safeValue);
+                });
+                
+                return html;
+            } catch (error) {
+                console.error('Fehler beim Verarbeiten des Moduls:', error);
+                return `<div style="padding: 2rem; background: #fee; border: 1px solid #f00; color: #900;">
+                    <h3>Modul-Fehler</h3>
+                    <p>Das Modul "${module.name}" konnte nicht verarbeitet werden.</p>
+                    <small>Fehler: ${error.message}</small>
+                </div>`;
+            }
         }
 
         // Spezielle Verarbeitung für Statistik-Module
@@ -2640,7 +2676,7 @@ properties: {
         function renderRichTextEditor(key, currentValue) {
             const editorId = `richtext-${key}-${Date.now()}`;
             
-            return `
+            const html = `
                 <div class="richtext-editor-container" style="border: 1px solid var(--kerberos-border); border-radius: 4px; overflow: hidden;">
                     <!-- Toolbar -->
                     <div class="richtext-toolbar" style="background: #f8f9fa; border-bottom: 1px solid var(--kerberos-border); padding: 0.5rem; display: flex; gap: 0.25rem; flex-wrap: wrap;">
@@ -2662,67 +2698,73 @@ properties: {
                         data-property="${key}"
                         style="min-height: 120px; padding: 0.75rem; background: white; outline: none; line-height: 1.5;"
                         placeholder="Text eingeben...">${currentValue}</div>
-                </div>
-                
-                <script>
-                    (function() {
-                        const editor = document.getElementById('${editorId}');
-                        const toolbar = editor.parentElement.querySelector('.richtext-toolbar');
-                        
-                        // Toolbar Events
-                        toolbar.addEventListener('click', (e) => {
-                            if (e.target.classList.contains('rt-btn')) {
-                                e.preventDefault();
-                                const command = e.target.dataset.command;
-                                
-                                if (command === 'createLink') {
-                                    const url = prompt('Link-URL eingeben:', 'https://');
-                                    if (url) {
-                                        document.execCommand(command, false, url);
-                                    }
-                                } else {
-                                    document.execCommand(command, false, null);
-                                }
-                                
-                                editor.focus();
-                                updatePropertyFromRichText('${key}', editor.innerHTML);
-                            }
-                        });
-                        
-                        // Content Changes
-                        editor.addEventListener('input', () => {
-                            updatePropertyFromRichText('${key}', editor.innerHTML);
-                        });
-                        
-                        // Paste as plain text (optional)
-                        editor.addEventListener('paste', (e) => {
-                            e.preventDefault();
-                            const text = (e.clipboardData || window.clipboardData).getData('text');
-                            document.execCommand('insertText', false, text);
-                        });
-                        
-                        // Update active toolbar buttons
-                        editor.addEventListener('keyup', updateToolbarState);
-                        editor.addEventListener('mouseup', updateToolbarState);
-                        
-                        function updateToolbarState() {
-                            toolbar.querySelectorAll('.rt-btn').forEach(btn => {
-                                btn.style.background = 'white';
-                            });
-                            
-                            if (document.queryCommandState('bold')) {
-                                toolbar.querySelector('.rt-bold').style.background = '#e3f2fd';
-                            }
-                            if (document.queryCommandState('italic')) {
-                                toolbar.querySelector('.rt-italic').style.background = '#e3f2fd';
-                            }
-                            if (document.queryCommandState('underline')) {
-                                toolbar.querySelector('.rt-underline').style.background = '#e3f2fd';
-                            }
+                </div>`;
+            
+            // Script nach dem Rendern initialisieren
+            setTimeout(() => initializeRichTextEditor(editorId, key), 10);
+            
+            return html;
+        }
+
+        // Separate Initialisierungsfunktion
+        function initializeRichTextEditor(editorId, propertyKey) {
+            const editor = document.getElementById(editorId);
+            if (!editor) return;
+            
+            const toolbar = editor.parentElement.querySelector('.richtext-toolbar');
+            if (!toolbar) return;
+            
+            // Toolbar Events
+            toolbar.addEventListener('click', (e) => {
+                if (e.target.classList.contains('rt-btn')) {
+                    e.preventDefault();
+                    const command = e.target.dataset.command;
+                    
+                    if (command === 'createLink') {
+                        const url = prompt('Link-URL eingeben:', 'https://');
+                        if (url) {
+                            document.execCommand(command, false, url);
                         }
-                    })();
-                </script>
-            `;
+                    } else {
+                        document.execCommand(command, false, null);
+                    }
+                    
+                    editor.focus();
+                    updatePropertyFromRichText(propertyKey, editor.innerHTML);
+                }
+            });
+            
+            // Content Changes
+            editor.addEventListener('input', () => {
+                updatePropertyFromRichText(propertyKey, editor.innerHTML);
+            });
+            
+            // Paste as plain text
+            editor.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                document.execCommand('insertText', false, text);
+            });
+            
+            // Update active toolbar buttons
+            const updateToolbarState = () => {
+                toolbar.querySelectorAll('.rt-btn').forEach(btn => {
+                    btn.style.background = 'white';
+                });
+                
+                if (document.queryCommandState('bold')) {
+                    toolbar.querySelector('.rt-bold').style.background = '#e3f2fd';
+                }
+                if (document.queryCommandState('italic')) {
+                    toolbar.querySelector('.rt-italic').style.background = '#e3f2fd';
+                }
+                if (document.queryCommandState('underline')) {
+                    toolbar.querySelector('.rt-underline').style.background = '#e3f2fd';
+                }
+            };
+            
+            editor.addEventListener('keyup', updateToolbarState);
+            editor.addEventListener('mouseup', updateToolbarState);
         }
 
         // 3️⃣ RICH TEXT PROPERTY UPDATE FUNKTION
@@ -3573,6 +3615,43 @@ properties: {
         }
 
         // Event Listeners
+        // Globale Funktionen definieren
+        window.updateProperty = updateProperty;
+        window.showIconPicker = showIconPicker;
+        window.showImagePicker = showImagePicker;
+        window.selectIcon = selectIcon;
+        window.selectImage = selectImage;
+        window.closeIconModal = closeIconModal;
+        window.closeImageModal = closeImageModal;
+        window.switchTab = switchTab;
+        window.switchImportTab = switchImportTab;
+        window.switchSettingsTab = switchSettingsTab;
+        window.updateSpacing = updateSpacing;
+        window.applySpacingToAll = applySpacingToAll;
+        window.applyChanges = applyChanges;
+        window.saveCurrentPage = saveCurrentPage;
+        window.closeSavePageModal = closeSavePageModal;
+        window.loadPage = loadPage;
+        window.deleteSavedPage = deleteSavedPage;
+        window.exportSavedPage = exportSavedPage;
+        window.closeLoadPageModal = closeLoadPageModal;
+        window.importData = importData;
+        window.closeImportModal = closeImportModal;
+        window.exportCurrentPage = exportCurrentPage;
+        window.exportModuleTemplates = exportModuleTemplates;
+        window.exportSelectedModule = exportSelectedModule;
+        window.showSavePageDialog = showSavePageDialog;
+        window.showLoadPageDialog = showLoadPageDialog;
+        window.showImportModal = showImportModal;
+        window.showSettingsModal = showSettingsModal;
+        window.closeSettingsModal = closeSettingsModal;
+        window.editModuleInfo = editModuleInfo;
+        window.closeModuleEditModal = closeModuleEditModal;
+        window.saveModuleInfo = saveModuleInfo;
+        window.showCreateModuleDialog = showCreateModuleDialog;
+        window.updatePropertyFromRichText = updatePropertyFromRichText;
+
+        // Event Listeners
         document.getElementById('exportPageBtn').addEventListener('click', exportPage);
         document.getElementById('savePageBtn').addEventListener('click', showSavePageDialog);
         document.getElementById('loadPageBtn').addEventListener('click', showLoadPageDialog);
@@ -3591,14 +3670,14 @@ properties: {
         // Close modals on escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                closePreview();
-                closeIconModal();
-                closeImageModal();
-                closeSavePageModal();
-                closeLoadPageModal();
-                closeImportModal();
-                closeSettingsModal();
-                closeModuleEditModal();
+                // Nur sichtbare Modals schließen
+                const modals = ['previewModal', 'iconModal', 'imageModal', 'savePageModal', 'loadPageModal', 'importModal', 'settingsModal', 'moduleEditModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal && modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                    }
+                });
             }
         });
 
