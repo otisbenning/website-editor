@@ -1444,110 +1444,20 @@ properties: {
         }
 
         // Modul auswählen
-        // HTML mit Properties verarbeiten
-                function processModuleHTML(module) {
-                    let html = module.html;
-
-                    // Special handling for statistics module: generate statsBlocks dynamically
-                    if (module.templateId === 'kerberos-stats') {
-                        // Collect stats (assume up to 4)
-                        const stats = [];
-                        for (let i = 1; i <= 4; i++) {
-                            stats.push({
-                                icon: module.properties[`stat${i}Icon`] || '',
-                                iconColor: module.properties[`stat${i}IconColor`] || '',
-                                number: module.properties[`stat${i}Number`] || '',
-                                numberColor: module.properties[`stat${i}NumberColor`] || '',
-                                text: module.properties[`stat${i}Text`] || '',
-                                textColor: module.properties[`stat${i}TextColor`] || ''
-                            });
-                        }
-                        // Generate blocks
-                        let statsBlocks = '';
-                        stats.forEach(stat => {
-                            statsBlocks += `
-                <div style="text-align: center; padding: ${module.properties.statPadding};">
-                    <div style="margin-bottom: ${module.properties.iconSpacing};">
-                        <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${module.properties.iconSize}; color: ${stat.iconColor};">${stat.icon}</div>
-                    </div>
-                    <div style="margin-bottom: ${module.properties.numberSpacing};">
-                        <div style="font-family: var(--heading-font-font-family); font-size: ${module.properties.numberSize}; font-weight: var(--heading-font-font-weight); color: ${stat.numberColor}; line-height: 1;">${stat.number}</div>
-                    </div>
-                    <div>
-                        <p style="font-family: var(--body-font-font-family); font-size: ${module.properties.textSize}; font-weight: var(--body-font-font-weight); line-height: var(--body-font-line-height); color: ${stat.textColor}; margin: 0;">${stat.text}</p>
-                    </div>
-                </div>
-                `;
-                        });
-                        html = html.replace('{{statsBlocks}}', statsBlocks);
-                    }
-
-                    Object.entries(module.properties).forEach(([key, value]) => {
-                        const regex = new RegExp(`{{${key}}}`, 'g');
-                        html = html.replace(regex, value);
-                    });
-                    return html;
-                }
-
-                // Modul auswählen
-                function selectModule(moduleId) {
-                    document.querySelectorAll('.canvas-module').forEach(el => {
-                        el.classList.remove('selected');
-                    });
-                    
-                    const moduleEl = document.querySelector(`[data-module-id="${moduleId}"]`);
-                    if (moduleEl) {
-                        moduleEl.classList.add('selected');
-                    }
-                    
-                    selectedModule = modules.find(m => m.id === moduleId);
-                    renderPropertyPanel();
-                    updateExportButtons(); // Update export buttons when module is selected
-                }
-
-                // Property Panel rendern
-                    let html = module.html;
-        
-                    // Special handling for statistics module: generate statsBlocks dynamically
-                    if (module.templateId === 'kerberos-stats') {
-                        // Collect stats (assume up to 4)
-                        const stats = [];
-                        for (let i = 1; i <= 4; i++) {
-                            stats.push({
-                                icon: module.properties[`stat${i}Icon`] || '',
-                                iconColor: module.properties[`stat${i}IconColor`] || '',
-                                number: module.properties[`stat${i}Number`] || '',
-                                numberColor: module.properties[`stat${i}NumberColor`] || '',
-                                text: module.properties[`stat${i}Text`] || '',
-                                textColor: module.properties[`stat${i}TextColor`] || ''
-                            });
-                        }
-                        // Generate blocks
-                        let statsBlocks = '';
-                        stats.forEach(stat => {
-                            statsBlocks += `
-        <div style="text-align: center; padding: ${module.properties.statPadding};">
-            <div style="margin-bottom: ${module.properties.iconSpacing};">
-                <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${module.properties.iconSize}; color: ${stat.iconColor};">${stat.icon}</div>
-            </div>
-            <div style="margin-bottom: ${module.properties.numberSpacing};">
-                <div style="font-family: var(--heading-font-font-family); font-size: ${module.properties.numberSize}; font-weight: var(--heading-font-font-weight); color: ${stat.numberColor}; line-height: 1;">${stat.number}</div>
-            </div>
-            <div>
-                <p style="font-family: var(--body-font-font-family); font-size: ${module.properties.textSize}; font-weight: var(--body-font-font-weight); line-height: var(--body-font-line-height); color: ${stat.textColor}; margin: 0;">${stat.text}</p>
-            </div>
-        </div>
-        `;
-                        });
-                        html = html.replace('{{statsBlocks}}', statsBlocks);
-                    }
-        
-                    Object.entries(module.properties).forEach(([key, value]) => {
-                        const regex = new RegExp(`{{${key}}}`, 'g');
-                        html = html.replace(regex, value);
-                    });
-                    return html;
-                }
+        function selectModule(moduleId) {
+            document.querySelectorAll('.canvas-module').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            const moduleEl = document.querySelector(`[data-module-id="${moduleId}"]`);
+            if (moduleEl) {
+                moduleEl.classList.add('selected');
+            }
+            
+            selectedModule = modules.find(m => m.id === moduleId);
+            renderPropertyPanel();
+            updateExportButtons(); // Update export buttons when module is selected
+        }
         function renderPropertyPanel() {
             const panel = document.getElementById('propertyPanel');
             
