@@ -3015,8 +3015,65 @@ properties: {
                 });
             });            
             
-            console.log('✅ Module-Interaktivität aktiviert!');
+        // ✨ UNIVERSELLE BUTTON HOVER-EFFEKTE
+        applyUniversalButtonHoverEffects();
+
+        console.log('✅ Module-Interaktivität aktiviert!');
         }
+
+        // ✨ Universelle Button Hover-Effekte für alle Module
+        function applyUniversalButtonHoverEffects() {
+            // Entferne alte Hover-Styles
+            const existingStyle = document.getElementById('kerberos-button-hover-styles');
+            if (existingStyle) existingStyle.remove();
+            
+            // Erstelle CSS für alle Module
+            let css = `/* Kerberos Universal Button Hover Effects */\n`;
+            
+            // Basis-Styles für alle Kerberos-Buttons
+            css += `.kerberos-btn {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                cursor: pointer !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }\n\n`;
+            
+            // Individuelle Hover-Styles für jedes Modul
+            modules.forEach(module => {
+                const props = module.properties;
+                const hoverColor = props.buttonHoverColor || '#FFFFFF';
+                const hoverBg = props.buttonHoverBg || 'rgba(6,58,168,0.8)';
+                const hoverTransform = props.buttonHoverTransform || 'translateY(-2px)';
+                const hoverShadow = props.buttonHoverShadow || '0 8px 24px rgba(6,58,168,0.25)';
+                
+                css += `.kerberos-btn-${module.id}:hover {
+                    background: ${hoverBg} !important;
+                    color: ${hoverColor} !important;
+                    transform: ${hoverTransform} !important;
+                    box-shadow: ${hoverShadow} !important;
+                }\n\n`;
+                
+                // Ripple-Effekt für moderne Interaktion
+                css += `.kerberos-btn-${module.id}:active {
+                    transform: translateY(0px) !important;
+                    transition: all 0.1s ease !important;
+                }\n\n`;
+            });
+            
+            // Fallback für Buttons ohne spezifische Klasse
+            css += `.canvas-module a[style*="background"]:not(.kerberos-btn):hover {
+                filter: brightness(1.1) saturate(1.1) !important;
+                transform: translateY(-1px) !important;
+                box-shadow: 0 6px 20px rgba(6,58,168,0.2) !important;
+            }\n\n`;
+            
+            // CSS einfügen
+            const style = document.createElement('style');
+            style.id = 'kerberos-button-hover-styles';
+            style.textContent = css;
+            document.head.appendChild(style);
+            
+            console.log('✨ Universelle Button-Hover-Effekte aktiviert!');
 
         // 7️⃣ ALIAS FUNKTION für Live-Rendering
         function renderCanvasWithInteractivity() {
@@ -3182,6 +3239,12 @@ properties: {
         function processUniversalModule(module, html) {
             const props = module.properties;
             
+            // 0. Hover-Effekt Properties für alle Module hinzufügen (falls nicht vorhanden)
+            if (!props.buttonHoverColor) props.buttonHoverColor = '#FFFFFF';
+            if (!props.buttonHoverBg) props.buttonHoverBg = 'rgba(6,58,168,0.8)';
+            if (!props.buttonHoverTransform) props.buttonHoverTransform = 'translateY(-2px)';
+            if (!props.buttonHoverShadow) props.buttonHoverShadow = '0 8px 24px rgba(6,58,168,0.25)';
+            
             // 1. Spezielle Module (falls vorhanden)
             if (module.templateId === 'kerberos-stats') {
                 html = processStatsModule(module, html);
@@ -3237,7 +3300,19 @@ properties: {
                 const regex = new RegExp(`{{${key}}}`, 'g');
                 html = html.replace(regex, value);
             });
-            
+
+            // 4. Button-Klassen für Hover-Effekte hinzufügen
+            html = html.replace(
+                /(<a[^>]*style="[^"]*background:[^"]*"[^>]*>)/g, 
+                (match) => {
+                    if (match.includes('kerberos-btn') || match.includes('display: inline-flex') || 
+                        match.includes('padding:') || match.includes('border-radius:')) {
+                        return match.replace('<a', `<a class="kerberos-btn kerberos-btn-${module.id}"`);
+                    }
+                    return match;
+                }
+            );
+
             return html;
         }
 
@@ -3251,6 +3326,12 @@ properties: {
             const hasIcon = props.iconClass || html.includes('{{iconClass}}');
             const hasButton = props.buttonText || html.includes('{{buttonText}}');
             
+            // Hover-Effekt Properties hinzufügen (falls nicht vorhanden)
+            if (!props.buttonHoverColor) props.buttonHoverColor = '#FFFFFF';
+            if (!props.buttonHoverBg) props.buttonHoverBg = 'rgba(6,58,168,0.8)';
+            if (!props.buttonHoverTransform) props.buttonHoverTransform = 'translateY(-2px)';
+            if (!props.buttonHoverShadow) props.buttonHoverShadow = '0 8px 24px rgba(6,58,168,0.25)';
+            
             // Icon Element (falls vorhanden)
             const iconElement = hasIcon ? 
                 `<div style="margin-bottom: ${props.iconSpacing || '1rem'};">
@@ -3262,7 +3343,7 @@ properties: {
                 ${iconElement}
                 <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.titleColor || '#063AA8'}; margin: 0 0 ${props.titleSpacing || '1rem'} 0;">${props.title || 'Titel'}</h3>
                 <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.textColor || '#6c757d'}; margin: 0 0 ${props.textSpacing || '2rem'} 0;">${props.text || 'Text'}</p>
-                ${hasButton ? `<a href="${props.buttonLink || '#'}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${props.buttonBgColor || '#063AA8'}; color: ${props.buttonTextColor || '#FFFFFF'}; padding: ${props.buttonPadding || '0.75rem 1.5rem'}; border-radius: ${props.buttonRadius || '6px'}; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: ${props.buttonShadow || '0 4px 12px rgba(6,58,168,0.2)'};">${props.buttonText || 'Button'}${props.buttonIcon ? `<span style="font-family: 'Font Awesome 5 Pro';">${props.buttonIcon}</span>` : ''}</a>` : ''}
+                ${hasButton ? `<a href="${props.buttonLink || '#'}" class="kerberos-btn kerberos-btn-${module.id}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${props.buttonBgColor || '#063AA8'}; color: ${props.buttonTextColor || '#FFFFFF'}; padding: ${props.buttonPadding || '0.75rem 1.5rem'}; border-radius: ${props.buttonRadius || '6px'}; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: ${props.buttonShadow || '0 4px 12px rgba(6,58,168,0.2)'}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">${props.buttonText || 'Button'}${props.buttonIcon ? `<span style="font-family: 'Font Awesome 5 Pro';">${props.buttonIcon}</span>` : ''}</a>` : ''}
             `;
             
             // Image Content (falls vorhanden)
@@ -4066,10 +4147,10 @@ properties: {
                 positionColor: 'Position-Farbe',
                 descriptionColor: 'Beschreibung-Farbe',
                 
-                // === BUTTONS ===
+                // === BUTTONS (für alle Module) ===
                 buttonText: 'Button-Text',
                 buttonLink: 'Button-Link',
-                buttonBgColor: 'Button-Farbe',
+                buttonBgColor: 'Button-Hintergrund',
                 buttonTextColor: 'Button-Text-Farbe',
                 buttonPadding: 'Button-Innenabstand',
                 buttonRadius: 'Button-Rundung',
@@ -4077,6 +4158,12 @@ properties: {
                 buttonShadow: 'Button-Schatten',
                 buttonSpacing: 'Button-Abstand',
                 buttonIcon: 'Button-Icon',
+
+                // === BUTTON HOVER-EFFEKTE (universell) ===
+                buttonHoverColor: 'Button-Hover Text-Farbe',
+                buttonHoverBg: 'Button-Hover Hintergrund',
+                buttonHoverTransform: 'Button-Hover Transformation',
+                buttonHoverShadow: 'Button-Hover Schatten',
                 
                 // === CTA BUTTONS (für moderne Module) ===
                 primaryButtonText: 'Haupt-Button Text',
@@ -6191,6 +6278,6 @@ properties: {
                 showNotification('🛡️ Kerberos Module Editor (Vollversion) bereit');
             }, 500);
         });
-    </script>
+</script>
 </body>
 </html>
