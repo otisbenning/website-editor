@@ -3194,19 +3194,29 @@ properties: {
             // Layout-spezifischer Content
             switch(layoutType) {
                 case 'image-left':
-                    layoutContent = `
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.contentGap}; align-items: center;">
-                            <div>${imageContent}</div>
-                            <div>${textContent}</div>
-                        </div>`;
+                    layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
+                        <div class="mobile-image-first">${imageContent}</div>
+                        <div class="mobile-text-second">${textContent}</div>
+                    </div>
+                    <style>
+                    @media (max-width: 768px) {
+                        .mobile-image-first { order: 1 !important; }
+                        .mobile-text-second { order: 2 !important; }
+                    }
+                    </style>`;
                     break;
                     
                 case 'image-right':
-                    layoutContent = `
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.contentGap}; align-items: center;">
-                            <div style="order: 2;">${imageContent}</div>
-                            <div style="order: 1;">${textContent}</div>
-                        </div>`;
+                    layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
+                        <div style="order: 2;" class="mobile-image-first">${imageContent}</div>
+                        <div style="order: 1;" class="mobile-text-second">${textContent}</div>
+                    </div>
+                    <style>
+                    @media (max-width: 768px) {
+                        .mobile-image-first { order: 1 !important; }
+                        .mobile-text-second { order: 2 !important; }
+                    }
+                    </style>`;
                     break;
                     
                 case 'image-top':
@@ -3314,6 +3324,62 @@ properties: {
                 }
             );
 
+            // 5. ✨ Hover-Effekt CSS einbetten (für Squarespace Export)
+            html = embedHoverEffectsCSS(module, html);
+
+            return html;
+        }
+
+        // ✨ Hover-Effekte CSS für Export generieren
+        function embedHoverEffectsCSS(module, html) {
+            const props = module.properties;
+            
+            // Hover-Properties mit Fallback-Werten
+            const hoverColor = props.buttonHoverColor || '#FFFFFF';
+            const hoverBg = props.buttonHoverBg || 'rgba(6,58,168,0.8)';
+            const hoverTransform = props.buttonHoverTransform || 'translateY(-2px)';
+            const hoverShadow = props.buttonHoverShadow || '0 8px 24px rgba(6,58,168,0.25)';
+            
+            // CSS für dieses spezifische Modul generieren
+            const hoverCSS = `
+        <style>
+        /* Kerberos Button Hover Effects - ${module.name} */
+        .kerberos-btn-${module.id} {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+
+        .kerberos-btn-${module.id}:hover {
+            background: ${hoverBg} !important;
+            color: ${hoverColor} !important;
+            transform: ${hoverTransform} !important;
+            box-shadow: ${hoverShadow} !important;
+        }
+
+        .kerberos-btn-${module.id}:active {
+            transform: translateY(0px) !important;
+            transition: all 0.1s ease !important;
+        }
+
+        /* Fallback für Buttons ohne spezifische Klasse */
+        .kerberos-module-${module.id} a[style*="background"]:not(.kerberos-btn):hover {
+            filter: brightness(1.1) saturate(1.1) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 6px 20px rgba(6,58,168,0.2) !important;
+            transition: all 0.3s ease !important;
+        }
+        </style>`;
+            
+            // CSS am Anfang des HTML einfügen UND Wrapper-Klasse hinzufügen
+            if (html.includes('<section') || html.includes('<div')) {
+                // Füge Modul-spezifische Klasse zum Haupt-Element hinzu
+                html = html.replace(/(<(?:section|div)[^>]*)(>)/, `$1 class="kerberos-module-${module.id}"$2`);
+                // CSS vor dem HTML einfügen
+                html = hoverCSS + '\n' + html;
+            }
+            
             return html;
         }
 
@@ -3374,8 +3440,8 @@ properties: {
                         
                     case 'image-right':
                         layoutContent = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${gap}; align-items: center;">
-                            <div style="order: 2;">${imageContent}</div>
-                            <div style="order: 1;">${textContent}</div>
+                            <div style="order: 2; @media (max-width: 768px) { order: 1; }">${imageContent}</div>
+                            <div style="order: 1; @media (max-width: 768px) { order: 2; }">${textContent}</div>
                         </div>`;
                         break;
                         
@@ -3760,7 +3826,8 @@ properties: {
                 key.includes('Layout') || key.includes('layout') ||
                 key.includes('Type') || key.includes('type') ||
                 key.endsWith('Alt') || key === 'imageAlt' ||
-                key.includes('Border') || key.includes('border')) return 'select';
+                key.includes('Border') || key.includes('border') ||
+                key.includes('Align') || key.includes('align')) return 'select';
             
             // Abstände (vereinfacht)
             if (key.includes('Spacing') || key.includes('spacing') || 
@@ -3823,6 +3890,17 @@ properties: {
                     { value: 'image-bottom', label: '🖼️ Bild unten' }
                 ];
             }
+
+            // Ausrichtungs-Optionen (für alle Align-Properties)
+            else if (key.includes('Align') || key.includes('align')) {
+                options = [
+                    { value: 'left', label: '◀️ Links' },
+                    { value: 'center', label: '🎯 Mitte' },
+                    { value: 'right', label: '▶️️ Rechts' },
+                    { value: 'justify', label: '📏 Block' }
+                ];
+            }
+
             // Reihenfolge
             else if (key.includes('Order') || key.includes('order')) {
                 options = [
