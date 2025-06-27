@@ -1320,6 +1320,92 @@ properties: {
             return html.replace('{{faqItems}}', faqItems);
         }
 
+        // Erweiterte Testimonials Processor für bis zu 30 Testimonials
+        function processKerberosTestimonialsExtended(module, html) {
+            const props = module.properties;
+            let testimonialSlides = '';
+            let navigationDots = '';
+            let slideCount = 0;
+            
+            for (let i = 1; i <= 30; i++) {
+                const text = props[`testimonial${i}Text`];
+                const author = props[`testimonial${i}Author`];
+                const position = props[`testimonial${i}Position`];
+                const company = props[`testimonial${i}Company`];
+                const image = props[`testimonial${i}Image`];
+                const rating = props[`testimonial${i}Rating`] || '5';
+                const isActive = props[`testimonial${i}Active`] === 'true';
+                
+                if (text && author && isActive) {
+                    const initial = author.charAt(0).toUpperCase();
+                    const avatarStyle = image ? 
+                        `background: url('${image}') center/cover;` : 
+                        `background: linear-gradient(135deg, ${props.primaryColor || '#063AA8'}, #009CE6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
+                    
+                    const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
+                    
+                    testimonialSlides += `
+                        <div class="testimonial-slide" style="min-width: 100%; background: ${props.cardBackground}; border-radius: ${props.cardRadius}; padding: ${props.cardPadding}; text-align: center; box-shadow: ${props.cardShadow};">
+                            <div style="font-size: 1.5rem; color: ${props.starColor}; margin-bottom: 1.5rem;">${stars}</div>
+                            <blockquote style="font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 1.6; color: ${props.textColor}; margin: 0 0 2rem 0; font-style: italic;">${text}</blockquote>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; ${avatarStyle}">${image ? '' : initial}</div>
+                                <div style="text-align: left;">
+                                    <div style="font-family: var(--heading-font-font-family); font-weight: 600; color: ${props.authorColor}; margin-bottom: 0.25rem;">${author}</div>
+                                    <div style="font-size: 0.9rem; color: ${props.subtitleColor};">${position}</div>
+                                    <div style="font-size: 0.85rem; color: ${props.subtitleColor}; opacity: 0.8;">${company}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    
+                    navigationDots += `
+                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" data-slide="${slideCount}"></button>`;
+                    
+                    slideCount++;
+                }
+            }
+            
+            html = html.replace('{{testimonialSlides}}', testimonialSlides);
+            html = html.replace('{{navigationDots}}', navigationDots);
+            
+            return html;
+        }
+
+        // Korrigierte Team Gallery Processor 
+        function processKerberosTeamGalleryFixed(module, html) {
+            const props = module.properties;
+            let teamMembers = '';
+            
+            // Dynamische Generierung der Team-Mitglieder (bis zu 6)
+            for (let i = 1; i <= 6; i++) {
+                const name = props[`member${i}Name`];
+                const position = props[`member${i}Position`];
+                const description = props[`member${i}Description`];
+                const image = props[`member${i}Image`];
+                const initialBg = props[`member${i}InitialBg`] || 'linear-gradient(135deg, #063AA8, #009CE6)';
+                const isActive = props[`member${i}Active`] === 'true';
+                
+                if (name && isActive) {
+                    const initial = name.charAt(0).toUpperCase();
+                    const avatarStyle = image ? 
+                        `background: url('${image}') center/cover; background-color: #E9ECEF;` : 
+                        `background: ${initialBg}; background-color: #E9ECEF; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700;`;
+                    
+                    const avatarContent = image ? '' : initial;
+                    
+                    teamMembers += `
+                        <div class="team-member-card" style="background: white; border-radius: 8px; padding: ${props.cardPadding || '2rem'}; text-align: center; box-shadow: 0 4px 12px rgba(6,58,168,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; max-width: 320px; width: 100%;">
+                            <div style="width: ${props.avatarSize || '120px'}; height: ${props.avatarSize || '120px'}; border-radius: 50%; margin: 0 auto 1rem auto; ${avatarStyle} transition: transform 0.3s ease;">${avatarContent}</div>
+                            <h4 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.nameColor || '#212529'}; margin: 0 0 0.5rem 0;">${name}</h4>
+                            <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: ${props.positionColor || '#6c757d'}; margin: 0 0 1rem 0; font-weight: 600;">${position}</p>
+                            <p style="font-family: var(--body-font-font-family); font-size: var(--small-text-size); line-height: var(--body-font-line-height); color: ${props.descriptionColor || '#6c757d'}; margin: 0;">${description}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{teamMembers}}', teamMembers);
+        }        
+
         function processKerberosDashboard(module, html) {
             const props = module.properties;
             let dashboardCards = '';
@@ -1716,6 +1802,109 @@ properties: {
             }
             
             return html.replace('{{integrationCards}}', integrationCards);
+        }
+
+        // Neue Processor für erweiterte Module
+        function processKerberosFeatureComparisonExtended(module, html) {
+            const props = module.properties;
+            let featureRows = '';
+            let mobileFeatureCards = '';
+            
+            // Generiere Tabellenzeilen für aktive Features
+            for (let i = 1; i <= 10; i++) {
+                const col1 = props[`row${i}Col1`];
+                const col2 = props[`row${i}Col2`];
+                const col3 = props[`row${i}Col3`];
+                const col4 = props[`row${i}Col4`];
+                const isActive = props[`row${i}Active`] === 'true';
+                
+                if (col1 && col2 && col3 && col4 && isActive) {
+                    const rowBg = i % 2 === 0 ? props.tableRowBg2 : props.tableRowBg1;
+                    featureRows += `
+                        <tr style="background: ${rowBg};">
+                            <td style="padding: 1rem; font-family: var(--body-font-font-family); color: ${props.tableTextColor}; font-weight: 600;">${col1}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${col2}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${col3}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${col4}</td>
+                        </tr>`;
+                    
+                    // Mobile Feature Cards
+                    mobileFeatureCards += `
+                        <div style="background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid ${props.mobileBorder};">
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.mobileFeatureTitle}; margin: 0 0 1rem 0; font-size: 1.1rem;">${col1}</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.col2Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.headerCol2}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${col2}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.col3Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.headerCol3}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${col3}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.col4Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.headerCol4}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${col4}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            html = html.replace('{{featureRows}}', featureRows);
+            html = html.replace('{{mobileFeatureCards}}', mobileFeatureCards);
+            
+            return html;
+        }
+
+        function processKerberosPricingResponseExtended(module, html) {
+            const props = module.properties;
+            let featureRows = '';
+            let mobileFeatureCards = '';
+            
+            // Generiere Feature-Vergleichszeilen
+            for (let i = 1; i <= 10; i++) {
+                const featureName = props[`feature${i}Name`];
+                const plan1Feature = props[`feature${i}Plan1`];
+                const plan2Feature = props[`feature${i}Plan2`];
+                const plan3Feature = props[`feature${i}Plan3`];
+                const isActive = props[`feature${i}Active`] === 'true';
+                
+                if (featureName && plan1Feature && plan2Feature && plan3Feature && isActive) {
+                    const rowBg = i % 2 === 0 ? props.tableRowBg2 : props.tableRowBg1;
+                    featureRows += `
+                        <tr style="background: ${rowBg};">
+                            <td style="padding: 1rem; font-family: var(--body-font-font-family); color: ${props.tableTextColor}; font-weight: 600;">${featureName}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${plan1Feature}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${plan2Feature}</td>
+                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableTextColor};">${plan3Feature}</td>
+                        </tr>`;
+                    
+                    // Mobile Feature Cards
+                    mobileFeatureCards += `
+                        <div style="background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid ${props.mobileBorder};">
+                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.mobileFeatureTitle}; margin: 0 0 1rem 0; font-size: 1.1rem;">${featureName}</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan1Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.plan1Name}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${plan1Feature}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan2Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.plan2Name}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${plan2Feature}</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: ${props.plan3Color}; margin-bottom: 0.5rem; font-size: 0.9rem;">${props.plan3Name}</div>
+                                    <div style="color: ${props.tableTextColor}; font-size: 0.9rem;">${plan3Feature}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+            }
+            
+            html = html.replace('{{featureRows}}', featureRows);
+            html = html.replace('{{mobileFeatureCards}}', mobileFeatureCards);
+            
+            return html;
         }
 
         // Module Bibliothek laden
@@ -2423,6 +2612,8 @@ properties: {
                 html = processKerberosTestimonials(module, html);
             } else if (module.templateId === 'kerberos-features-grid') {
                 html = processKerberosFeatures(module, html);
+            } else if (module.templateId === 'kerberos-benefits') {
+                html = processKerberosBenefits(module, html);    
             } else if (module.templateId === 'kerberos-process-timeline' || module.templateId === 'kerberos-process-timeline-fixed') {
                 html = processKerberosTimeline(module, html);
             }
@@ -2439,8 +2630,20 @@ properties: {
                 html = processKerberosProductShowcase(module, html);
             } else if (module.templateId === 'kerberos-integrations-grid') {
                 html = processKerberosIntegrationsGrid(module, html);
+            } // In processUniversalModule hinzufügen:
+            else if (module.templateId === 'kerberos-feature-comparison-extended') {
+                html = processKerberosFeatureComparisonExtended(module, html);
+            } else if (module.templateId === 'kerberos-pricing-responsive-extended') {
+                html = processKerberosPricingResponseExtended(module, html);
             }
-            
+            // In processUniversalModule hinzufügen:
+            else if (module.templateId === 'kerberos-testimonials-carousel-extended') {
+                html = processKerberosTestimonialsExtended(module, html);
+            } else if (module.templateId === 'kerberos-team-gallery-fixed') {
+                html = processKerberosTeamGalleryFixed(module, html);
+            }
+
+
             // 2. Universelle Layout-Verarbeitung für Bild+Text Module
             if (html.includes('{{layoutContent}}')) {
                 html = processUniversalLayout(module, html);
@@ -2536,6 +2739,36 @@ properties: {
             return html.replace('{{layoutContent}}', layoutContent);
         }
 
+        function processKerberosBenefits(module, html) {
+            const props = module.properties;
+            const showIcons = props.showIcons === 'true';
+            let benefitItems = '';
+            
+            for (let i = 1; i <= 6; i++) {
+                const title = props[`benefit${i}Title`];
+                const description = props[`benefit${i}Description`];
+                const icon = props[`benefit${i}Icon`];
+                const iconColor = props[`benefit${i}IconColor`];
+                const titleColor = props[`benefit${i}TitleColor`];
+                const descriptionColor = props[`benefit${i}DescriptionColor`];
+                const isActive = props[`benefit${i}Active`] === 'true';
+                
+                if (title && description && isActive) {
+                    const iconElement = showIcons ? 
+                        `<div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize}; color: ${iconColor}; margin-bottom: ${props.iconSpacing}; text-align: center;">${icon}</div>` : '';
+                    
+                    benefitItems += `
+                        <div class="kerberos-benefit-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: ${props.cardRadius}; padding: ${props.cardPadding}; text-align: center; transition: all 0.3s ease; cursor: default; box-shadow: ${props.cardShadow};">
+                            ${iconElement}
+                            <h3 style="font-family: var(--heading-font-font-family); font-size: ${props.titleSize}; font-weight: var(--heading-font-font-weight); color: ${titleColor}; margin: 0 0 ${props.titleSpacing} 0;">${title}</h3>
+                            <p style="font-family: var(--body-font-font-family); font-size: ${props.descriptionSize}; line-height: var(--body-font-line-height); color: ${descriptionColor}; margin: 0;">${description}</p>
+                        </div>`;
+                }
+            }
+            
+            return html.replace('{{benefitItems}}', benefitItems);
+        }
+
         // Modul auswählen
         function selectModule(moduleId) {
             document.querySelectorAll('.canvas-module').forEach(el => {
@@ -2587,37 +2820,42 @@ properties: {
                 <p style="font-size: 0.8rem; color: #6c757d; margin-bottom: 1.5rem;">${template.description}</p>
             `;
             
-            Object.entries(selectedModule.properties).forEach(([key, value]) => {
-                // Properties ausblenden die Squarespace übernimmt oder veraltet sind
-                if (shouldHideProperty(key)) {
-                    return; // Skip this property
-                }
-                
-                const fieldType = getFieldType(key, value);
-                const label = formatPropertyName(key);
-                
-                html += `<div class="form-group">`;
-                html += `<label class="form-label">${label}</label>`;
-                
-                if (fieldType === 'color') {
-                    html += renderColorPicker(key, value);
-                } else if (fieldType === 'icon') {
-                    html += renderIconPicker(key, value);
-                } else if (fieldType === 'image') {
-                    html += renderImagePicker(key, value);
-                } else if (fieldType === 'spacing') {
-                    html += renderSpacingPicker(key, value);
-                } else if (fieldType === 'richtext') {
-                    html += renderRichTextEditor(key, value);
-                } else if (fieldType === 'textarea') {
-                    html += `<textarea class="form-control" oninput="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
-                } else if (fieldType === 'select') {
-                    html += renderSelectPicker(key, value);
+            // Gruppiere Properties für Accordion
+            const propertyGroups = groupPropertiesForAccordion(selectedModule.properties);
+
+            Object.entries(propertyGroups).forEach(([groupName, groupProperties]) => {
+                if (groupName === 'general') {
+                    // Allgemeine Properties ohne Accordion
+                    groupProperties.forEach(([key, value]) => {
+                        const fieldType = getFieldType(key, value);
+                        const label = formatPropertyName(key);
+                        html += renderPropertyField(key, value, fieldType, label);
+                    });
                 } else {
-                    html += `<input type="text" class="form-control" value="${value}" oninput="updateProperty('${key}', this.value)">`;
+                    // Accordion für gruppierte Properties
+                    const isExpanded = groupProperties.some(([key]) => key.includes('1') || key.includes('Active')); // Erste Gruppe standardmäßig offen
+                    html += `
+                        <div class="property-accordion" style="margin: 1rem 0; border: 1px solid var(--kerberos-border); border-radius: 6px; overflow: hidden;">
+                            <div class="accordion-header" onclick="toggleAccordion(this)" style="background: var(--kerberos-primary); color: white; padding: 0.75rem 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 0.9rem;">
+                                <span>${formatGroupName(groupName)}</span>
+                                <span class="accordion-icon" style="transition: transform 0.3s ease;">${isExpanded ? '−' : '+'}</span>
+                            </div>
+                            <div class="accordion-content" style="max-height: ${isExpanded ? 'none' : '0'}; overflow: hidden; transition: max-height 0.3s ease; background: #fafbfc;">
+                                <div style="padding: 1rem;">
+                    `;
+                    
+                    groupProperties.forEach(([key, value]) => {
+                        const fieldType = getFieldType(key, value);
+                        const label = formatPropertyName(key);
+                        html += renderPropertyField(key, value, fieldType, label);
+                    });
+                    
+                    html += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }
-                
-                html += `</div>`;
             });
             
             html += `
@@ -2642,6 +2880,106 @@ properties: {
             
             panel.innerHTML = html;
         }
+
+        function groupPropertiesForAccordion(properties) {
+            const groups = {
+                general: [],
+                testimonials: [],
+                features: [],
+                team: [],
+                stats: [],
+                rows: [],
+                plans: [],
+                members: []
+            };
+            
+            Object.entries(properties).forEach(([key, value]) => {
+                if (shouldHideProperty(key)) return;
+                
+                // Gruppierung basierend auf Property-Namen
+                if (key.includes('testimonial')) {
+                    groups.testimonials.push([key, value]);
+                } else if (key.includes('feature') && (key.includes('Plan') || key.includes('Name'))) {
+                    groups.features.push([key, value]);
+                } else if (key.includes('member') || key.includes('team')) {
+                    groups.team.push([key, value]);
+                } else if (key.includes('stat') && key.match(/\d/)) {
+                    groups.stats.push([key, value]);
+                } else if (key.includes('row') && key.match(/\d/)) {
+                    groups.rows.push([key, value]);
+                } else if (key.includes('plan') && key.match(/\d/)) {
+                    groups.plans.push([key, value]);
+                } else {
+                    groups.general.push([key, value]);
+                }
+            });
+            
+            // Entferne leere Gruppen
+            Object.keys(groups).forEach(key => {
+                if (groups[key].length === 0) {
+                    delete groups[key];
+                }
+            });
+            
+            return groups;
+        }
+
+        function formatGroupName(groupKey) {
+            const names = {
+                general: 'Allgemeine Einstellungen',
+                testimonials: '💬 Testimonials & Bewertungen',
+                features: '⭐ Features & Eigenschaften',
+                team: '👥 Team-Mitglieder',
+                stats: '📊 Statistiken & Zahlen',
+                rows: '📋 Tabellen-Zeilen',
+                plans: '💰 Preispläne',
+                members: '👤 Mitarbeiter'
+            };
+            return names[groupKey] || groupKey;
+        }
+
+        function renderPropertyField(key, value, fieldType, label) {
+            let html = `<div class="form-group">`;
+            html += `<label class="form-label">${label}</label>`;
+            
+            if (fieldType === 'color') {
+                html += renderColorPicker(key, value);
+            } else if (fieldType === 'icon') {
+                html += renderIconPicker(key, value);
+            } else if (fieldType === 'image') {
+                html += renderImagePicker(key, value);
+            } else if (fieldType === 'spacing') {
+                html += renderSpacingPicker(key, value);
+            } else if (fieldType === 'richtext') {
+                html += renderRichTextEditor(key, value);
+            } else if (fieldType === 'textarea') {
+                html += `<textarea class="form-control" oninput="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
+            } else if (fieldType === 'select') {
+                html += renderSelectPicker(key, value);
+            } else {
+                html += `<input type="text" class="form-control" value="${value}" oninput="updateProperty('${key}', this.value)">`;
+            }
+            
+            html += `</div>`;
+            return html;
+        }
+
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.accordion-icon');
+            const isOpen = content.style.maxHeight !== '0px' && content.style.maxHeight !== '';
+            
+            if (isOpen) {
+                content.style.maxHeight = '0px';
+                icon.textContent = '+';
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '−';
+            }
+        }
+
+        // Globale Funktion verfügbar machen
+        window.toggleAccordion = toggleAccordion;
 
         function groupPropertiesByContext(properties) {
             const groups = {
@@ -3794,26 +4132,42 @@ properties: {
                     
                 case 'module':
                     if (data.module) {
+                        // Füge das Modul zu den Templates hinzu
+                        if (!MODULE_TEMPLATES.find(t => t.id === data.module.id)) {
+                            MODULE_TEMPLATES.push(data.module);
+                        }
+                        
+                        // Lade Module-Bibliothek neu
+                        loadModuleLibrary();
+                        
+                        // Optional: Füge das Modul direkt zum Canvas hinzu
                         addModuleToCanvas(data.module.id);
+                        
                         showNotification('✅ Modul importiert: ' + data.name);
                         closeImportModal();
                     }
                     break;
                     
-                case 'templates':
-                    if (confirm('Neue Module-Templates hinzufügen?')) {
-                        if (data.templates && Array.isArray(data.templates)) {
-                            data.templates.forEach(template => {
-                                if (!MODULE_TEMPLATES.find(t => t.id === template.id)) {
-                                    MODULE_TEMPLATES.push(template);
-                                }
-                            });
-                            loadModuleLibrary();
-                            showNotification('✅ Templates importiert: ' + data.templates.length + ' Module');
-                            closeImportModal();
+                    case 'templates':
+                        if (confirm('Neue Module-Templates hinzufügen?')) {
+                            if (data.templates && Array.isArray(data.templates)) {
+                                data.templates.forEach(template => {
+                                    if (!MODULE_TEMPLATES.find(t => t.id === template.id)) {
+                                        // Markiere importierte Templates als customized
+                                        template.customized = true;
+                                        if (!template.category || template.category === '') {
+                                            template.category = 'Custom';
+                                        }
+                                        MODULE_TEMPLATES.push(template);
+                                    }
+                                });
+                                loadModuleLibrary();
+                                saveCustomTemplates(); // Speichere importierte Templates
+                                showNotification('✅ Templates importiert: ' + data.templates.length + ' Module');
+                                closeImportModal();
+                            }
                         }
-                    }
-                    break;
+                        break;
                     
                 default:
                     showNotification('❌ Unbekannter Datentyp: ' + data.type);
@@ -4181,10 +4535,18 @@ properties: {
         }
 
         function exportModuleLibrary() {
-            const customTemplates = MODULE_TEMPLATES.filter(t => t.customized || t.category === 'Custom');
+            // Erweiterte Filterlogik für Export
+            const customTemplates = MODULE_TEMPLATES.filter(t => {
+                return t.customized || 
+                    t.category === 'Custom' || 
+                    !t.id.startsWith('kerberos-hero') ||  // Alles außer den geschützten Basis-Modulen
+                    t.id.includes('extended') ||           // Alle erweiterten Module
+                    t.id.includes('comparison') ||         // Vergleichstabellen
+                    t.id.includes('pricing');              // Preistabellen
+            });
             
             if (customTemplates.length === 0) {
-                showNotification('❌ Keine benutzerdefinierten Templates zum Exportieren');
+                showNotification('❌ Keine exportierbaren Templates gefunden');
                 return;
             }
             
@@ -4202,6 +4564,32 @@ properties: {
             
             showNotification(`📤 ${customTemplates.length} Custom Templates exportiert`);
         }
+
+        function repairTemplateLibrary() {
+            let repaired = 0;
+            MODULE_TEMPLATES.forEach(template => {
+                // Markiere alle nicht-Standard Module als customized
+                if (!template.id.startsWith('kerberos-hero') || 
+                    template.id.includes('extended') || 
+                    template.id.includes('comparison') || 
+                    template.id.includes('pricing')) {
+                    if (!template.customized) {
+                        template.customized = true;
+                        repaired++;
+                    }
+                }
+            });
+            
+            if (repaired > 0) {
+                saveCustomTemplates();
+                showNotification(`🔧 ${repaired} Templates als exportierbar markiert`);
+            } else {
+                showNotification('✅ Template-Bibliothek ist bereits korrekt');
+            }
+        }
+
+        // Globale Funktion verfügbar machen
+        window.repairTemplateLibrary = repairTemplateLibrary;
 
         function saveCustomTemplates() {
             const customTemplates = MODULE_TEMPLATES.filter(t => t.customized || t.category === 'Custom');
