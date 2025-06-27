@@ -2643,6 +2643,102 @@ properties: {
             panel.innerHTML = html;
         }
 
+        function groupPropertiesByContext(properties) {
+            const groups = {
+                'Allgemein': {},
+                'Plan 1': {},
+                'Plan 2': {},  
+                'Plan 3': {},
+                'Tabelle': {},
+                'Layout': {}
+            };
+            
+            Object.entries(properties).forEach(([key, value]) => {
+                if (shouldHideProperty(key)) return;
+                
+                if (key.includes('plan1')) groups['Plan 1'][key] = value;
+                else if (key.includes('plan2')) groups['Plan 2'][key] = value;
+                else if (key.includes('plan3')) groups['Plan 3'][key] = value;
+                else if (key.includes('table') || key.includes('feature')) groups['Tabelle'][key] = value;
+                else if (key.includes('Spacing') || key.includes('Gap') || key.includes('Padding')) groups['Layout'][key] = value;
+                else groups['Allgemein'][key] = value;
+            });
+            
+            // Leere Gruppen entfernen
+            return Object.fromEntries(Object.entries(groups).filter(([, props]) => Object.keys(props).length > 0));
+        }
+
+        function renderPlanQuickSetup(planNumber) {
+            return `
+                <div style="background: #F8F9FA; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #DEE2E6;">
+                    <h5 style="margin: 0 0 1rem 0; color: #063AA8; font-size: 0.9rem;">⚡ Plan ${planNumber} Schnell-Setup</h5>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+                        <button class="btn btn-secondary" onclick="applyPlanTemplate('${planNumber}', 'basic')" style="font-size: 0.75rem; padding: 0.4rem;">💼 Basis</button>
+                        <button class="btn btn-secondary" onclick="applyPlanTemplate('${planNumber}', 'premium')" style="font-size: 0.75rem; padding: 0.4rem;">⭐ Premium</button>
+                        <button class="btn btn-secondary" onclick="applyPlanTemplate('${planNumber}', 'enterprise')" style="font-size: 0.75rem; padding: 0.4rem;">🏢 Enterprise</button>
+                        <button class="btn btn-warning" onclick="copyFromPlan('${planNumber}')" style="font-size: 0.75rem; padding: 0.4rem;">📋 Kopieren</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchPropertyTab(e) {
+            const targetGroup = e.target.dataset.group;
+            
+            // Update Tabs
+            document.querySelectorAll('.property-tab').forEach(tab => {
+                const isActive = tab.dataset.group === targetGroup;
+                tab.style.background = isActive ? '#063AA8' : 'transparent';
+                tab.style.color = isActive ? 'white' : '#063AA8';
+            });
+            
+            // Update Content
+            document.querySelectorAll('.property-group').forEach(group => {
+                group.style.display = group.dataset.group === targetGroup ? 'block' : 'none';
+            });
+        }
+
+        function groupPropertiesByContext(properties) {
+            const groups = {
+                'Allgemein': {},
+                'Plan 1': {},
+                'Plan 2': {},
+                'Plan 3': {},
+                'Tabelle': {},
+                'Layout': {}
+            };
+            
+            Object.entries(properties).forEach(([key, value]) => {
+                if (shouldHideProperty(key)) return;
+                
+                if (key.includes('plan1')) groups['Plan 1'][key] = value;
+                else if (key.includes('plan2')) groups['Plan 2'][key] = value;
+                else if (key.includes('plan3')) groups['Plan 3'][key] = value;
+                else if (key.includes('table') || key.includes('feature')) groups['Tabelle'][key] = value;
+                else if (key.includes('Spacing') || key.includes('Gap')) groups['Layout'][key] = value;
+                else groups['Allgemein'][key] = value;
+            });
+            
+            // Leere Gruppen entfernen
+            return Object.fromEntries(Object.entries(groups).filter(([, props]) => Object.keys(props).length > 0));
+        }
+
+        function switchPropertyTab(e) {
+            const targetGroup = e.target.dataset.group;
+            
+            // Update Tabs
+            document.querySelectorAll('.property-tab').forEach(tab => {
+                const isActive = tab.dataset.group === targetGroup;
+                tab.style.background = isActive ? '#063AA8' : 'transparent';
+                tab.style.color = isActive ? 'white' : '#063AA8';
+            });
+            
+            // Update Content
+            document.querySelectorAll('.property-group').forEach(group => {
+                group.style.display = group.dataset.group === targetGroup ? 'block' : 'none';
+            });
+        }
+
         // Generische Property-Type-Erkennung für alle Module
         function getFieldType(key, value) {
             // Farben (immer Color Picker)
@@ -3433,9 +3529,35 @@ properties: {
             showNotification('✅ Änderungen übernommen');
         }
 
+        function highlightChangedElement(property) {
+            const moduleElement = document.querySelector(`[data-module-id="${selectedModule.id}"] .module-content`);
+            if (!moduleElement) return;
+            
+            // Highlight das geänderte Element
+            const elements = moduleElement.querySelectorAll('*');
+            elements.forEach(el => {
+                if (el.style.color === selectedModule.properties[property] || 
+                    el.textContent.includes(selectedModule.properties[property])) {
+                    el.style.transition = 'all 0.3s ease';
+                    el.style.outline = '2px solid #009CE6';
+                    el.style.outlineOffset = '2px';
+                    
+                    setTimeout(() => {
+                        el.style.outline = 'none';
+                    }, 2000);
+                }
+            });
+        }
+
         // Globale Funktionen
         window.selectModule = selectModule;
         window.editModuleInfo = editModuleInfo;
+        window.applyPlanTemplate = applyPlanTemplate;
+        window.copyFromPlan = copyFromPlan;
+        window.switchPropertyTab = switchPropertyTab;
+        window.groupPropertiesByContext = groupPropertiesByContext;
+        window.renderPlanQuickSetup = renderPlanQuickSetup;
+        window.highlightChangedElement = highlightChangedElement;
         
         // Seite speichern
         function showSavePageDialog() {
@@ -3726,8 +3848,192 @@ properties: {
             loadModuleLibraryList();
         }
 
+
         function closeModuleLibraryModal() {
             document.getElementById('moduleLibraryModal').style.display = 'none';
+        }
+
+        // 🆕 BULK EDIT MODAL - HIER EINFÜGEN:
+        function showBulkEditModal() {
+            const modal = document.createElement('div');
+            modal.id = 'bulkEditModal';
+            modal.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="color: #063AA8; margin: 0 0 1.5rem 0;">🔧 Bulk-Bearbeitung</h3>
+                        
+                        <div style="margin-bottom: 2rem; padding: 1rem; background: #F8F9FA; border-radius: 6px;">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1rem;">💰 Preise anpassen</h4>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Alle Preise mit Faktor multiplizieren:</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="number" id="priceMultiplier" step="0.1" value="1.0" style="flex: 1; padding: 0.5rem; border: 1px solid #DEE2E6; border-radius: 4px;">
+                                <button onclick="applyBulkPriceChange()" class="btn btn-primary">✓ Anwenden</button>
+                            </div>
+                            <small style="color: #6c757d;">Beispiel: 1.1 = +10%, 0.9 = -10%</small>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem; padding: 1rem; background: #F8F9FA; border-radius: 6px;">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1rem;">🎨 Farben ersetzen</h4>
+                            <div style="display: grid; grid-template-columns: 1fr auto 1fr auto; gap: 0.5rem; align-items: center;">
+                                <input type="text" id="oldColor" placeholder="Alte Farbe (z.B. #063AA8)" style="padding: 0.5rem; border: 1px solid #DEE2E6; border-radius: 4px;">
+                                <span>→</span>
+                                <input type="text" id="newColor" placeholder="Neue Farbe" style="padding: 0.5rem; border: 1px solid #DEE2E6; border-radius: 4px;">
+                                <button onclick="applyBulkColorChange()" class="btn btn-primary">✓ Ersetzen</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem; padding: 1rem; background: #F8F9FA; border-radius: 6px;">
+                            <h4 style="margin: 0 0 1rem 0; font-size: 1rem;">📝 Text ersetzen</h4>
+                            <div style="display: grid; grid-template-columns: 1fr auto 1fr auto; gap: 0.5rem; align-items: center;">
+                                <input type="text" id="oldText" placeholder="Alter Text" style="padding: 0.5rem; border: 1px solid #DEE2E6; border-radius: 4px;">
+                                <span>→</span>
+                                <input type="text" id="newText" placeholder="Neuer Text" style="padding: 0.5rem; border: 1px solid #DEE2E6; border-radius: 4px;">
+                                <button onclick="applyBulkTextChange()" class="btn btn-primary">✓ Ersetzen</button>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: right; border-top: 1px solid #DEE2E6; padding-top: 1rem;">
+                            <button onclick="closeBulkEditModal()" class="btn btn-secondary">Schließen</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeBulkEditModal();
+                }
+            });
+        }
+
+        function closeBulkEditModal() {
+            const modal = document.getElementById('bulkEditModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function applyBulkPriceChange() {
+            const multiplier = parseFloat(document.getElementById('priceMultiplier').value);
+            if (!multiplier || !selectedModule) return;
+            
+            let changedCount = 0;
+            Object.keys(selectedModule.properties).forEach(key => {
+                if (key.includes('Price') || key.includes('price')) {
+                    const currentValue = selectedModule.properties[key];
+                    // Extract number from price string (e.g., "€299" -> 299)
+                    const match = currentValue.match(/[\d,.]+/);
+                    if (match) {
+                        const number = parseFloat(match[0].replace(',', ''));
+                        const newNumber = Math.round(number * multiplier);
+                        selectedModule.properties[key] = currentValue.replace(match[0], newNumber.toString());
+                        changedCount++;
+                    }
+                }
+            });
+            
+            if (changedCount > 0) {
+                renderPropertyPanel();
+                applyChanges();
+                showNotification(`✅ ${changedCount} Preise aktualisiert (Faktor: ${multiplier})`);
+                closeBulkEditModal();
+            }
+        }
+
+        function applyBulkColorChange() {
+            const oldColor = document.getElementById('oldColor').value.trim();
+            const newColor = document.getElementById('newColor').value.trim();
+            
+            if (!oldColor || !newColor || !selectedModule) return;
+            
+            let changedCount = 0;
+            Object.keys(selectedModule.properties).forEach(key => {
+                if (selectedModule.properties[key] === oldColor) {
+                    selectedModule.properties[key] = newColor;
+                    changedCount++;
+                }
+            });
+            
+            if (changedCount > 0) {
+                renderPropertyPanel();
+                applyChanges();
+                showNotification(`✅ ${changedCount} Farben von ${oldColor} zu ${newColor} geändert`);
+                closeBulkEditModal();
+            }
+        }
+
+        function applyBulkTextChange() {
+            const oldText = document.getElementById('oldText').value.trim();
+            const newText = document.getElementById('newText').value.trim();
+            
+            if (!oldText || !newText || !selectedModule) return;
+            
+            let changedCount = 0;
+            Object.keys(selectedModule.properties).forEach(key => {
+                if (selectedModule.properties[key].includes && selectedModule.properties[key].includes(oldText)) {
+                    selectedModule.properties[key] = selectedModule.properties[key].replace(new RegExp(oldText, 'g'), newText);
+                    changedCount++;
+                }
+            });
+            
+            if (changedCount > 0) {
+                renderPropertyPanel();
+                applyChanges();
+                showNotification(`✅ ${changedCount} Texte von "${oldText}" zu "${newText}" geändert`);
+                closeBulkEditModal();
+            }
+        }
+
+        function applyPlanTemplate(planNumber, template) {
+            const templates = {
+                basic: { name: 'Starter', price: '€299', description: 'Ideal für kleine Unternehmen mit grundlegenden Compliance-Anforderungen', color: '#063AA8' },
+                premium: { name: 'Professional', price: '€599', description: 'Umfassende Lösung für mittelständische Unternehmen', color: '#009CE6' },
+                enterprise: { name: 'Enterprise', price: '€1.299', description: 'Maßgeschneiderte Lösung für Großunternehmen', color: '#B265E9' }
+            };
+            
+            const config = templates[template];
+            if (!config || !selectedModule) return;
+            
+            // Bulk-Update aller Plan-Properties
+            selectedModule.properties[`plan${planNumber}Name`] = config.name;
+            selectedModule.properties[`plan${planNumber}Price`] = config.price;
+            selectedModule.properties[`plan${planNumber}Description`] = config.description;
+            selectedModule.properties[`plan${planNumber}Color`] = config.color;
+            selectedModule.properties[`plan${planNumber}PriceColor`] = config.color;
+            selectedModule.properties[`plan${planNumber}ButtonText`] = `${config.name} wählen`;
+            
+            renderPropertyPanel();
+            applyChanges();
+            showNotification(`✅ ${config.name}-Template auf Plan ${planNumber} angewendet`);
+        }
+
+        function copyFromPlan(targetPlan) {
+            if (!selectedModule) return;
+            
+            const otherPlans = ['1', '2', '3'].filter(p => p !== targetPlan);
+            const options = otherPlans.map(p => {
+                const name = selectedModule.properties[`plan${p}Name`] || `Plan ${p}`;
+                return `<option value="${p}">${name}</option>`;
+            }).join('');
+            
+            const sourcePlan = prompt(`Von welchem Plan kopieren?\n${otherPlans.map(p => `${p}: ${selectedModule.properties[`plan${p}Name`] || `Plan ${p}`}`).join('\n')}\n\nPlan-Nummer eingeben:`);
+            
+            if (sourcePlan && otherPlans.includes(sourcePlan)) {
+                // Kopiere alle Properties vom Source-Plan
+                Object.keys(selectedModule.properties).forEach(key => {
+                    if (key.includes(`plan${sourcePlan}`)) {
+                        const targetKey = key.replace(`plan${sourcePlan}`, `plan${targetPlan}`);
+                        selectedModule.properties[targetKey] = selectedModule.properties[key];
+                    }
+                });
+                
+                renderPropertyPanel();
+                applyChanges();
+                showNotification(`✅ Plan ${sourcePlan} nach Plan ${targetPlan} kopiert`);
+            }
         }
 
         function loadModuleLibraryList(filterCategory = 'all', searchTerm = '') {
@@ -4423,6 +4729,17 @@ properties: {
         window.exportAllCurrentModules = exportAllCurrentModules;
         window.deleteIndividualModule = deleteIndividualModule;
         window.exportSingleModule = exportSingleModule;
+        // Bestehende window-Definitionen...
+        window.showBulkEditModal = showBulkEditModal;
+        window.closeBulkEditModal = closeBulkEditModal;
+        window.applyBulkPriceChange = applyBulkPriceChange;
+        window.applyBulkColorChange = applyBulkColorChange;
+        window.applyBulkTextChange = applyBulkTextChange;
+        window.applyPlanTemplate = applyPlanTemplate;
+        window.copyFromPlan = copyFromPlan;
+        window.switchPropertyTab = switchPropertyTab;
+        window.groupPropertiesByContext = groupPropertiesByContext;
+        window.renderPlanQuickSetup = renderPlanQuickSetup;
 
         // Create Module Dialog Functions
         function showCreateModuleDialog() {
