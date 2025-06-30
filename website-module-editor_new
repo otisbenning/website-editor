@@ -3402,6 +3402,8 @@ properties: {
         // Universelle Modul-Verarbeitung für alle aktuellen und zukünftigen Module
         function processUniversalModule(module, html) {
             const props = module.properties;
+
+            console.log('🔍 Template-ID:', module.templateId, 'für Modul:', module.name);
             
             // 0. Hover-Effekt Properties für alle Module hinzufügen (falls nicht vorhanden)
             if (!props.buttonHoverColor) props.buttonHoverColor = '#FFFFFF';
@@ -3456,8 +3458,9 @@ properties: {
                 html = processKerberosTeamGalleryFixed(module, html);
             } else if (module.templateId === 'kerberos-product-overview') {
                 html = processKerberosProductOverview(module, html);
-            } else if (module.id === 'kerberos-product-fade-overview') {
-                return processKerberosProductFadeOverview(module, html);
+            } else if (module.templateId === 'kerberos-product-fade-overview') {
+                console.log('✅ FADE OVERVIEW ERKANNT - Process-Funktion wird ausgeführt!');
+                html = processKerberosProductFadeOverview(module, html);
             }
 
 
@@ -6533,7 +6536,7 @@ properties: {
             }, 500);
         });
 
-        // ✨ FADE HOVER PRODUKT-ÜBERSICHT MODUL ✨
+        // ✨ FADE HOVER PRODUKT-ÜBERSICHT MODUL (KORRIGIERT) ✨
         function processKerberosProductFadeOverview(module, html) {
             console.log('🔥 Process-Funktion wird ausgeführt für:', module.name);
             const props = module.properties;
@@ -6562,7 +6565,7 @@ properties: {
                 
                 if (isActive && title) {
                     productCards += `
-                        <a href="${link || '#'}" class="kerberos-product-fade-card-${module.id}" style="
+                        <a href="${link || '#'}" style="
                             background: ${props.cardBackgroundColor}; 
                             border: 1px solid ${props.cardBorderColor}; 
                             border-radius: ${props.cardBorderRadius}; 
@@ -6584,45 +6587,44 @@ properties: {
                 }
             }
             
-            // === FADE HOVER CSS ===
+            // === FADE HOVER CSS (KORRIGIERT FÜR BUTTON-KLASSEN) ===
             const fadeHoverCSS = `<style>
                 /* Kerberos Product Fade Hover Effects - ${module.name} */
-                .kerberos-product-fade-card-${module.id} {
+                .kerberos-btn-${module.id} {
                     position: relative !important;
                     overflow: hidden !important;
+                    animation: fadeInUp 0.6s ease-out !important;
                 }
                 
-                .kerberos-product-fade-card-${module.id}:hover {
+                /* ÜBERSCHREIBE STANDARD BUTTON-HOVER KOMPLETT */
+                .kerberos-btn-${module.id}:hover {
                     background: ${props.cardHoverBackground} !important;
+                    color: inherit !important;
                     transform: ${props.cardHoverTransform} !important;
                     box-shadow: ${props.cardHoverShadow} !important;
                     border-color: ${props.cardHoverBackground} !important;
                     opacity: ${props.cardHoverOpacity} !important;
                 }
                 
-                .kerberos-product-fade-card-${module.id}:hover .product-fade-title-${module.id} {
+                .kerberos-btn-${module.id}:hover .product-fade-title-${module.id} {
                     color: ${props.cardHoverTitleColor} !important;
                 }
                 
-                .kerberos-product-fade-card-${module.id}:hover .product-fade-description-${module.id} {
+                .kerberos-btn-${module.id}:hover .product-fade-description-${module.id} {
                     color: ${props.cardHoverDescriptionColor} !important;
                 }
                 
-                .kerberos-product-fade-card-${module.id}:hover img {
+                .kerberos-btn-${module.id}:hover img {
                     transform: scale(1.05) !important;
                     filter: brightness(1.1) !important;
                 }
                 
-                .kerberos-product-fade-card-${module.id}:active {
+                .kerberos-btn-${module.id}:active {
                     transform: translateY(-4px) !important;
                     transition: all 0.2s ease !important;
                 }
                 
-                /* Sanfter Fade-In Animation */
-                .kerberos-product-fade-card-${module.id} {
-                    animation: fadeInUp 0.6s ease-out;
-                }
-                
+                /* Fade-In Animation */
                 @keyframes fadeInUp {
                     from {
                         opacity: 0;
@@ -6636,7 +6638,7 @@ properties: {
                 
                 /* Responsive Verhalten */
                 @media (max-width: 768px) {
-                    .kerberos-product-fade-card-${module.id}:hover {
+                    .kerberos-btn-${module.id}:hover {
                         transform: translateY(-4px) !important;
                     }
                 }
@@ -6651,7 +6653,7 @@ properties: {
             
             console.log('✅ Process-Funktion erfolgreich ausgeführt');
             return html;
-        }    
+        }
         
 
     </script>
