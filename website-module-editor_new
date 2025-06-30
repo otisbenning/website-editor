@@ -1546,7 +1546,6 @@
     }
 },
 
-,
 {
     id: 'kerberos-company-presentation',
     name: 'Company Presentation',
@@ -2757,8 +2756,8 @@ properties: {
                 if (text && author && isActive) {
                     const initial = author.charAt(0).toUpperCase();
                     const avatarStyle = image ? 
-                        `background: url('{{imageUrl}}') center/cover;` : 
-                        `background: linear-gradient(135deg, ${props.primaryColor || '#063AA8'}, #009CE6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
+                        `background: url('${image}') center/cover;` : 
+                        `background: linear-gradient(135deg, ${props.primaryColor || '#063AA8'}, ${props.accentColor || '#009CE6'}); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
                     
                     const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
                     
@@ -2825,9 +2824,8 @@ properties: {
                 if (name && isActive) {
                     const initial = name.charAt(0).toUpperCase();
                     const avatarStyle = image ? 
-                        `background: url('{{imageUrl}}') center/cover; background-color: #E9ECEF;` : 
+                        `background: url('${image}') center/cover; background-color: #E9ECEF;` : 
                         `background: ${initialBg}; background-color: #E9ECEF; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700;`;
-                    
                     const avatarContent = image ? '' : initial;
                     
                     teamMembers += `
@@ -2883,7 +2881,7 @@ properties: {
                             transform: scale(1);
                             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                         ">
-                            <img src="{{imageUrl}}" alt="${title}" style="width: 100%; height: ${imageHeight}; object-fit: cover;">
+                            <img src="${image}" alt="${title}" style="width: 100%; height: ${imageHeight}; object-fit: cover;">
                             <div style="padding: 1rem;">
                                 <h4 class="product-title-${module.id}" style="font-family: var(--heading-font-font-family); color: ${props.cardTitleColor || '#212529'}; margin: 0 0 0.5rem 0; font-size: 1.1rem; transition: color 0.3s ease;">${title}</h4>
                                 <p style="font-family: var(--body-font-font-family); color: ${props.cardDescriptionColor || '#6c757d'}; margin: 0; font-size: 0.9rem;">${description}</p>
@@ -3118,24 +3116,24 @@ properties: {
             }
             
             // Interactive JavaScript hinzufügen
-            const interactiveScript = '<script>' +
-                'document.addEventListener("DOMContentLoaded", function() {' +
-                    'document.querySelectorAll(".timeline-step").forEach(step => {' +
-                        'step.addEventListener("mouseenter", () => {' +
-                            'const card = step.querySelector(".timeline-card");' +
-                            'const dot = step.querySelector(".timeline-dot");' +
-                            'if (card) card.style.transform = "scale(1.02)";' +
-                            'if (dot) dot.style.transform = "translateX(-50%) scale(1.1)";' +
-                        '});' +
-                        'step.addEventListener("mouseleave", () => {' +
-                            'const card = step.querySelector(".timeline-card");' +
-                            'const dot = step.querySelector(".timeline-dot");' +
-                            'if (card) card.style.transform = "scale(1)";' +
-                            'if (dot) dot.style.transform = "translateX(-50%) scale(1)";' +
-                        '});' +
-                    '});' +
-                '});' +
-                '</script>';
+            const interactiveScript = `<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    document.querySelectorAll(".timeline-step").forEach(step => {
+                        step.addEventListener("mouseenter", () => {
+                            const card = step.querySelector(".timeline-card");
+                            const dot = step.querySelector(".timeline-dot");
+                            if (card) card.style.transform = "scale(1.02)";
+                            if (dot) dot.style.transform = "translateX(-50%) scale(1.1)";
+                        });
+                        step.addEventListener("mouseleave", () => {
+                            const card = step.querySelector(".timeline-card");
+                            const dot = step.querySelector(".timeline-dot");
+                            if (card) card.style.transform = "scale(1)";
+                            if (dot) dot.style.transform = "translateX(-50%) scale(1)";
+                        });
+                    });
+                });
+                </script>`;
 
             return html.replace('{{timelineSteps}}', timelineSteps) + interactiveScript;
         }
@@ -4142,11 +4140,16 @@ properties: {
                 Object.entries(module.properties).forEach(([key, value]) => {
                     const regex = new RegExp(`{{${key}}}`, 'g');
                     // Sichere HTML-Ersetzung
-                    const safeValue = typeof value === 'string' ? value.replace(/'/g, "&#39;").replace(/"/g, "&quot;") : value;
+                    const safeValue = typeof value === 'string' ?
+                        value.replace(/'/g, "&#39;").replace(/"/g, "&quot;") : value;
                     html = html.replace(regex, safeValue);
                 });
                 
+                // Fallback: Alle übrig gebliebenen Platzhalter ersetzen
+                html = replaceTemplatePlaceholders(html, module);
+
                 return html;
+
             } catch (error) {
                 console.error('Fehler beim Verarbeiten des Moduls:', error);
                 return `<div style="padding: 2rem; background: #fee; border: 1px solid #f00; color: #900;">
@@ -4157,6 +4160,17 @@ properties: {
             }
         }
 
+        // Fallback-Funktion für Template-Platzhalter
+        function replaceTemplatePlaceholders(html, module) {
+            // Ersetze alle übrig gebliebenen Platzhalter mit leeren Strings oder Standardwerten
+            html = html.replace(/\{\{[^}]+\}\}/g, (match) => {
+                console.warn('Unbekannter Platzhalter gefunden:', match, 'in Modul:', module.name);
+                return ''; // Oder einen Standardwert zurückgeben
+            });
+            
+            return html;
+        }
+
         // Spezielle Verarbeitung für Statistik-Module
         function processStatsModule(module, html) {
             const props = module.properties;
@@ -4164,20 +4178,19 @@ properties: {
             
             // Dynamische Generierung der Statistik-Blöcke
             for (let i = 1; i <= 4; i++) {
-                const number = props[`stat${i}Number`];
-                const text = props[`stat${i}Text`];
-                const icon = props[`stat${i}Icon`];
-                const iconColor = props[`stat${i}IconColor`];
-                const numberColor = props[`stat${i}NumberColor`];
-                const textColor = props[`stat${i}TextColor`];
+                const number = props['stat' + i + 'Number'];
+                const text = props['stat' + i + 'Text'];
+                const icon = props['stat' + i + 'Icon'];
+                const iconColor = props['stat' + i + 'IconColor'];
+                const numberColor = props['stat' + i + 'NumberColor'];
+                const textColor = props['stat' + i + 'TextColor'];
                 
                 if (number && text) {
-                    statsBlocks += `
-                        <div style="text-align: center; padding: ${props.statPadding || '2rem'}; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">
-                            <div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize || '3rem'}; color: ${iconColor || '#063AA8'}; margin-bottom: ${props.iconSpacing || '1rem'};">${icon || '&#xf005;'}</div>
-                            <div style="font-size: ${props.numberSize || '3rem'}; font-weight: 700; color: ${numberColor || '#063AA8'}; margin-bottom: ${props.numberSpacing || '0.5rem'};">${number}</div>
-                            <div style="font-size: ${props.textSize || '1rem'}; color: ${textColor || '#6c757d'};">${text}</div>
-                        </div>`;
+                    statsBlocks += '<div style="text-align: center; padding: ' + (props.statPadding || '2rem') + '; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(6,58,168,0.1);">' +
+                        '<div style="font-family: \'Font Awesome 5 Pro\'; font-size: ' + (props.iconSize || '3rem') + '; color: ' + (iconColor || '#063AA8') + '; margin-bottom: ' + (props.iconSpacing || '1rem') + ';">' + (icon || '&#xf005;') + '</div>' +
+                        '<div style="font-size: ' + (props.numberSize || '3rem') + '; font-weight: 700; color: ' + (numberColor || '#063AA8') + '; margin-bottom: ' + (props.numberSpacing || '0.5rem') + ';">' + number + '</div>' +
+                        '<div style="font-size: ' + (props.textSize || '1rem') + '; color: ' + (textColor || '#6c757d') + ';">' + text + '</div>' +
+                    '</div>';
                 }
             }
             
@@ -4458,6 +4471,23 @@ properties: {
             return html;
         }
 
+        // Globale Template-Platzhalter Ersetzung (Fallback)
+        function replaceTemplatePlaceholders(html, module) {
+            if (!module || !module.properties) return html;
+            
+            // Ersetze alle übrig gebliebenen Template-Platzhalter
+            Object.entries(module.properties).forEach(([key, value]) => {
+                const regex = new RegExp(`{{${key}}}`, 'g');
+                html = html.replace(regex, value || '');
+            });
+            
+            // Spezielle Platzhalter
+            html = html.replace(/{{imageUrl}}/g, module.properties.imageUrl || '');
+            html = html.replace(/{{currentValue}}/g, '');
+            
+            return html;
+        }
+
         // ✨ Hover-Effekte CSS für Export generieren
         function embedHoverEffectsCSS(module, html) {
             const props = module.properties;
@@ -4572,7 +4602,7 @@ properties: {
             const imageContent = hasImage ? 
                 (props.imageUrl ? 
                     `<div style="position: relative; overflow: hidden; border-radius: ${props.imageRadius || '8px'}; box-shadow: ${props.imageShadow || '0 4px 12px rgba(6,58,168,0.1)'};">
-                        <img src="{{imageUrl}}" alt="${props.imageAlt || 'Bild'}" style="width: 100%; height: ${props.imageHeight || 'auto'}; object-fit: ${props.imageObjectFit || 'cover'}; object-position: ${props.imageObjectPosition || 'center'}; display: block; margin: 0; line-height: 0; ${props.imageCustomCSS || ''}">
+                        <img src="${props.imageUrl}" alt="${props.imageAlt || 'Bild'}" style="width: 100%; height: ${props.imageHeight || 'auto'}; object-fit: ${props.imageObjectFit || 'cover'}; object-position: ${props.imageObjectPosition || 'center'}; display: block; margin: 0; line-height: 0; ${props.imageCustomCSS || ''}">
                     </div>` : 
                     `<div style="width: 100%; height: 300px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: ${props.imageRadius || '8px'}; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 1.2rem; margin: 0;">📸 Bild hinzufügen</div>`) : '';
             
@@ -4960,31 +4990,6 @@ properties: {
         // Globale Funktion verfügbar machen
         window.toggleAccordion = toggleAccordion;
 
-        function groupPropertiesByContext(properties) {
-            const groups = {
-                'Allgemein': {},
-                'Plan 1': {},
-                'Plan 2': {},  
-                'Plan 3': {},
-                'Tabelle': {},
-                'Layout': {}
-            };
-            
-            Object.entries(properties).forEach(([key, value]) => {
-                if (shouldHideProperty(key)) return;
-                
-                if (key.includes('plan1')) groups['Plan 1'][key] = value;
-                else if (key.includes('plan2')) groups['Plan 2'][key] = value;
-                else if (key.includes('plan3')) groups['Plan 3'][key] = value;
-                else if (key.includes('table') || key.includes('feature')) groups['Tabelle'][key] = value;
-                else if (key.includes('Spacing') || key.includes('Gap') || key.includes('Padding')) groups['Layout'][key] = value;
-                else groups['Allgemein'][key] = value;
-            });
-            
-            // Leere Gruppen entfernen
-            return Object.fromEntries(Object.entries(groups).filter(([, props]) => Object.keys(props).length > 0));
-        }
-
         function renderPlanQuickSetup(planNumber) {
             return `
                 <div style="background: #F8F9FA; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #DEE2E6;">
@@ -4997,22 +5002,6 @@ properties: {
                     </div>
                 </div>
             `;
-        }
-
-        function switchPropertyTab(e) {
-            const targetGroup = e.target.dataset.group;
-            
-            // Update Tabs
-            document.querySelectorAll('.property-tab').forEach(tab => {
-                const isActive = tab.dataset.group === targetGroup;
-                tab.style.background = isActive ? '#063AA8' : 'transparent';
-                tab.style.color = isActive ? 'white' : '#063AA8';
-            });
-            
-            // Update Content
-            document.querySelectorAll('.property-group').forEach(group => {
-                group.style.display = group.dataset.group === targetGroup ? 'block' : 'none';
-            });
         }
 
         function groupPropertiesByContext(properties) {
@@ -5199,15 +5188,6 @@ properties: {
                     { value: 'Office Building', label: 'Office Building' },
                     { value: 'Technology Solutions', label: 'Technology Solutions' },
                     { value: 'Professional Services', label: 'Professional Services' }
-                ];
-            }
-            // Button Border
-            else if (key.includes('Border') || key.includes('border')) {
-                options = [
-                    { value: 'none', label: 'Kein Rahmen' },
-                    { value: '1px solid #063AA8', label: 'Dünner Rahmen' },
-                    { value: '2px solid #063AA8', label: 'Dicker Rahmen' },
-                    { value: '1px solid rgba(255,255,255,0.3)', label: 'Transparenter Rahmen' }
                 ];
             }
 
@@ -5399,7 +5379,7 @@ properties: {
             });
             
             html += `</div>`;
-            html += `<input type="text" class="form-control" value="{{currentValue}}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Hex-Code oder Farbname">`;
+            html += `<input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Hex-Code oder Farbname">`;
             
             return html;
         }
@@ -5413,16 +5393,16 @@ properties: {
                     </div>
                     <button type="button" class="btn btn-primary" onclick="showIconPicker('${key}')" style="flex: 1;">Icon auswählen</button>
                 </div>
-                <input type="text" class="form-control" value="{{currentValue}}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Unicode (z.B. &#xf132;)">
+                <input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" style="margin-top: 0.5rem;" placeholder="Unicode (z.B. &#xf132;)">
             `;
         }
 
         // Image Picker rendern
         function renderImagePicker(key, currentValue) {
-            const preview = currentValue ? `<img src="{{currentValue}}" class="image-preview" alt="Vorschau" style="max-width: 100%; max-height: 150px; border-radius: 4px; margin-top: 0.5rem; display: block;">` : '';
-            
+            const preview = currentValue ? `<img src="${currentValue}" class="image-preview" alt="Vorschau" style="max-width: 100%; max-height: 150px; border-radius: 4px; margin-top: 0.5rem; display: block;">` : '';
+
             return `
-                <input type="text" class="form-control" value="{{currentValue}}" oninput="updateProperty('${key}', this.value)" placeholder="Squarespace Bild-URL eingeben..." style="margin-bottom: 0.5rem;">
+                <input type="text" class="form-control" value="${currentValue}" oninput="updateProperty('${key}', this.value)" placeholder="Squarespace Bild-URL eingeben..." style="margin-bottom: 0.5rem;">
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <button type="button" class="btn btn-secondary" onclick="showImagePicker('${key}')" style="flex: 1;">📸 Bild hochladen/Stock</button>
                     <button type="button" class="btn btn-secondary" onclick="showImageEditor('${key}')" style="min-width: auto;">🎨</button>
@@ -5903,7 +5883,7 @@ properties: {
                         class="richtext-editor"
                         data-property="${key}"
                         style="min-height: 120px; padding: 0.75rem; background: white; outline: none; line-height: 1.5;"
-                        placeholder="Text eingeben...">{{currentValue}}</div>
+                        placeholder="Text eingeben...">${currentValue}</div>
                 </div>`;
             
             // Script nach dem Rendern initialisieren
