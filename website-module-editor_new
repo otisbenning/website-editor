@@ -4801,32 +4801,55 @@ properties: {
         function groupPropertiesForAccordion(properties) {
             const groups = {
                 general: [],
-                testimonials: [],
-                features: [],
-                team: [],
-                stats: [],
-                rows: [],
-                plans: [],
-                members: []
+                styling: [],     // 🆕 Hinzugefügt
+                advanced: []     // 🆕 Hinzugefügt
             };
             
             Object.entries(properties).forEach(([key, value]) => {
                 if (shouldHideProperty(key)) return;
                 
-                // Gruppierung basierend auf Property-Namen
-                if (key.includes('testimonial')) {
+                // 🎨 DESIGN & STYLING (höchste Priorität)
+                if (key.includes('Shadow') || key.includes('Glow') || key.includes('Transform') ||
+                key.includes('Hover') || key.includes('Gradient') || 
+                (key.includes('Border') && !key.includes('Color'))) {
+                    groups.styling.push([key, value]);
+                }
+                
+                // 🔧 ERWEITERTE EINSTELLUNGEN
+                else if (key.includes('buttonHover') || key.includes('cardHover') || 
+                        key.includes('textShadow') || key.includes('cardShadow') ||
+                        key.includes('Filter') || key.includes('Backdrop')) {
+                    groups.advanced.push([key, value]);
+                }
+                
+                // 📊 SPEZIFISCHE MODULE-GRUPPEN
+                else if (key.includes('testimonial')) {
+                    if (!groups.testimonials) groups.testimonials = [];
                     groups.testimonials.push([key, value]);
-                } else if (key.includes('feature') && (key.includes('Plan') || key.includes('Name'))) {
+                } 
+                else if (key.includes('feature') && (key.includes('Plan') || key.includes('Name'))) {
+                    if (!groups.features) groups.features = [];
                     groups.features.push([key, value]);
-                } else if (key.includes('member') || key.includes('team')) {
+                } 
+                else if (key.includes('member') || key.includes('team')) {
+                    if (!groups.team) groups.team = [];
                     groups.team.push([key, value]);
-                } else if (key.includes('stat') && key.match(/\d/)) {
+                } 
+                else if (key.includes('stat') && key.match(/\d/)) {
+                    if (!groups.stats) groups.stats = [];
                     groups.stats.push([key, value]);
-                } else if (key.includes('row') && key.match(/\d/)) {
+                } 
+                else if (key.includes('row') && key.match(/\d/)) {
+                    if (!groups.rows) groups.rows = [];
                     groups.rows.push([key, value]);
-                } else if (key.includes('plan') && key.match(/\d/)) {
+                } 
+                else if (key.includes('plan') && key.match(/\d/)) {
+                    if (!groups.plans) groups.plans = [];
                     groups.plans.push([key, value]);
-                } else {
+                }
+                
+                // 🏠 ALLGEMEINE EIGENSCHAFTEN (niedrigste Priorität)
+                else {
                     groups.general.push([key, value]);
                 }
             });
@@ -4844,6 +4867,8 @@ properties: {
         function formatGroupName(groupKey) {
             const names = {
                 general: 'Allgemeine Einstellungen',
+                styling: '🎨 Design & Effekte',
+                advanced: '🔧 Erweiterte Einstellungen',
                 testimonials: '💬 Testimonials & Bewertungen',
                 features: '⭐ Features & Eigenschaften',
                 team: '👥 Team-Mitglieder',
@@ -4871,8 +4896,23 @@ properties: {
                 html += renderRichTextEditor(key, value);
             } else if (fieldType === 'textarea') {
                 html += `<textarea class="form-control" oninput="updateProperty('${key}', this.value)" style="min-height: 80px;">${value}</textarea>`;
+            } else if (fieldType === 'boolean') {
+                html += renderBooleanPicker(key, value);
+            } else if (fieldType === 'position') {
+                html += renderPositionPicker(key, value);
             } else if (fieldType === 'select') {
                 html += renderSelectPicker(key, value);
+            } else if (fieldType === 'shadow-preset') {
+                html += renderShadowPreset(key, value);
+            } else if (fieldType === 'hover-preset') {
+                html += renderHoverPreset(key, value);
+            } else if (fieldType === 'gradient-preset') {
+                html += renderGradientPreset(key, value);
+            } else if (fieldType === 'border-preset') {
+                html += renderBorderPreset(key, value);
+            } else if (fieldType === 'advanced') {
+                html += `<input type="text" class="form-control" value="${value}" oninput="updateProperty('${key}', this.value)" placeholder="Für Experten - CSS-Wert eingeben">`;
+                html += `<small style="color: #6c757d; font-size: 0.75rem;">⚠️ Nur für fortgeschrittene Benutzer</small>`;
             } else {
                 html += `<input type="text" class="form-control" value="${value}" oninput="updateProperty('${key}', this.value)">`;
             }
@@ -5005,9 +5045,27 @@ properties: {
             // Bilder (nur echte URLs)
             if ((key.includes('Image') || key.includes('image') || key.endsWith('Url')) && !key.includes('Alt') && !key.includes('Order') && !key.includes('Radius') && !key.includes('Shadow') && !key.includes('Background')) return 'image';
             
+            // Boolean-Eigenschaften (show*, *Active)
+            if (key.startsWith('show') || key.endsWith('Active') || key.includes('Active')) return 'boolean';
+
+            // Positionierung (position, Position)
+            if (key.includes('Position') || key.includes('position')) return 'position';
+
+            // 🎨 PRESET-PROPERTIES (Smart Dropdowns)
+            if (key.includes('Shadow') || key.includes('Glow')) return 'shadow-preset';
+            if (key.includes('Transform') || key.includes('Hover')) return 'hover-preset';
+            if (key.includes('Gradient') || key.includes('Background') && key.includes('Gradient')) return 'gradient-preset';
+
+            // 🔧 ERWEITERTE PROPERTIES (versteckt in Accordion)
+            if (key.includes('buttonHover') || key.includes('cardHover') || 
+                key.includes('textShadow') || key.includes('cardShadow') ||
+                key.includes('Filter') || key.includes('Backdrop')) return 'advanced';
+
+            // CSS-Eigenschaften (für fortgeschrittene User)
+            if (key.includes('Border') && !key.includes('Color') && !key.includes('Radius')) return 'border-preset';
+
             // Dropdowns für Optionen
             if (key.includes('Order') || key.includes('order') || 
-                key.includes('Active') || key.includes('active') || 
                 key.includes('Count') || key.includes('count') || 
                 key.includes('Layout') || key.includes('layout') ||
                 key.includes('Type') || key.includes('type') ||
@@ -5130,6 +5188,27 @@ properties: {
                     { value: '1px solid rgba(255,255,255,0.3)', label: 'Transparenter Rahmen' }
                 ];
             }
+
+            // Button Border (erweitert)
+            else if (key.includes('Border') || key.includes('border')) {
+                options = [
+                    { value: 'none', label: '🚫 Kein Rahmen' },
+                    { value: '1px solid #063AA8', label: '📏 Dünner Rahmen (Blau)' },
+                    { value: '2px solid #063AA8', label: '📐 Dicker Rahmen (Blau)' },
+                    { value: '1px solid rgba(255,255,255,0.3)', label: '👻 Transparenter Rahmen' },
+                    { value: '2px solid rgba(255,255,255,0.5)', label: '⚪ Dick Transparent' }
+                ];
+            }
+            // Content-Transformation
+            else if (key.includes('Transform') || key.includes('transform')) {
+                options = [
+                    { value: 'none', label: '🚫 Keine Transformation' },
+                    { value: 'translateY(-2px)', label: '⬆️ Leicht nach oben' },
+                    { value: 'translateY(-4px)', label: '⬆️⬆️ Deutlich nach oben' },
+                    { value: 'scale(1.05)', label: '🔍 Leicht vergrößern' },
+                    { value: 'scale(1.1)', label: '🔍🔍 Deutlich vergrößern' }
+                ];
+            }
             
             let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
             
@@ -5140,6 +5219,150 @@ properties: {
             
             html += `</select>`;
             
+            return html;
+        }
+
+        // Shadow Preset Picker
+        function renderShadowPreset(key, currentValue) {
+            const shadowPresets = [
+                { value: 'none', label: '🚫 Kein Schatten' },
+                { value: '0 2px 4px rgba(0,0,0,0.1)', label: '☁️ Leichter Schatten' },
+                { value: '0 4px 8px rgba(0,0,0,0.15)', label: '☁️☁️ Normaler Schatten' },
+                { value: '0 8px 16px rgba(0,0,0,0.2)', label: '☁️☁️☁️ Starker Schatten' },
+                { value: '0 20px 60px rgba(0,0,0,0.2)', label: '🌫️ Dramatischer Schatten' },
+                { value: '0 0 20px rgba(6,58,168,0.3)', label: '💙 Blauer Glow' },
+                { value: '0 0 30px rgba(255,215,0,0.5)', label: '✨ Goldener Glow' }
+            ];
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            shadowPresets.forEach(preset => {
+                const selected = preset.value === currentValue ? 'selected' : '';
+                html += `<option value="${preset.value}" ${selected}>${preset.label}</option>`;
+            });
+            
+            html += `</select>`;
+            return html;
+        }
+
+        // Hover Preset Picker
+        function renderHoverPreset(key, currentValue) {
+            const hoverPresets = [
+                { value: 'none', label: '🚫 Kein Hover-Effekt' },
+                { value: 'translateY(-2px)', label: '⬆️ Leicht nach oben' },
+                { value: 'translateY(-4px)', label: '⬆️⬆️ Deutlich nach oben' },
+                { value: 'scale(1.02)', label: '🔍 Leicht vergrößern' },
+                { value: 'scale(1.05)', label: '🔍🔍 Deutlich vergrößern' },
+                { value: 'rotate(1deg)', label: '↻ Leichte Rotation' }
+            ];
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            hoverPresets.forEach(preset => {
+                const selected = preset.value === currentValue ? 'selected' : '';
+                html += `<option value="${preset.value}" ${selected}>${preset.label}</option>`;
+            });
+            
+            html += `</select>`;
+            return html;
+        }
+
+        // Gradient Preset Picker
+        function renderGradientPreset(key, currentValue) {
+            const gradientPresets = [
+                { value: '#063AA8', label: '🟦 Einfarbig Blau' },
+                { value: 'linear-gradient(135deg, #063AA8, #009CE6)', label: '🌊 Blau Gradient' },
+                { value: 'linear-gradient(135deg, #063AA8, #B265E9)', label: '🌈 Blau-Lila Gradient' },
+                { value: 'linear-gradient(135deg, #212529, #063AA8)', label: '🌚 Dunkel-Blau Gradient' },
+                { value: 'linear-gradient(135deg, #EF8646, #B265E9)', label: '🔥 Orange-Lila Gradient' },
+                { value: 'linear-gradient(135deg, rgba(6,58,168,0.9), rgba(0,156,230,0.9))', label: '👻 Transparenter Gradient' }
+            ];
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            gradientPresets.forEach(preset => {
+                const selected = preset.value === currentValue ? 'selected' : '';
+                html += `<option value="${preset.value}" ${selected}>${preset.label}</option>`;
+            });
+            
+            html += `</select>`;
+            return html;
+        }
+
+        // Border Preset Picker
+        function renderBorderPreset(key, currentValue) {
+            const borderPresets = [
+                { value: 'none', label: '🚫 Kein Rahmen' },
+                { value: '1px solid #063AA8', label: '📏 Dünner Rahmen (Blau)' },
+                { value: '2px solid #063AA8', label: '📐 Dicker Rahmen (Blau)' },
+                { value: '1px solid rgba(255,255,255,0.3)', label: '👻 Transparenter Rahmen' },
+                { value: '2px dashed #009CE6', label: '- - Gestrichelter Rahmen' },
+                { value: '3px solid #B265E9', label: '🟣 Dicker Lila Rahmen' }
+            ];
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            borderPresets.forEach(preset => {
+                const selected = preset.value === currentValue ? 'selected' : '';
+                html += `<option value="${preset.value}" ${selected}>${preset.label}</option>`;
+            });
+            
+            html += `</select>`;
+            return html;
+        }
+
+        // Boolean Picker rendern
+        function renderBooleanPicker(key, currentValue) {
+            const options = [
+                { value: 'true', label: '✅ Anzeigen' },
+                { value: 'false', label: '❌ Ausblenden' }
+            ];
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            options.forEach(option => {
+                const selected = option.value === currentValue ? 'selected' : '';
+                html += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+            });
+            
+            html += `</select>`;
+            return html;
+        }
+
+        // Position Picker rendern  
+        function renderPositionPicker(key, currentValue) {
+            let options = [];
+            
+            // Badge-Position
+            if (key.includes('badge') || key.includes('Badge')) {
+                options = [
+                    { value: 'top-left', label: '↖️ Oben Links' },
+                    { value: 'top-right', label: '↗️ Oben Rechts' },
+                    { value: 'top-center', label: '⬆️ Oben Mitte' },
+                    { value: 'bottom-left', label: '↙️ Unten Links' },
+                    { value: 'bottom-right', label: '↘️ Unten Rechts' },
+                    { value: 'bottom-center', label: '⬇️ Unten Mitte' }
+                ];
+            }
+            // Content-Position
+            else {
+                options = [
+                    { value: 'left', label: '◀️ Links' },
+                    { value: 'center', label: '🎯 Mitte' },
+                    { value: 'right', label: '▶️ Rechts' },
+                    { value: 'top', label: '⬆️ Oben' },
+                    { value: 'bottom', label: '⬇️ Unten' }
+                ];
+            }
+            
+            let html = `<select class="form-control" oninput="updateProperty('${key}', this.value)">`;
+            
+            options.forEach(option => {
+                const selected = option.value === currentValue ? 'selected' : '';
+                html += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+            });
+            
+            html += `</select>`;
             return html;
         }
 
