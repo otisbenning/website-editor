@@ -4197,6 +4197,7 @@ properties: {
             return html.replace('{{teamMembers}}', teamMembers);
         }
 
+
         // Produkt-Übersicht Modul Verarbeitung
         function processProductOverviewModule(module, html) {
             const props = module.properties;
@@ -4402,8 +4403,9 @@ properties: {
                 html = processKerberosWarningFacts(module, html);
             } else if (module.templateId === 'kerberos-company-presentation') {
                 html = processKerberosCompanyPresentation(module, html);
+            } else if (module.templateId === 'kerberos-feature-breaker') {
+                html = processKerberosFeatureBreaker(module, html);
             }
-
 
             // 2. Universelle Layout-Verarbeitung für Bild+Text Module
             if (html.includes('{{layoutContent}}')) {
@@ -5855,6 +5857,54 @@ properties: {
                         }
                     }
                 }
+
+                // Feature Breaker Live Updates
+                else if (moduleElement.classList.contains('kerberos-module-kerberos-feature-breaker')) {
+                    if (key === 'title') {
+                        const titleEl = moduleElement.querySelector('h1');
+                        if (titleEl) titleEl.textContent = value;
+                    }
+                    else if (key === 'subtitle') {
+                        const subtitleEl = moduleElement.querySelector('h2');
+                        if (subtitleEl) subtitleEl.textContent = value;
+                    }
+                    else if (key === 'description') {
+                        const descEl = moduleElement.querySelector('p');
+                        if (descEl) descEl.textContent = value;
+                    }
+                    else if (key === 'primaryButtonText') {
+                        const btnEl = moduleElement.querySelector('.breaker-btn-primary');
+                        if (btnEl) {
+                            const iconHtml = btnEl.querySelector('span') ? btnEl.querySelector('span').outerHTML : '';
+                            btnEl.innerHTML = value + ' ' + iconHtml;
+                        }
+                    }
+                    else if (key === 'badgeText' && value) {
+                        const badgeEl = moduleElement.querySelector('.breaker-badge');
+                        if (badgeEl) badgeEl.textContent = value;
+                    }
+                    else if (key === 'showBadge') {
+                        const badgeEl = moduleElement.querySelector('.breaker-badge');
+                        if (badgeEl) badgeEl.style.display = value === 'true' ? 'block' : 'none';
+                    }
+                    else if (key === 'showSecondaryButton') {
+                        const btnEl = moduleElement.querySelector('.breaker-btn-secondary');
+                        if (btnEl) btnEl.style.display = value === 'true' ? 'inline-flex' : 'none';
+                    }
+                    else if (key === 'showIcon') {
+                        const iconEl = moduleElement.querySelector('.breaker-icon');
+                        if (iconEl) iconEl.style.display = value === 'true' ? 'block' : 'none';
+                    }
+                    else if (key === 'countdownActive') {
+                        const countdownEl = moduleElement.querySelector('.breaker-countdown');
+                        if (countdownEl) countdownEl.style.display = value === 'true' ? 'block' : 'none';
+                    }
+                    else if (key === 'showPricing') {
+                        const pricingEl = moduleElement.querySelector('.breaker-pricing');
+                        if (pricingEl) pricingEl.style.display = value === 'true' ? 'block' : 'none';
+                    }
+                }
+                
                 
             } catch (error) {
                 console.warn('Live-Update fehlgeschlagen, fallback zu vollständigem Update:', error);
@@ -6309,98 +6359,195 @@ properties: {
             }
         }
 
+        // Template-Validierung
+        function validateTemplate(template) {
+            if (!template || typeof template !== 'object') return false;
+            if (!template.id || typeof template.id !== 'string') return false;
+            if (!template.name) template.name = 'Unbenanntes Modul';
+            if (!template.category) template.category = 'Custom';
+            if (!template.html) template.html = '<div>Standard HTML</div>';
+            if (!template.properties) template.properties = {};
+            return true;
+        }
+
+        // DEBUG: Template-Status prüfen
+        console.log('MODULE_TEMPLATES Status:', {
+            exists: typeof MODULE_TEMPLATES !== 'undefined',
+            isArray: Array.isArray(MODULE_TEMPLATES),
+            length: MODULE_TEMPLATES ? MODULE_TEMPLATES.length : 'N/A',
+            type: typeof MODULE_TEMPLATES
+        });
+
         function handleImportData(data) {
-            if (!data.type) {
-                showNotification('❌ Unbekanntes Datenformat');
-                return;
-            }
-            
-            switch (data.type) {
-                case 'page':
-                    if (confirm('Aktuelle Seite überschreiben und ' + data.name + ' laden?')) {
-                        modules = data.modules || [];
-                        if (data.spacing) globalSpacing = data.spacing;
-                        document.getElementById('pageNameInput').value = data.name;
-                        renderCanvas();
-                        selectedModule = null;
-                        renderPropertyPanel();
-                        showNotification('✅ Seite importiert: ' + data.name);
-                        closeImportModal();
-                    }
-                    break;
-                    
-                case 'module':
-                case 'single-module':  // ← FIX: Unterstütze beide Typen
-                case 'module-template':
-                    const moduleData = data.module || data.template || data;
-                    if (moduleData) {
-                        // FIX: Unterstütze sowohl 'id' als auch 'templateId'
+            try {
+                // Validierung der Eingangsdaten
+                if (!data || typeof data !== 'object') {
+                    showNotification('❌ Ungültige Datenstruktur');
+                    return;
+                }
+                
+                if (!data.type) {
+                    showNotification('❌ Unbekanntes Datenformat - "type" fehlt');
+                    return;
+                }
+                
+                // Einfache Validierung - MODULE_TEMPLATES sollte bereits existieren
+                if (!MODULE_TEMPLATES || !Array.isArray(MODULE_TEMPLATES)) {
+                    console.error('MODULE_TEMPLATES nicht verfügbar');
+                    showNotification('❌ Template-System nicht geladen');
+                    return;
+                }
+                
+                switch (data.type) {
+                    case 'page':
+                        if (confirm('Aktuelle Seite überschreiben und ' + (data.name || 'Seite') + ' laden?')) {
+                            modules = Array.isArray(data.modules) ? data.modules : [];
+                            if (data.spacing) globalSpacing = data.spacing;
+                            document.getElementById('pageNameInput').value = data.name || 'Importierte Seite';
+                            renderCanvas();
+                            selectedModule = null;
+                            renderPropertyPanel();
+                            showNotification('✅ Seite importiert: ' + (data.name || 'Unbekannt'));
+                            closeImportModal();
+                        }
+                        break;
+                        
+                    case 'module':
+                    case 'single-module':
+                    case 'module-template':
+                        const moduleData = data.module || data.template || data;
+                        
+                        // Validierung der Modul-Daten
+                        if (!moduleData || typeof moduleData !== 'object') {
+                            showNotification('❌ Ungültige Modul-Daten');
+                            return;
+                        }
+                        
                         const templateId = moduleData.id || moduleData.templateId;
-                        if (!MODULE_TEMPLATES.find(t => t.id === templateId)) {
+                        if (!templateId) {
+                            showNotification('❌ Modul-ID fehlt');
+                            return;
+                        }
+                        
+                        // Sichere Template-Suche
+                        const existingTemplate = MODULE_TEMPLATES.find(t => t && t.id === templateId);
+                        
+                        if (!existingTemplate) {
+                            // Neues Template erstellen
                             const newTemplate = {
-                                id: templateId,  // ← FIX: Korrekte ID verwenden
+                                id: templateId,
                                 name: moduleData.name || data.name || 'Importiertes Modul',
                                 category: moduleData.category || 'Custom',
                                 description: moduleData.description || data.description || 'Importiertes Modul',
-                                html: moduleData.html || generateHtmlFromProperties(moduleData),
-                                properties: moduleData.properties || {}
+                                html: moduleData.html || `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}};">
+                                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+                                        <h2 style="color: {{titleColor}};">{{title}}</h2>
+                                        <p style="color: {{textColor}};">{{text}}</p>
+                                    </div>
+                                </section>`,
+                                properties: moduleData.properties || {
+                                    title: 'Standard Titel',
+                                    titleColor: '#063AA8',
+                                    text: 'Standard Text',
+                                    textColor: '#212529',
+                                    backgroundColor: '#FFFFFF',
+                                    sectionSpacing: '4rem 0'
+                                },
+                                customized: true
                             };
-                            newTemplate.customized = true;
+                            
                             MODULE_TEMPLATES.push(newTemplate);
                             loadModuleLibrary();
                             saveCustomTemplates();
+                            console.log('✅ Template hinzugefügt:', templateId);
                         }
                         
-                        // FIX: Verwende die korrekte templateId auch hier
-                        addModuleToCanvas(templateId);
-                        
-                        // Wenn es Custom Properties gibt, übernehme sie
-                        if (moduleData.properties && modules.length > 0) {
-                            const lastModule = modules[modules.length - 1];
-                            lastModule.properties = { ...lastModule.properties, ...moduleData.properties };
-                            renderCanvas();
+                        // Modul zum Canvas hinzufügen
+                        if (typeof addModuleToCanvas === 'function') {
+                            addModuleToCanvas(templateId);
+                            
+                            // Custom Properties anwenden
+                            if (moduleData.properties && modules.length > 0) {
+                                const lastModule = modules[modules.length - 1];
+                                if (lastModule) {
+                                    lastModule.properties = { ...lastModule.properties, ...moduleData.properties };
+                                    renderCanvas();
+                                }
+                            }
+                        } else {
+                            console.error('addModuleToCanvas Funktion nicht verfügbar');
                         }
                         
-                        showNotification('✅ Modul importiert: ' + (data.name || moduleData.name));
+                        showNotification('✅ Modul importiert: ' + (data.name || moduleData.name || 'Unbekannt'));
                         closeImportModal();
-                    }
-                    break;
-                    
-                case 'templates':
-                case 'custom-library':
-                case 'module-backup':  // ← FIX: Unterstütze Backup-Format
-                    if (confirm('Neue Module hinzufügen?')) {
-                        let importedCount = 0;
-                        const templatesToAdd = data.templates || data.modules || [];
+                        break;
                         
-                        templatesToAdd.forEach(template => {
-                            // Konvertiere Module zu Templates wenn nötig
-                            if (template.templateId && !template.id) {
-                                template.id = template.templateId;
-                                template.html = template.html || generateHtmlFromTemplate(template);
+                    case 'templates':
+                    case 'custom-library':
+                    case 'module-backup':
+                        if (confirm('Neue Module hinzufügen?')) {
+                            let importedCount = 0;
+                            const templatesToAdd = data.templates || data.modules || [];
+                            
+                            if (!Array.isArray(templatesToAdd)) {
+                                showNotification('❌ Keine gültigen Templates gefunden');
+                                return;
                             }
                             
-                            if (!MODULE_TEMPLATES.find(t => t.id === template.id)) {
-                                template.customized = true;
-                                if (!template.category) template.category = 'Custom';
-                                MODULE_TEMPLATES.push(template);
-                                importedCount++;
+                            templatesToAdd.forEach(template => {
+                                try {
+                                    // Validierung jedes Templates
+                                    if (!template || typeof template !== 'object') {
+                                        console.warn('Ungültiges Template übersprungen:', template);
+                                        return;
+                                    }
+                                    
+                                    // Template-ID sicherstellen
+                                    if (template.templateId && !template.id) {
+                                        template.id = template.templateId;
+                                    }
+                                    
+                                    if (!template.id) {
+                                        console.warn('Template ohne ID übersprungen:', template);
+                                        return;
+                                    }
+                                    
+                                    // Existenz prüfen
+                                    const exists = MODULE_TEMPLATES.find(t => t && t.id === template.id);
+                                    if (!exists) {
+                                        // Standard-Werte setzen
+                                        template.customized = true;
+                                        if (!template.category) template.category = 'Custom';
+                                        if (!template.name) template.name = 'Importiertes Modul';
+                                        if (!template.html) template.html = '<div>Standard HTML</div>';
+                                        if (!template.properties) template.properties = {};
+                                        
+                                        MODULE_TEMPLATES.push(template);
+                                        importedCount++;
+                                        console.log('✅ Template importiert:', template.id);
+                                    }
+                                } catch (templateError) {
+                                    console.error('Fehler beim Template-Import:', templateError, template);
+                                }
+                            });
+                            
+                            if (importedCount > 0) {
+                                loadModuleLibrary();
+                                saveCustomTemplates();
+                                showNotification(`✅ ${importedCount} Module importiert`);
+                            } else {
+                                showNotification('ℹ️ Alle Module bereits vorhanden oder ungültig');
                             }
-                        });
-                        
-                        if (importedCount > 0) {
-                            loadModuleLibrary();
-                            saveCustomTemplates();
-                            showNotification(`✅ ${importedCount} Module importiert`);
-                        } else {
-                            showNotification('ℹ️ Alle Module bereits vorhanden');
+                            closeImportModal();
                         }
-                        closeImportModal();
-                    }
-                    break;
-                    
-                default:
-                    showNotification('❌ Unbekannter Datentyp: ' + data.type);
+                        break;
+                        
+                    default:
+                        showNotification('❌ Unbekannter Datentyp: ' + data.type);
+                }
+            } catch (error) {
+                console.error('Fehler beim Import:', error);
+                showNotification('❌ Import-Fehler: ' + error.message);
             }
         }
 
@@ -7514,6 +7661,15 @@ properties: {
         window.exportAllCurrentModules = exportAllCurrentModules;
         window.deleteIndividualModule = deleteIndividualModule;
         window.exportSingleModule = exportSingleModule;
+        // Sichere Modul-Referenz-Prüfung
+        function validateModuleReference(moduleId) {
+            if (!moduleId) return false;
+            if (!modules || !Array.isArray(modules)) return false;
+            return modules.some(m => m && m.id === moduleId);
+        }
+
+        // Globale Funktionen sicher verfügbar machen
+        window.validateModuleReference = validateModuleReference;
         // Bestehende window-Definitionen...
         window.showBulkEditModal = showBulkEditModal;
         window.closeBulkEditModal = closeBulkEditModal;
@@ -7861,6 +8017,105 @@ properties: {
             return html;
         }
         
+        // Feature Breaker Modul Verarbeitung
+        function processKerberosFeatureBreaker(module, html) {
+            const props = module.properties;
+            
+            // Header Content
+            let headerContent = `<div style="text-align: ${props.contentAlignment}; position: relative;">`;
+            
+            // Badge Element (falls aktiviert)
+            if (props.showBadge === 'true' && props.badgeText) {
+                const badgePosition = props.badgePosition === 'top-left' ? 'top: 1rem; left: 1rem;' : 
+                                    props.badgePosition === 'top-center' ? 'top: 1rem; left: 50%; transform: translateX(-50%);' :
+                                    'top: 1rem; right: 1rem;';
+                
+                headerContent += `<div style="position: absolute; ${badgePosition} background: ${props.badgeColor}; color: ${props.badgeTextColor}; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">${props.badgeText}</div>`;
+            }
+            
+            // Icon Element
+            if (props.showIcon === 'true' && props.iconClass) {
+                headerContent += `<div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize}; color: ${props.iconColor}; margin-bottom: 1.5rem; filter: drop-shadow(${props.iconGlow});">${props.iconClass}</div>`;
+            }
+            
+            // Titel
+            headerContent += `<h1 style="font-family: var(--heading-font-font-family); font-size: 3rem; font-weight: 800; line-height: 1.1; color: ${props.titleColor}; margin: 0 0 1rem 0; text-shadow: ${props.textShadow};">${props.title}</h1>`;
+            
+            // Untertitel
+            if (props.subtitle) {
+                headerContent += `<h2 style="font-family: var(--heading-font-font-family); font-size: 1.5rem; font-weight: 400; line-height: 1.3; color: ${props.subtitleColor}; margin: 0 0 1.5rem 0; text-shadow: ${props.textShadow};">${props.subtitle}</h2>`;
+            }
+            
+            // Beschreibung
+            if (props.description) {
+                headerContent += `<p style="font-family: var(--body-font-font-family); font-size: 1.2rem; line-height: 1.6; color: ${props.descriptionColor}; margin: 0 0 2rem 0; max-width: 600px; ${props.contentAlignment === 'center' ? 'margin-left: auto; margin-right: auto;' : ''}">${props.description}</p>`;
+            }
+            
+            // Pricing (falls aktiviert)
+            if (props.showPricing === 'true' && props.priceText) {
+                headerContent += `<div style="margin: 2rem 0;">
+                    <div style="display: inline-flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.1); padding: 1rem 2rem; border-radius: 50px; backdrop-filter: blur(10px);">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: ${props.priceColor}; font-family: var(--heading-font-font-family);">${props.priceText}</span>
+                        ${props.originalPrice ? `<span style="font-size: 1.2rem; color: ${props.originalPriceColor}; text-decoration: line-through;">${props.originalPrice}</span>` : ''}
+                    </div>
+                </div>`;
+            }
+            
+            // Buttons
+            const buttonAlign = props.contentAlignment === 'center' ? 'justify-content: center;' : props.contentAlignment === 'right' ? 'justify-content: flex-end;' : 'justify-content: flex-start;';
+            
+            headerContent += `<div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; ${buttonAlign}">`;
+            
+            // Primärer Button
+            if (props.primaryButtonText) {
+                headerContent += `<a href="${props.primaryButtonLink}" class="breaker-btn-primary breaker-btn-${module.id}" style="font-family: var(--button-font-family); font-weight: 700; font-size: 1.1rem; background: ${props.primaryButtonBgColor}; color: ${props.primaryButtonTextColor}; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: ${props.cardShadow}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 1px;">${props.primaryButtonText}${props.primaryButtonIcon ? ` <span style="font-family: 'Font Awesome 5 Pro';">${props.primaryButtonIcon}</span>` : ''}</a>`;
+            }
+            
+            // Sekundärer Button
+            if (props.showSecondaryButton === 'true' && props.secondaryButtonText) {
+                headerContent += `<a href="${props.secondaryButtonLink}" class="breaker-btn-secondary breaker-btn-${module.id}" style="font-family: var(--button-font-family); font-weight: 600; font-size: 1.1rem; background: ${props.secondaryButtonBgColor}; color: ${props.secondaryButtonTextColor}; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: ${props.secondaryButtonBorder}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">${props.secondaryButtonText}</a>`;
+            }
+            
+            headerContent += `</div></div>`;
+            
+            // CSS für Hover-Effekte
+            const hoverCSS = `<style>
+                .breaker-btn-${module.id}:hover {
+                    transform: translateY(-2px) !important;
+                    filter: brightness(1.1) !important;
+                }
+                .breaker-btn-${module.id}:active {
+                    transform: translateY(0px) !important;
+                    transition: all 0.1s ease !important;
+                }
+                @media (max-width: 768px) {
+                    .kerberos-module-${module.templateId} h1 {
+                        font-size: 2rem !important;
+                    }
+                    .kerberos-module-${module.templateId} h2 {
+                        font-size: 1.2rem !important;
+                    }
+                    .kerberos-module-${module.templateId} p {
+                        font-size: 1rem !important;
+                    }
+                    .kerberos-module-${module.templateId} .breaker-btn-${module.id} {
+                        width: 100% !important;
+                        justify-content: center !important;
+                        max-width: 300px !important;
+                    }
+                }
+            </style>`;
+            
+            // Template zusammenbauen
+            html = html.replace('{{breakerContent}}', headerContent);
+            
+            // CSS hinzufügen
+            html = hoverCSS + html;
+            
+            return html;
+        }
+
+
         function processKerberosWarningFacts(module, html) {
             const props = module.properties;
             
