@@ -728,6 +728,7 @@
                 <!-- Module-Liste wird hier geladen -->
             </div>
             <div style="margin-top: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                <button class="btn btn-info" onclick="showDeletedTemplatesManager()" style="margin-right: 0.5rem;">🗑️ Gelöschte Templates</button>
                 <button class="btn btn-warning" onclick="exportModuleLibrary()">📤 Bibliothek exportieren</button>
                 <button class="btn btn-secondary" onclick="closeModuleLibraryModal()">Schließen</button>
             </div>
@@ -5576,6 +5577,64 @@ properties: {
             }
         }
 
+        // Gelöschte Templates anzeigen und wiederherstellen
+        function showDeletedTemplatesManager() {
+            const deletedList = getDeletedTemplatesBlacklist();
+            
+            if (deletedList.length === 0) {
+                showNotification('✅ Keine gelöschten Templates vorhanden');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 2500; display: flex; 
+                align-items: center; justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h3 style="margin: 0 0 1rem 0; color: var(--kerberos-primary);">🗑️ Gelöschte Templates</h3>
+                    <p style="color: #6c757d; margin-bottom: 1.5rem;">Diese Templates wurden gelöscht und können wiederhergestellt werden:</p>
+                    
+                    <div id="deletedTemplatesList" style="margin-bottom: 1.5rem;">
+                        ${deletedList.map(templateId => `
+                            <div style="border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: var(--kerberos-primary);">${templateId}</strong>
+                                    <br><small style="color: #999;">Gelöschtes Template</small>
+                                </div>
+                                <button onclick="restoreDeletedTemplate('${templateId}'); closeDeletedTemplatesModal();" class="btn btn-success" style="font-size: 0.85rem;">
+                                    ↻ Wiederherstellen
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div style="text-align: right;">
+                        <button onclick="closeDeletedTemplatesModal()" class="btn btn-secondary">Schließen</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.id = 'deletedTemplatesModal';
+            document.body.appendChild(modal);
+            
+            // Close on outside click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeDeletedTemplatesModal();
+                }
+            });
+        }
+
+        function closeDeletedTemplatesModal() {
+            const modal = document.getElementById('deletedTemplatesModal');
+            if (modal) modal.remove();
+        }
+
+
         function loadModuleLibraryList(filterCategory = 'all', searchTerm = '') {
             const container = document.getElementById('moduleLibraryList');
             container.innerHTML = '';
@@ -5655,13 +5714,16 @@ properties: {
                     MODULE_TEMPLATES.splice(index, 1);
                 }
                 
+                // Füge zur Blacklist hinzu (verhindert erneutes Laden)
+                addToDeletedTemplatesBlacklist(templateId);
+                
                 // Module-Bibliothek neu laden
                 loadModuleLibrary();
                 loadModuleLibraryList();
                 
                 showNotification(`🗑️ Template "${template.name}" gelöscht`);
                 
-                // Speichere Custom Templates in LocalStorage
+                // Speichere Custom Templates und Blacklist in LocalStorage
                 saveCustomTemplates();
             }
         }
@@ -5784,11 +5846,15 @@ properties: {
 
         function loadCustomTemplates() {
             try {
+                // Lade gelöschte Templates Blacklist
+                const deletedList = getDeletedTemplatesBlacklist();
+                
                 const saved = localStorage.getItem('kerberos-custom-templates');
                 if (saved) {
                     const customTemplates = JSON.parse(saved);
                     customTemplates.forEach(template => {
-                        if (!MODULE_TEMPLATES.find(t => t.id === template.id)) {
+                        // Nur hinzufügen wenn nicht in Blacklist und nicht bereits vorhanden
+                        if (!deletedList.includes(template.id) && !MODULE_TEMPLATES.find(t => t.id === template.id)) {
                             MODULE_TEMPLATES.push(template);
                         }
                     });
@@ -5796,6 +5862,55 @@ properties: {
             } catch (e) {
                 console.error('Fehler beim Laden der Custom Templates:', e);
             }
+        }
+
+        // Template-Blacklist Management
+        function addToDeletedTemplatesBlacklist(templateId) {
+            try {
+                const deletedList = getDeletedTemplatesBlacklist();
+                if (!deletedList.includes(templateId)) {
+                    deletedList.push(templateId);
+                    localStorage.setItem('kerberos-deleted-templates', JSON.stringify(deletedList));
+                }
+            } catch (e) {
+                console.error('Fehler beim Speichern der Blacklist:', e);
+            }
+        }
+
+        function getDeletedTemplatesBlacklist() {
+            try {
+                const saved = localStorage.getItem('kerberos-deleted-templates');
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                console.error('Fehler beim Laden der Blacklist:', e);
+                return [];
+            }
+        }
+
+        function removeFromDeletedTemplatesBlacklist(templateId) {
+            try {
+                const deletedList = getDeletedTemplatesBlacklist();
+                const index = deletedList.indexOf(templateId);
+                if (index > -1) {
+                    deletedList.splice(index, 1);
+                    localStorage.setItem('kerberos-deleted-templates', JSON.stringify(deletedList));
+                }
+            } catch (e) {
+                console.error('Fehler beim Aktualisieren der Blacklist:', e);
+            }
+        }
+
+        // Template-Wiederherstellung
+        function restoreDeletedTemplate(templateId) {
+            // Entferne von Blacklist
+            removeFromDeletedTemplatesBlacklist(templateId);
+            
+            // Lade Templates neu
+            loadCustomTemplates();
+            loadModuleLibrary();
+            loadModuleLibraryList();
+            
+            showNotification(`✅ Template wiederhergestellt`);
         }
 
         // Library Filter & Search
@@ -6458,6 +6573,9 @@ properties: {
         window.editModuleTemplate = editModuleTemplate;
         window.exportModuleTemplate = exportModuleTemplate;
         window.exportModuleLibrary = exportModuleLibrary;
+        window.showDeletedTemplatesManager = showDeletedTemplatesManager;
+        window.closeDeletedTemplatesModal = closeDeletedTemplatesModal;
+        window.restoreDeletedTemplate = restoreDeletedTemplate;
         document.getElementById('savePageBtn').addEventListener('click', showSavePageDialog);
         document.getElementById('loadPageBtn').addEventListener('click', showLoadPageDialog);
         document.getElementById('importBtn').addEventListener('click', showImportModal);
