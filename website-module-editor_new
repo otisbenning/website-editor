@@ -7440,8 +7440,11 @@ properties: {
                 
                 const moduleElement = container.closest('.canvas-module') || container.closest('section');
                 const dots = moduleElement ? moduleElement.querySelectorAll('.testimonial-dot') : [];
-                const prevBtn = container.querySelector('.nav-prev');
-                const nextBtn = container.querySelector('.nav-next');
+                
+                // DIESE ZEILEN ÄNDERN:
+                const prevBtn = container.querySelector('.kerberos-prev');  // ← war .nav-prev
+                const nextBtn = container.querySelector('.kerberos-next');  // ← war .nav-next
+                
                 
                 let currentSlide = 0;
                 let autoPlay = true;
