@@ -3085,74 +3085,59 @@ properties: {
             let timelineSteps = '';
             
             for (let i = 1; i <= 4; i++) {
-                const title = props[`step${i}Title`];
-                const description = props[`step${i}Description`];
-                const icon = props[`step${i}Icon`];
-                const color = props[`step${i}Color`];
-                const number = props[`step${i}Number`];
-                const position = props[`step${i}Position`] || (i % 2 === 0 ? 'left' : 'right');
-                const isActive = props[`step${i}Active`] === 'true';
+                const title = props['step' + i + 'Title'];
+                const description = props['step' + i + 'Description'];
+                const icon = props['step' + i + 'Icon'];
+                const color = props['step' + i + 'Color'];
+                const number = props['step' + i + 'Number'];
+                const position = props['step' + i + 'Position'] || (i % 2 === 0 ? 'left' : 'right');
+                const isActive = props['step' + i + 'Active'] === 'true';
                 
                 if (title && description && isActive) {
                     const isRight = position === 'right';
                     const marginTop = i === 1 ? '0' : '4rem';
                     
-                    timelineSteps += `
-                        <div class="timeline-step" style="position: relative; margin-top: ${marginTop};">
-                            <!-- Dot -->
-                            <div class="timeline-dot" style="position: absolute; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: ${color}; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 12px rgba(6,58,168,0.2); transition: transform 0.3s ease;">
-                                <span style="font-family: 'Font Awesome 5 Pro'; color: white; font-size: 1.25rem;">${icon}</span>
-                            </div>
-                            
-                            <!-- Card -->
-                            <div class="timeline-card" style="width: 45%; ${isRight ? 'margin-left: 55%;' : 'margin-right: 55%;'} background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 12px; padding: 2rem; box-shadow: 0 8px 24px rgba(6,58,168,0.08); transition: transform 0.3s ease;">
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <div style="background: ${color}; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">${number}</div>
-                                    <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); color: ${color}; margin: 0; font-weight: 600;">${title}</h3>
-                                </div>
-                                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.textColor}; margin: 0;">${description}</p>
-                            </div>
-                        </div>`;
+                    const cardPosition = isRight ? 'margin-left: 55%;' : 'margin-right: 55%;';
+                    
+                    timelineSteps += '<div class="timeline-step" style="position: relative; margin-top: ' + marginTop + ';">' +
+                        '<!-- Dot -->' +
+                        '<div class="timeline-dot" style="position: absolute; left: 50%; transform: translateX(-50%); width: 60px; height: 60px; background: ' + color + '; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 4px 12px rgba(6,58,168,0.2); transition: transform 0.3s ease;">' +
+                            '<span style="font-family: \'Font Awesome 5 Pro\'; color: white; font-size: 1.25rem;">' + icon + '</span>' +
+                        '</div>' +
+                        
+                        '<!-- Card -->' +
+                        '<div class="timeline-card" style="width: 45%; ' + cardPosition + ' background: ' + props.cardBackground + '; border: 1px solid ' + props.cardBorder + '; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">' +
+                            '<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">' +
+                                '<div style="background: ' + color + '; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">' + (number || i) + '</div>' +
+                                '<h3 style="font-family: var(--heading-font-font-family); color: ' + props.textColor + '; margin: 0; font-size: 1.25rem;">' + title + '</h3>' +
+                            '</div>' +
+                            '<p style="font-family: var(--body-font-font-family); color: ' + props.subtitleColor + '; margin: 0; line-height: 1.6;">' + description + '</p>' +
+                        '</div>' +
+                    '</div>';
                 }
             }
             
-            // Füge das korrigierte Script hinzu
-            const script = '<script>' +
-            'document.addEventListener("DOMContentLoaded", function() {' +
-                'const steps = document.querySelectorAll(".timeline-step");' +
-                'const observer = new IntersectionObserver((entries) => {' +
-                    'entries.forEach(entry => {' +
-                        'if (entry.isIntersecting) {' +
-                            'entry.target.style.opacity = "1";' +
-                            'entry.target.style.transform = "translateY(0)";' +
-                        '}' +
-                    '});' +
-                '}, { threshold: 0.5 });' +
-                
-                'steps.forEach((step, index) => {' +
-                    'step.style.opacity = "0";' +
-                    'step.style.transform = "translateY(20px)";' +
-                    'step.style.transition = "all 0.6s ease " + (index * 0.2) + "s";' +
-                    'timelineObserver.observe(step);' +
-                    
-                    'step.addEventListener("mouseenter", () => {' +
-                        'const card = step.querySelector(".timeline-card");' +
-                        'const dot = step.querySelector(".timeline-dot");' +
-                        'if (card) card.style.transform = "scale(1.02)";' +
-                        'if (dot) dot.style.transform = "translateX(-50%) scale(1.2)";' +
-                    '});' +
-                    
-                    'step.addEventListener("mouseleave", () => {' +
-                        'const card = step.querySelector(".timeline-card");' +
-                        'const dot = step.querySelector(".timeline-dot");' +
-                        'if (card) card.style.transform = "scale(1)";' +
-                        'if (dot) dot.style.transform = "translateX(-50%) scale(1)";' +
+            // Interactive JavaScript hinzufügen
+            const interactiveScript = '<script>' +
+                'document.addEventListener("DOMContentLoaded", function() {' +
+                    'document.querySelectorAll(".timeline-step").forEach(step => {' +
+                        'step.addEventListener("mouseenter", () => {' +
+                            'const card = step.querySelector(".timeline-card");' +
+                            'const dot = step.querySelector(".timeline-dot");' +
+                            'if (card) card.style.transform = "scale(1.02)";' +
+                            'if (dot) dot.style.transform = "translateX(-50%) scale(1.1)";' +
+                        '});' +
+                        'step.addEventListener("mouseleave", () => {' +
+                            'const card = step.querySelector(".timeline-card");' +
+                            'const dot = step.querySelector(".timeline-dot");' +
+                            'if (card) card.style.transform = "scale(1)";' +
+                            'if (dot) dot.style.transform = "translateX(-50%) scale(1)";' +
+                        '});' +
                     '});' +
                 '});' +
-            '});' +
-            '</script>';
+                '</script>';
 
-            return html.replace('{{timelineSteps}}', timelineSteps);
+            return html.replace('{{timelineSteps}}', timelineSteps) + interactiveScript;
         }
 
         // === NEUE PROCESSOR-FUNKTIONEN ===
@@ -3162,27 +3147,29 @@ properties: {
             let featureCards = '';
             
             for (let i = 1; i <= 6; i++) {
-                const title = props[`feature${i}Title`];
-                const description = props[`feature${i}Description`];
-                const icon = props[`feature${i}Icon`];
-                const color = props[`feature${i}Color`];
-                const badge = props[`feature${i}Badge`];
-                const badgeColor = props[`feature${i}BadgeColor`];
-                const isActive = props[`feature${i}Active`] === 'true';
+                const title = props['feature' + i + 'Title'];
+                const description = props['feature' + i + 'Description'];
+                const icon = props['feature' + i + 'Icon'];
+                const color = props['feature' + i + 'Color'];
+                const badge = props['feature' + i + 'Badge'];
+                const badgeColor = props['feature' + i + 'BadgeColor'];
+                const isActive = props['feature' + i + 'Active'] === 'true';
                 
                 if (title && description && isActive) {
-                    const badgeHtml = badge ? `<div style="position: absolute; top: 1rem; right: 1rem; background: ${badgeColor}; color: ${props.badgeTextColor}; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">${badge}</div>` : '';
+                    let badgeHtml = '';
+                    if (badge) {
+                        badgeHtml = '<div style="position: absolute; top: 1rem; right: 1rem; background: ' + badgeColor + '; color: ' + props.badgeTextColor + '; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">' + badge + '</div>';
+                    }
                     
-                    featureCards += `
-                        <div class="kerberos-feature-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;">
-                            ${badgeHtml}
-                            <div class="feature-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, ${color}10, ${color}05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>
-                            <div style="position: relative; z-index: 2;">
-                                <div class="feature-icon" style="font-family: 'Font Awesome 5 Pro'; font-size: 2.5rem; color: ${color}; margin-bottom: 1.5rem; transition: all 0.3s ease;">${icon}</div>
-                                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); color: ${props.textColor}; margin: 0 0 1rem 0;">${title}</h3>
-                                <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.subtitleColor}; margin: 0;">${description}</p>
-                            </div>
-                        </div>`;
+                    featureCards += '<div class="kerberos-feature-card" style="background: ' + props.cardBackground + '; border: 1px solid ' + props.cardBorder + '; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;">' +
+                        badgeHtml +
+                        '<div class="feature-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, ' + color + '10, ' + color + '05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>' +
+                        '<div style="position: relative; z-index: 2;">' +
+                            '<div class="feature-icon" style="font-family: \'Font Awesome 5 Pro\'; font-size: 2.5rem; color: ' + color + '; margin-bottom: 1.5rem; transition: all 0.3s ease;">' + icon + '</div>' +
+                            '<h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); color: ' + props.textColor + '; margin: 0 0 1rem 0;">' + title + '</h3>' +
+                            '<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ' + props.subtitleColor + '; margin: 0;">' + description + '</p>' +
+                        '</div>' +
+                    '</div>';
                 }
             }
             
@@ -3194,27 +3181,26 @@ properties: {
             let apiEndpoints = '';
             
             for (let i = 1; i <= 4; i++) {
-                const method = props[`endpoint${i}Method`];
-                const path = props[`endpoint${i}Path`];
-                const title = props[`endpoint${i}Title`];
-                const description = props[`endpoint${i}Description`];
-                const status = props[`endpoint${i}Status`];
-                const statusColor = props[`endpoint${i}StatusColor`];
-                const isActive = props[`endpoint${i}Active`] === 'true';
+                const method = props['endpoint' + i + 'Method'];
+                const path = props['endpoint' + i + 'Path'];
+                const title = props['endpoint' + i + 'Title'];
+                const description = props['endpoint' + i + 'Description'];
+                const status = props['endpoint' + i + 'Status'];
+                const statusColor = props['endpoint' + i + 'StatusColor'];
+                const isActive = props['endpoint' + i + 'Active'] === 'true';
                 
                 if (method && path && title && isActive) {
                     const methodColor = method === 'GET' ? '#28A745' : method === 'POST' ? '#063AA8' : '#EF8646';
                     
-                    apiEndpoints += `
-                        <div class="api-endpoint-card" style="background: ${props.cardBackground}; border: 1px solid ${props.cardBorder}; border-radius: 8px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                <span style="background: ${methodColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">${method}</span>
-                                <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">${status}</span>
-                            </div>
-                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.textColor}; margin: 0 0 0.5rem 0; font-size: 1.1rem;">${title}</h4>
-                            <p style="font-family: 'Monaco', 'Consolas', monospace; color: ${props.primaryColor}; font-size: 0.9rem; margin: 0 0 1rem 0;">${path}</p>
-                            <p style="font-family: var(--body-font-font-family); color: ${props.textColor}; font-size: 0.9rem; margin: 0; opacity: 0.8;">${description}</p>
-                        </div>`;
+                    apiEndpoints += '<div class="api-endpoint-card" style="background: ' + props.cardBackground + '; border: 1px solid ' + props.cardBorder + '; border-radius: 8px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer;">' +
+                        '<div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">' +
+                            '<span style="background: ' + methodColor + '; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">' + method + '</span>' +
+                            '<span style="background: ' + statusColor + '; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">' + status + '</span>' +
+                        '</div>' +
+                        '<h4 style="font-family: var(--heading-font-font-family); color: ' + props.textColor + '; margin: 0 0 0.5rem 0; font-size: 1.1rem;">' + title + '</h4>' +
+                        '<p style="font-family: \'Monaco\', \'Consolas\', monospace; color: ' + props.primaryColor + '; font-size: 0.9rem; margin: 0 0 1rem 0;">' + path + '</p>' +
+                        '<p style="font-family: var(--body-font-font-family); color: ' + props.textColor + '; font-size: 0.9rem; margin: 0; opacity: 0.8;">' + description + '</p>' +
+                    '</div>';
                 }
             }
             
@@ -3229,70 +3215,70 @@ properties: {
             
             // Pricing Plans generieren (RESPONSIVE KORRIGIERT)
             for (let i = 1; i <= 3; i++) {
-                const name = props[`plan${i}Name`];
-                const price = props[`plan${i}Price`];
-                const period = props[`plan${i}Period`];
-                const description = props[`plan${i}Description`];
-                const buttonText = props[`plan${i}ButtonText`];
-                const buttonLink = props[`plan${i}ButtonLink`];
-                const isPopular = props[`plan${i}Popular`] === 'true';
-                const color = props[`plan${i}Color`];
-                const isActive = props[`plan${i}Active`] === 'true';
+                const name = props['plan' + i + 'Name'];
+                const price = props['plan' + i + 'Price'];
+                const period = props['plan' + i + 'Period'];
+                const description = props['plan' + i + 'Description'];
+                const buttonText = props['plan' + i + 'ButtonText'];
+                const buttonLink = props['plan' + i + 'ButtonLink'];
+                const isPopular = props['plan' + i + 'Popular'] === 'true';
+                const color = props['plan' + i + 'Color'];
+                const isActive = props['plan' + i + 'Active'] === 'true';
                 
                 if (name && price && isActive) {
-                    const popularBadge = isPopular ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${props.popularBadgeColor}; color: ${props.badgeTextColor}; padding: 0.5rem 1.5rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; z-index: 10;">${props.popularBadge}</div>` : '';
-                    const cardStyle = isPopular ? `transform: scale(1.05); border: 2px solid ${color}; box-shadow: 0 16px 40px rgba(6,58,168,0.2);` : `border: 1px solid ${props.cardBorder};`;
+                    let popularBadge = '';
+                    if (isPopular) {
+                        popularBadge = '<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ' + props.popularBadgeColor + '; color: ' + props.badgeTextColor + '; padding: 0.5rem 1.5rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; z-index: 10;">' + props.popularBadge + '</div>';
+                    }
                     
-                    pricingPlans += `
-                        <div class="pricing-plan" style="background: ${props.cardBackground}; ${cardStyle} border-radius: 12px; padding: 2rem; text-align: center; position: relative; transition: all 0.3s ease; max-width: 100%; box-sizing: border-box;">
-                            ${popularBadge}
-                            <h3 style="font-family: var(--heading-font-font-family); color: ${color}; margin: 0 0 1rem 0; font-size: 1.5rem;">${name}</h3>
-                            <div style="margin-bottom: 1rem;">
-                                <span class="price" style="font-family: var(--heading-font-font-family); font-size: 2.5rem; font-weight: 700; color: ${props.textColor};">${price}</span>
-                                <span style="color: ${props.subtitleColor}; font-size: 1rem;">${period}</span>
-                            </div>
-                            <p style="color: ${props.subtitleColor}; margin: 0 0 2rem 0; line-height: 1.5;">${description}</p>
-                            <a href="${buttonLink}" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ${color}; color: white; padding: 1rem 1.5rem; border-radius: 8px; text-decoration: none; display: inline-block; width: calc(100% - 3rem); max-width: 250px; transition: all 0.3s ease; box-sizing: border-box; white-space: nowrap; text-align: center;">${buttonText}</a>
-                        </div>`;
+                    const cardStyle = isPopular ? 'transform: scale(1.05); box-shadow: 0 8px 30px rgba(6,58,168,0.15); border: 2px solid ' + props.popularBadgeColor + ';' : 'border: 1px solid ' + props.cardBorder + ';';
+                    
+                    pricingPlans += '<div class="pricing-plan" style="position: relative; background: ' + props.cardBackground + '; ' + cardStyle + ' border-radius: 12px; padding: 2rem; text-align: center; transition: all 0.3s ease; cursor: pointer;">' +
+                        popularBadge +
+                        '<div style="margin-bottom: 1.5rem;">' +
+                            '<h3 style="font-family: var(--heading-font-font-family); color: ' + props.textColor + '; margin: 0 0 0.5rem 0; font-size: 1.5rem;">' + name + '</h3>' +
+                            '<div style="font-size: 3rem; font-weight: 900; color: ' + color + '; margin: 1rem 0;">' + price + '<span style="font-size: 1rem; color: ' + props.subtitleColor + '; font-weight: 400;">/' + period + '</span></div>' +
+                            '<p style="font-family: var(--body-font-font-family); color: ' + props.subtitleColor + '; margin: 0;">' + description + '</p>' +
+                        '</div>' +
+                        '<a href="' + buttonLink + '" style="font-family: var(--button-font-family); background: ' + color + '; color: white; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none; display: inline-block; font-weight: 700; transition: all 0.3s ease; width: 100%; box-sizing: border-box;">' + buttonText + '</a>' +
+                    '</div>';
                 }
             }
             
-            // Feature-Vergleichstabelle generieren
-            for (let i = 1; i <= 6; i++) {
-                const featureName = props[`feature${i}Name`];
-                const plan1Feature = props[`feature${i}Plan1`];
-                const plan2Feature = props[`feature${i}Plan2`];
-                const plan3Feature = props[`feature${i}Plan3`];
+            // Feature-Rows für Vergleichstabelle generieren
+            for (let i = 1; i <= 10; i++) {
+                const featureName = props['feature' + i + 'Name'];
+                const plan1Feature = props['feature' + i + 'Plan1'];
+                const plan2Feature = props['feature' + i + 'Plan2'];
+                const plan3Feature = props['feature' + i + 'Plan3'];
+                const isActive = props['feature' + i + 'Active'] === 'true';
                 
-                if (featureName && plan1Feature && plan2Feature && plan3Feature) {
-                    const rowBg = i % 2 === 0 ? props.tableRowAlt || '#F8F9FA' : 'white';
-                    featureRows += `
-                        <tr style="background: ${rowBg};">
-                            <td style="padding: 1rem; font-family: var(--body-font-font-family); color: ${props.tableText}; font-weight: 600;">${featureName}</td>
-                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan1Feature}</td>
-                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan2Feature}</td>
-                            <td style="padding: 1rem; text-align: center; font-family: var(--body-font-font-family); color: ${props.tableText};">${plan3Feature}</td>
-                        </tr>`;
+                if (featureName && isActive) {
+                    featureRows += '<div class="feature-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; padding: 1rem; border-bottom: 1px solid ' + props.cardBorder + '; align-items: center;">' +
+                        '<div style="color: ' + props.textColor + '; font-weight: 600;">' + featureName + '</div>' +
+                        '<div style="text-align: center; color: ' + props.tableTextColor + ';">' + plan1Feature + '</div>' +
+                        '<div style="text-align: center; color: ' + props.tableTextColor + ';">' + plan2Feature + '</div>' +
+                        '<div style="text-align: center; color: ' + props.tableTextColor + ';">' + plan3Feature + '</div>' +
+                    '</div>';
                     
-                    // Mobile Feature Cards generieren
-                    mobileFeatureCards += `
-                        <div style="background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid ${props.featureBorder};">
-                            <h4 style="font-family: var(--heading-font-font-family); color: ${props.featureTitle}; margin: 0 0 1rem 0; font-size: 1.1rem;">${featureName}</h4>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
-                                <div>
-                                    <div style="font-weight: 600; color: ${props.plan1Color}; margin-bottom: 0.5rem;">${props.plan1Name}</div>
-                                    <div style="color: ${props.tableText};">${plan1Feature}</div>
-                                </div>
-                                <div>
-                                    <div style="font-weight: 600; color: ${props.plan2Color}; margin-bottom: 0.5rem;">${props.plan2Name}</div>
-                                    <div style="color: ${props.tableText};">${plan2Feature}</div>
-                                </div>
-                                <div>
-                                    <div style="font-weight: 600; color: ${props.plan3Color}; margin-bottom: 0.5rem;">${props.plan3Name}</div>
-                                    <div style="color: ${props.tableText};">${plan3Feature}</div>
-                                </div>
-                            </div>
-                        </div>`;
+                    // Mobile Feature Cards
+                    mobileFeatureCards += '<div class="mobile-feature-card" style="background: ' + props.cardBackground + '; border: 1px solid ' + props.cardBorder + '; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">' +
+                        '<h4 style="color: ' + props.textColor + '; margin: 0 0 1rem 0;">' + featureName + '</h4>' +
+                        '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">' +
+                            '<div style="text-align: center;">' +
+                                '<div style="color: ' + props.planColor + '; margin-bottom: 0.5rem; font-size: 0.9rem;">' + props.plan1Name + '</div>' +
+                                '<div style="color: ' + props.tableTextColor + '; font-size: 0.9rem;">' + plan1Feature + '</div>' +
+                            '</div>' +
+                            '<div style="text-align: center;">' +
+                                '<div style="color: ' + props.planColor + '; margin-bottom: 0.5rem; font-size: 0.9rem;">' + props.plan2Name + '</div>' +
+                                '<div style="color: ' + props.tableTextColor + '; font-size: 0.9rem;">' + plan2Feature + '</div>' +
+                            '</div>' +
+                            '<div style="text-align: center;">' +
+                                '<div style="color: ' + props.planColor + '; margin-bottom: 0.5rem; font-size: 0.9rem;">' + props.plan3Name + '</div>' +
+                                '<div style="color: ' + props.tableTextColor + '; font-size: 0.9rem;">' + plan3Feature + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
                 }
             }
             
@@ -8165,105 +8151,64 @@ properties: {
             // === HEADER CONTENT ===
             let headerContent = '';
             if (props.title) {
-                headerContent += `<div style="text-align: center; margin-bottom: 3rem;">
-                    <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.titleColor}; margin: 0 0 1rem 0;">${props.title}</h2>`;
-                
-                if (props.showSubtitle === 'true' && props.subtitle) {
-                    headerContent += `<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.subtitleColor}; max-width: 800px; margin: 0 auto;">${props.subtitle}</p>`;
-                }
-                
-                headerContent += `</div>`;
+                headerContent += '<h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ' + props.titleColor + '; margin: 0 0 1rem 0;">' + props.title + '</h2>';
+            }
+
+            if (props.showSubtitle === 'true' && props.subtitle) {
+                headerContent += '<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ' + props.subtitleColor + '; margin: 0 0 2rem 0;">' + props.subtitle + '</p>';
             }
             
             // === PRODUCT CARDS ===
             let productCards = '';
-            for (let i = 1; i <= 6; i++) {
-                const isActive = props[`product${i}Active`] === 'true';
-                const title = props[`product${i}Title`];
-                const description = props[`product${i}Description`];
-                const image = props[`product${i}Image`];
-                const link = props[`product${i}Link`];
+            for (let i = 1; i <= 3; i++) {
+                const productTitle = props['product' + i + 'Title'];
+                const productDescription = props['product' + i + 'Description'];
+                const productImage = props['product' + i + 'Image'];
+                const productLink = props['product' + i + 'Link'];
+                const productButtonText = props['product' + i + 'ButtonText'];
+                const isActive = props['product' + i + 'Active'] === 'true';
                 
-                if (isActive && title) {
-                    productCards += `
-                        <a href="${link || '#'}" style="
-                            background: ${props.cardBackgroundColor}; 
-                            border: 1px solid ${props.cardBorderColor}; 
-                            border-radius: ${props.cardBorderRadius}; 
-                            overflow: hidden; 
-                            text-decoration: none; 
-                            display: block; 
-                            cursor: pointer;
-                            box-shadow: ${props.cardShadow};
-                            transform: translateY(0);
-                            opacity: 1;
-                            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                        ">
-                            ${image ? `<img src="{{imageUrl}}" alt="${title}" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.4s ease;">` : ''}
-                            <div style="padding: 1rem; transition: all 0.4s ease;">
-                                <h4 class="product-fade-title-${module.id}" style="font-family: var(--heading-font-font-family); color: ${props.cardTitleColor}; margin: 0 0 0.5rem 0; font-size: 1.1rem; transition: color 0.4s ease;">${title}</h4>
-                                <p class="product-fade-description-${module.id}" style="font-family: var(--body-font-font-family); color: ${props.cardDescriptionColor}; margin: 0; font-size: 0.9rem; transition: color 0.4s ease;">${description}</p>
-                            </div>
-                        </a>`;
+                if (productTitle && productDescription && isActive) {
+                    productCards += '<div class="product-fade-card" style="background: ' + props.cardBackground + '; border: 1px solid ' + props.cardBorder + '; border-radius: 12px; padding: 2rem; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;">' +
+                        '<div class="fade-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, ' + props.primaryColor + '10, ' + props.primaryColor + '05); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;"></div>' +
+                        '<div style="position: relative; z-index: 2;">';
+                    
+                    if (productImage) {
+                        productCards += '<div style="margin-bottom: 1.5rem; text-align: center;">' +
+                            '<img src="' + productImage + '" alt="' + productTitle + '" style="max-width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">' +
+                        '</div>';
+                    }
+                    
+                    productCards += '<h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-4-size); font-weight: var(--heading-font-font-weight); color: ' + props.textColor + '; margin: 0 0 1rem 0;">' + productTitle + '</h3>' +
+                        '<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ' + props.subtitleColor + '; margin: 0 0 1.5rem 0;">' + productDescription + '</p>';
+                    
+                    if (productButtonText && productLink) {
+                        productCards += '<a href="' + productLink + '" class="kerberos-btn kerberos-btn-' + module.id + '" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ' + props.primaryColor + '; color: white; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; display: inline-block; transition: all 0.3s ease;">' + productButtonText + '</a>';
+                    }
+                    
+                    productCards += '</div></div>';
                 }
             }
             
-            // === FADE HOVER CSS (KORRIGIERT FÜR BUTTON-KLASSEN) ===
-            const fadeHoverCSS = `<style>
-                /* Kerberos Product Fade Hover Effects - ${module.name} */
-                .kerberos-btn-${module.id} {
-                    position: relative !important;
-                    overflow: hidden !important;
-                    animation: fadeInUp 0.6s ease-out !important;
-                }
-                
-                /* ÜBERSCHREIBE STANDARD BUTTON-HOVER KOMPLETT */
-                .kerberos-btn-${module.id}:hover {
-                    background: ${props.cardHoverBackground} !important;
-                    color: inherit !important;
-                    transform: ${props.cardHoverTransform} !important;
-                    box-shadow: ${props.cardHoverShadow} !important;
-                    border-color: ${props.cardHoverBackground} !important;
-                    opacity: ${props.cardHoverOpacity} !important;
-                }
-                
-                .kerberos-btn-${module.id}:hover .product-fade-title-${module.id} {
-                    color: ${props.cardHoverTitleColor} !important;
-                }
-                
-                .kerberos-btn-${module.id}:hover .product-fade-description-${module.id} {
-                    color: ${props.cardHoverDescriptionColor} !important;
-                }
-                
-                .kerberos-btn-${module.id}:hover img {
-                    transform: scale(1.05) !important;
-                    filter: brightness(1.1) !important;
-                }
-                
-                .kerberos-btn-${module.id}:active {
-                    transform: translateY(-4px) !important;
-                    transition: all 0.2s ease !important;
-                }
-                
-                /* Fade-In Animation */
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                /* Responsive Verhalten */
-                @media (max-width: 768px) {
-                    .kerberos-btn-${module.id}:hover {
-                        transform: translateY(-4px) !important;
-                    }
-                }
-            </style>`;
+            // Fade Hover CSS
+            const fadeHoverCSS = '<style>' +
+                '.product-fade-card:hover .fade-overlay {' +
+                    'opacity: 1 !important;' +
+                '}' +
+                '.product-fade-card:hover {' +
+                    'transform: translateY(-5px) !important;' +
+                    'box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;' +
+                '}' +
+                '.kerberos-btn-' + module.id + ':hover {' +
+                    'background: rgba(6,58,168,0.8) !important;' +
+                    'transform: translateY(-2px) !important;' +
+                '}' +
+                '@media (max-width: 768px) {' +
+                    '.kerberos-btn-' + module.id + ':hover {' +
+                        'transform: translateY(-4px) !important;' +
+                    '}' +
+                '}' +
+            '</style>';
             
             // === TEMPLATE ZUSAMMENBAUEN ===
             html = html.replace('{{headerContent}}', headerContent);
@@ -8281,89 +8226,76 @@ properties: {
             const props = module.properties;
             
             // Header Content
-            let headerContent = `<div style="text-align: ${props.contentAlignment}; position: relative;">`;
+            let headerContent = '<div style="text-align: ' + props.contentAlignment + '; position: relative;">';
             
             // Badge Element (falls aktiviert)
             if (props.showBadge === 'true' && props.badgeText) {
-                const badgePosition = props.badgePosition === 'top-left' ? 'top: 1rem; left: 1rem;' : 
-                                    props.badgePosition === 'top-center' ? 'top: 1rem; left: 50%; transform: translateX(-50%);' :
-                                    'top: 1rem; right: 1rem;';
+                let badgePosition = '';
+                if (props.badgePosition === 'top-left') {
+                    badgePosition = 'top: 1rem; left: 1rem;';
+                } else if (props.badgePosition === 'top-center') {
+                    badgePosition = 'top: 1rem; left: 50%; transform: translateX(-50%);';
+                } else {
+                    badgePosition = 'top: 1rem; right: 1rem;';
+                }
                 
-                headerContent += `<div style="position: absolute; ${badgePosition} background: ${props.badgeColor}; color: ${props.badgeTextColor}; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">${props.badgeText}</div>`;
+                headerContent += '<div style="position: absolute; ' + badgePosition + ' background: ' + props.badgeColor + '; color: ' + props.badgeTextColor + '; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; z-index: 10;">' + props.badgeText + '</div>';
             }
             
-            // Icon Element
-            if (props.showIcon === 'true' && props.iconClass) {
-                headerContent += `<div style="font-family: 'Font Awesome 5 Pro'; font-size: ${props.iconSize}; color: ${props.iconColor}; margin-bottom: 1.5rem; filter: drop-shadow(${props.iconGlow});">${props.iconClass}</div>`;
+            // Titel, Untertitel, Beschreibung hinzufügen
+            if (props.title) {
+                headerContent += '<h1 style="font-family: var(--heading-font-font-family); font-size: var(--heading-1-size); font-weight: var(--heading-font-font-weight); color: ' + props.titleColor + '; margin: 0 0 1rem 0;">' + props.title + '</h1>';
             }
             
-            // Titel
-            headerContent += `<h1 style="font-family: var(--heading-font-font-family); font-size: 3rem; font-weight: 800; line-height: 1.1; color: ${props.titleColor}; margin: 0 0 1rem 0; text-shadow: ${props.textShadow};">${props.title}</h1>`;
-            
-            // Untertitel
             if (props.subtitle) {
-                headerContent += `<h2 style="font-family: var(--heading-font-font-family); font-size: 1.5rem; font-weight: 400; line-height: 1.3; color: ${props.subtitleColor}; margin: 0 0 1.5rem 0; text-shadow: ${props.textShadow};">${props.subtitle}</h2>`;
+                headerContent += '<h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); color: ' + props.subtitleColor + '; margin: 0 0 1.5rem 0; font-weight: 500;">' + props.subtitle + '</h2>';
             }
             
-            // Beschreibung
             if (props.description) {
-                headerContent += `<p style="font-family: var(--body-font-font-family); font-size: 1.2rem; line-height: 1.6; color: ${props.descriptionColor}; margin: 0 0 2rem 0; max-width: 600px; ${props.contentAlignment === 'center' ? 'margin-left: auto; margin-right: auto;' : ''}">${props.description}</p>`;
+                headerContent += '<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ' + props.textColor + '; margin: 0 0 2rem 0; max-width: 600px; margin-left: auto; margin-right: auto;">' + props.description + '</p>';
             }
             
-            // Pricing (falls aktiviert)
-            if (props.showPricing === 'true' && props.priceText) {
-                headerContent += `<div style="margin: 2rem 0;">
-                    <div style="display: inline-flex; align-items: center; gap: 1rem; background: rgba(255,255,255,0.1); padding: 1rem 2rem; border-radius: 50px; backdrop-filter: blur(10px);">
-                        <span style="font-size: 2.5rem; font-weight: 800; color: ${props.priceColor}; font-family: var(--heading-font-font-family);">${props.priceText}</span>
-                        ${props.originalPrice ? `<span style="font-size: 1.2rem; color: ${props.originalPriceColor}; text-decoration: line-through;">${props.originalPrice}</span>` : ''}
-                    </div>
-                </div>`;
-            }
-            
-            // Buttons
-            const buttonAlign = props.contentAlignment === 'center' ? 'justify-content: center;' : props.contentAlignment === 'right' ? 'justify-content: flex-end;' : 'justify-content: flex-start;';
-            
-            headerContent += `<div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; ${buttonAlign}">`;
-            
-            // Primärer Button
+            // Buttons hinzufügen
             if (props.primaryButtonText) {
-                headerContent += `<a href="${props.primaryButtonLink}" class="breaker-btn-primary breaker-btn-${module.id}" style="font-family: var(--button-font-family); font-weight: 700; font-size: 1.1rem; background: ${props.primaryButtonBgColor}; color: ${props.primaryButtonTextColor}; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: ${props.cardShadow}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 1px;">${props.primaryButtonText}${props.primaryButtonIcon ? ` <span style="font-family: 'Font Awesome 5 Pro';">${props.primaryButtonIcon}</span>` : ''}</a>`;
+                headerContent += '<div style="display: flex; gap: 1rem; justify-content: ' + props.contentAlignment + '; flex-wrap: wrap; margin-top: 2rem;">' +
+                    '<a href="' + props.primaryButtonLink + '" class="breaker-btn-primary kerberos-btn kerberos-btn-' + module.id + '" style="font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: ' + props.primaryButtonBg + '; color: ' + props.primaryButtonColor + '; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(6,58,168,0.2); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">' + 
+                        props.primaryButtonText;
+                
+                if (props.primaryButtonIcon) {
+                    headerContent += '<span style="font-family: \'Font Awesome 5 Pro\'; margin-left: 0.5rem;">' + props.primaryButtonIcon + '</span>';
+                }
+                
+                headerContent += '</a>';
+                
+                if (props.secondaryButtonText) {
+                    headerContent += '<a href="' + props.secondaryButtonLink + '" class="breaker-btn-secondary" style="font-family: var(--button-font-family); background: transparent; color: ' + props.secondaryButtonColor + '; border: 2px solid ' + props.secondaryButtonColor + '; padding: 0.75rem 2rem; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; transition: all 0.3s ease;">' + props.secondaryButtonText + '</a>';
+                }
+                
+                headerContent += '</div>';
             }
             
-            // Sekundärer Button
-            if (props.showSecondaryButton === 'true' && props.secondaryButtonText) {
-                headerContent += `<a href="${props.secondaryButtonLink}" class="breaker-btn-secondary breaker-btn-${module.id}" style="font-family: var(--button-font-family); font-weight: 600; font-size: 1.1rem; background: ${props.secondaryButtonBgColor}; color: ${props.secondaryButtonTextColor}; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: ${props.secondaryButtonBorder}; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-transform: uppercase; letter-spacing: 1px; backdrop-filter: blur(10px);">${props.secondaryButtonText}</a>`;
-            }
+            headerContent += '</div>';
             
-            headerContent += `</div></div>`;
-            
-            // CSS für Hover-Effekte
-            const hoverCSS = `<style>
-                .breaker-btn-${module.id}:hover {
-                    transform: translateY(-2px) !important;
-                    filter: brightness(1.1) !important;
-                }
-                .breaker-btn-${module.id}:active {
-                    transform: translateY(0px) !important;
-                    transition: all 0.1s ease !important;
-                }
-                @media (max-width: 768px) {
-                    .kerberos-module-${module.templateId} h1 {
-                        font-size: 2rem !important;
-                    }
-                    .kerberos-module-${module.templateId} h2 {
-                        font-size: 1.2rem !important;
-                    }
-                    .kerberos-module-${module.templateId} p {
-                        font-size: 1rem !important;
-                    }
-                    .kerberos-module-${module.templateId} .breaker-btn-${module.id} {
-                        width: 100% !important;
-                        justify-content: center !important;
-                        max-width: 300px !important;
-                    }
-                }
-            </style>`;
+            // Hover-CSS für Buttons
+            const hoverCSS = '<style>' +
+                '.kerberos-btn-' + module.id + ':hover {' +
+                    'background: ' + props.primaryButtonHoverBg + ' !important;' +
+                    'color: ' + props.primaryButtonHoverColor + ' !important;' +
+                    'transform: translateY(-2px) !important;' +
+                    'box-shadow: 0 8px 24px rgba(6,58,168,0.25) !important;' +
+                '}' +
+                '.breaker-btn-secondary:hover {' +
+                    'background: ' + props.secondaryButtonColor + ' !important;' +
+                    'color: white !important;' +
+                '}' +
+                '@media (max-width: 768px) {' +
+                    '.breaker-btn-' + module.id + ' {' +
+                        'width: 100% !important;' +
+                        'justify-content: center !important;' +
+                        'max-width: 300px !important;' +
+                    '}' +
+                '}' +
+            '</style>';
             
             // Template zusammenbauen
             html = html.replace('{{breakerContent}}', headerContent);
@@ -8381,9 +8313,9 @@ properties: {
             // Sammle alle aktiven Facts
             const facts = [];
             for (let i = 1; i <= 6; i++) {
-                const active = props[`fact${i}Active`];
-                const number = props[`fact${i}Number`];
-                const description = props[`fact${i}Description`];
+                const active = props['fact' + i + 'Active'];
+                const number = props['fact' + i + 'Number'];
+                const description = props['fact' + i + 'Description'];
                 
                 if (active === 'true' && number && description) {
                     facts.push({
@@ -8396,27 +8328,19 @@ properties: {
             // Generiere Facts HTML
             let factsHTML = '';
             if (facts.length > 0) {
-                factsHTML = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: ${props.factsGap}; margin-top: ${props.factsSpacing};">
-                        ${facts.map(fact => `
-                            <div style="text-align: center; position: relative;">
-                                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                                    <div style="width: 2px; height: 80px; background: ${props.lineColor}; margin-right: 1rem; border-radius: 2px;"></div>
-                                    <div>
-                                        <div style="font-size: ${props.factNumberSize}; font-weight: bold; color: ${props.factNumberColor}; line-height: 1.2; margin-bottom: 0.5rem;">${fact.number}</div>
-                                        <div style="font-size: ${props.factTextSize}; color: ${props.factTextColor}; line-height: 1.4;">${fact.description}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                factsHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: ' + props.factsGap + '; margin-top: ' + props.factsSpacing + ';">';
+                
+                facts.forEach(fact => {
+                    factsHTML += '<div style="text-align: center; position: relative;">' +
+                        '<div style="font-size: 3rem; font-weight: 900; color: ' + props.factsNumberColor + '; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">' + fact.number + '</div>' +
+                        '<p style="font-family: var(--body-font-font-family); color: ' + props.factsTextColor + '; font-size: 1.1rem; line-height: 1.6; margin: 0;">' + fact.description + '</p>' +
+                    '</div>';
+                });
+                
+                factsHTML += '</div>';
             }
             
-            // Ersetze Platzhalter
-            html = html.replace('{{factsContent}}', factsHTML);
-            
-            return html;
+            return html.replace('{{factsContent}}', factsHTML);
         }
 
         // Testimonials Carousel Funktionalität für Kerberos Module Editor
