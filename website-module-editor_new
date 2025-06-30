@@ -655,6 +655,7 @@
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
                         <button class="btn btn-success" onclick="showCreateModuleDialog()" style="flex: 1; min-width: 200px;">+ Neues Modul erstellen</button>
                         <button class="btn btn-warning" onclick="showModuleLibraryManager()" style="flex: 1; min-width: 200px;">📚 Bibliothek verwalten</button>
+                        <button class="btn btn-danger" onclick="resetLocalStorage()" style="flex: 1; min-width: 200px;">🗑️ LocalStorage zurücksetzen</button>
                     </div>
                 </div>
                 <div id="customModulesList">
@@ -1542,6 +1543,153 @@
         iconSpacing: '1.5rem',
         titleSpacing: '1rem',
         textSpacing: '2rem'
+    }
+},
+
+,
+{
+    id: 'kerberos-company-presentation',
+    name: 'Company Presentation',
+    category: 'Team & About',
+    description: 'Unternehmensvorstellung mit Haupttext, Button und Statistiken im Grid-Layout',
+    html: `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}}; position: relative;" class="kerberos-company-presentation">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: grid; grid-template-columns: 1fr; gap: {{contentGap}}; align-items: center;">
+                
+                <!-- Hauptinhalt Container -->
+                <div style="display: grid; grid-template-columns: 1fr 400px; gap: 3rem; align-items: center; margin-bottom: 4rem;">
+                    <!-- Linke Seite: Text & Button -->
+                    <div>
+                        <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); color: {{titleColor}}; margin: 0 0 1.5rem 0; line-height: 1.2;">
+                            {{title}}
+                        </h2>
+                        
+                        <div style="color: {{textColor}}; font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
+                            {{description}}
+                        </div>
+                        
+                        <a href="{{buttonLink}}" style="display: inline-flex; align-items: center; gap: 0.5rem; background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: 0.75rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;">
+                            {{buttonText}}
+                        </a>
+                    </div>
+                    
+                    <!-- Rechte Seite: Bild oder Shape -->
+                    {{rightSideContent}}
+                </div>
+                
+                <!-- Statistiken Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                    
+                    <!-- Statistik 1 -->
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+                        <div style="width: 4px; background: {{primaryColor}}; height: 80px; border-radius: 2px; margin-top: 0.5rem;"></div>
+                        <div>
+                            <div style="font-family: var(--heading-font-font-family); font-size: 1.4rem; font-weight: 700; color: {{primaryColor}}; margin-bottom: 0.5rem;">
+                                {{stat1Value}}
+                            </div>
+                            <div style="color: {{textColor}}; font-weight: 600; font-size: 0.9rem;">
+                                {{stat1Description}}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistik 2 -->
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+                        <div style="width: 4px; background: {{primaryColor}}; height: 80px; border-radius: 2px; margin-top: 0.5rem;"></div>
+                        <div>
+                            <div style="font-family: var(--heading-font-font-family); font-size: 1.4rem; font-weight: 700; color: {{primaryColor}}; margin-bottom: 0.5rem;">
+                                {{stat2Value}}
+                            </div>
+                            <div style="color: {{textColor}}; font-weight: 600; font-size: 0.9rem;">
+                                {{stat2Description}}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistik 3 -->
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+                        <div style="width: 4px; background: {{primaryColor}}; height: 80px; border-radius: 2px; margin-top: 0.5rem;"></div>
+                        <div>
+                            <div style="font-family: var(--heading-font-font-family); font-size: 1.4rem; font-weight: 700; color: {{primaryColor}}; margin-bottom: 0.5rem;">
+                                {{stat3Value}}
+                            </div>
+                            <div style="color: {{textColor}}; font-weight: 600; font-size: 0.9rem;">
+                                {{stat3Description}}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistik 4 -->
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start;">
+                        <div style="width: 4px; background: {{primaryColor}}; height: 80px; border-radius: 2px; margin-top: 0.5rem;"></div>
+                        <div>
+                            <div style="font-family: var(--heading-font-font-family); font-size: 1.4rem; font-weight: 700; color: {{primaryColor}}; margin-bottom: 0.5rem;">
+                                {{stat4Value}}
+                            </div>
+                            <div style="color: {{textColor}}; font-weight: 600; font-size: 0.9rem;">
+                                {{stat4Description}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Responsive Styles -->
+        <style>
+            @media (max-width: 768px) {
+                .kerberos-company-presentation div[style*="grid-template-columns: 1fr 400px"] {
+                    grid-template-columns: 1fr !important;
+                    gap: 2rem !important;
+                }
+                .kerberos-company-presentation div[style*="height: 300px"] {
+                    height: 200px !important;
+                    order: -1;
+                }
+                .kerberos-company-presentation div[style*="repeat(auto-fit, minmax(250px, 1fr))"] {
+                    grid-template-columns: 1fr !important;
+                    gap: 1.5rem !important;
+                }
+            }
+        </style>
+    </section>`,
+    properties: {
+        // Hauptinhalt
+        title: 'Geldwäsche-Compliance für alle seit 2017',
+        titleColor: '#063AA8',
+        description: 'Seit 2017 ist es unsere Aufgabe, die Anforderungen des Geldwäschegesetz für alle umsetzbar zu machen. Wir beraten und unterstützen Unternehmen nicht nur mit fachlicher Expertise, sondern bauen zudem unser Angebot technischer und standardisierter Lösungen stetig aus.<br><br>Als einer der größten Dienstleister für Anti-Geldwäsche Compliance Deutschlands tragen wir maßgeblich dazu bei, <strong>Compliance für alle</strong> zu ermöglichen.',
+        textColor: '#212529',
+
+        // Zu den bestehenden Properties hinzufügen:
+        imageUrl: '',
+        imageAlt: 'Unternehmensbild',
+        showImage: 'false',
+        
+        // Button
+        buttonText: 'Über uns',
+        buttonLink: '/unternehmen/ueber-uns',
+        buttonBgColor: '#063AA8',
+        buttonTextColor: '#FFFFFF',
+        
+        // Design
+        backgroundColor: '#FFFFFF',
+        primaryColor: '#063AA8',
+        shapeColor: 'hsla(226, 94%, 34%, 0.14)',
+        sectionSpacing: '6rem 0',
+        contentGap: '3rem',
+        
+        // Statistiken
+        stat1Value: 'Alle Branchen',
+        stat1Description: 'Unsere Kunden stammen aus allen verpflichteten Branchen',
+        
+        stat2Value: '1.000+',
+        stat2Description: 'Erfolgreich abgeschlossene Behördenvorgänge',
+        
+        stat3Value: '60+',
+        stat3Description: 'Mitarbeiterinnen und Mitarbeiter',
+        
+        stat4Value: 'Zertifiziert',
+        stat4Description: 'Nach den Standards ISO 37301, ISO 27001 und ISO 27701'
     }
 },
 
@@ -3462,8 +3610,12 @@ properties: {
 
         // Modul zum Canvas hinzufügen
         function addModuleToCanvas(templateId) {
-            const template = MODULE_TEMPLATES.find(t => t.id === templateId);
-            if (!template) return;
+            const template = MODULE_TEMPLATES.find(t => t && t.id === templateId);
+            if (!template) {
+                console.error('Template nicht gefunden:', templateId);
+                showNotification('❌ Template nicht gefunden: ' + templateId);
+                return;
+            }
             
             const module = {
                 id: `module_${++moduleCounter}`,
@@ -4248,6 +4400,8 @@ properties: {
                 html = processKerberosProductFadeOverview(module, html);
             } else if (module.templateId === 'kerberos-warning-facts') {
                 html = processKerberosWarningFacts(module, html);
+            } else if (module.templateId === 'kerberos-company-presentation') {
+                html = processKerberosCompanyPresentation(module, html);
             }
 
 
@@ -4447,6 +4601,33 @@ properties: {
             return html.replace('{{layoutContent}}', layoutContent);
         }
 
+        function processKerberosCompanyPresentation(module, html) {
+            const props = module.properties;
+            
+            // Rechte Seite: Bild oder Shape
+            let rightSideContent = '';
+            
+            if (props.imageUrl && props.imageUrl.trim() !== '') {
+                // Zeige Bild wenn vorhanden
+                rightSideContent = `
+                    <div style="position: relative; height: 300px; border-radius: 4px; overflow: hidden;">
+                        <img src="${props.imageUrl}" 
+                            alt="${props.imageAlt || 'Company Image'}" 
+                            style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                    </div>`;
+            } else {
+                // Zeige Design-Shape wenn kein Bild
+                rightSideContent = `
+                    <div style="background: ${props.shapeColor}; border-radius: 4px; height: 300px; position: relative;">
+                    </div>`;
+            }
+            
+            // Ersetze den Platzhalter
+            html = html.replace('{{rightSideContent}}', rightSideContent);
+            
+            return html;
+        }
+
         function processKerberosBenefits(module, html) {
             const props = module.properties;
             const showIcons = props.showIcons === 'true';
@@ -4489,6 +4670,18 @@ properties: {
             }
             
             selectedModule = modules.find(m => m.id === moduleId);
+            
+            if (!selectedModule) {
+                console.error('❌ Modul nicht gefunden:', moduleId);
+                return;
+            }
+            
+            // Validiere, dass das Template existiert
+            const template = MODULE_TEMPLATES.find(t => t && t.id === selectedModule.templateId);
+            if (!template) {
+                console.error('❌ Template nicht gefunden für Modul:', selectedModule.name, 'Template-ID:', selectedModule.templateId);
+            }
+            
             renderPropertyPanel();
             updateExportButtons(); // Update export buttons when module is selected
         }
@@ -4520,9 +4713,23 @@ properties: {
                 panel.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 1.5rem;">Modul auswählen zum Bearbeiten</p>';
                 return;
             }
-            
-            const template = MODULE_TEMPLATES.find(t => t.id === selectedModule.templateId);
-            
+                        
+            console.log('🔍 Template-ID:', selectedModule.templateId, 'für Modul:', selectedModule.name);
+
+            const template = MODULE_TEMPLATES.find(t => t && t.id === selectedModule.templateId);
+
+            if (!template) {
+                panel.innerHTML = `
+                    <div style="color: #dc3545; text-align: center; padding: 1.5rem; background: #fee; border: 1px solid #f5c6cb; border-radius: 4px;">
+                        <h4>⚠️ Template nicht gefunden</h4>
+                        <p>Template-ID: ${selectedModule.templateId}</p>
+                        <p>Modul: ${selectedModule.name}</p>
+                        <button onclick="fixMissingTemplate('${selectedModule.id}')" class="btn btn-primary" style="margin-top: 1rem;">Template reparieren</button>
+                    </div>
+                `;
+                return;
+            }
+                        
             let html = `
                 <h4 style="color: var(--kerberos-primary); margin-bottom: 1rem; font-size: 1rem;">${template.name}</h4>
                 <p style="font-size: 0.8rem; color: #6c757d; margin-bottom: 1.5rem;">${template.description}</p>
@@ -5665,6 +5872,33 @@ properties: {
                     }, 100);
                 }
             }
+
+            // Company Presentation Live Updates
+            else if (key.startsWith('stat') && key.includes('Value')) {
+                const statNumber = key.match(/stat(\d+)Value/)[1];
+                const statElements = moduleElement.querySelectorAll(`div[style*="font-size: 1.4rem"]`);
+                if (statElements[statNumber - 1]) {
+                    statElements[statNumber - 1].textContent = value;
+                }
+            }
+            else if (key.startsWith('stat') && key.includes('Description')) {
+                const statNumber = key.match(/stat(\d+)Description/)[1];
+                const descElements = moduleElement.querySelectorAll(`div[style*="font-size: 0.9rem"]`);
+                if (descElements[statNumber - 1]) {
+                    descElements[statNumber - 1].textContent = value;
+                }
+            }
+            else if (key === 'shapeColor') {
+                const shapeElement = moduleElement.querySelector('[style*="height: 300px"]');
+                if (shapeElement) {
+                    shapeElement.style.background = value;
+                }
+            }
+
+            else if (key === 'imageUrl') {
+                // Trigger full re-render for image changes
+                applyChanges();
+            }
         }
 
         // Spezielle Live-Updates für komplexe Module
@@ -6688,14 +6922,28 @@ properties: {
                 if (saved) {
                     const customTemplates = JSON.parse(saved);
                     customTemplates.forEach(template => {
+                        // Validierung: Template muss id haben
+                        if (!template || !template.id) {
+                            console.warn('Überspringe ungültiges Template:', template);
+                            return;
+                        }
+                        
                         // Nur hinzufügen wenn nicht in Blacklist und nicht bereits vorhanden
                         if (!deletedList.includes(template.id) && !MODULE_TEMPLATES.find(t => t.id === template.id)) {
+                            // Weitere Validierung
+                            if (!template.name) template.name = 'Unbenanntes Template';
+                            if (!template.category) template.category = 'Custom';
+                            if (!template.html) template.html = '<div>Leeres Template</div>';
+                            if (!template.properties) template.properties = {};
+                            
                             MODULE_TEMPLATES.push(template);
                         }
                     });
                 }
             } catch (e) {
                 console.error('Fehler beim Laden der Custom Templates:', e);
+                // Falls localStorage korrupt ist, lösche es
+                localStorage.removeItem('kerberos-custom-templates');
             }
         }
 
@@ -7787,6 +8035,82 @@ properties: {
                 goToSlide(0, false);
                 startAutoPlay();
             });
+        }
+
+        // Debug-Funktion um Template-Probleme zu finden
+        function debugTemplates() {
+            console.log('=== TEMPLATE DEBUG ===');
+            console.log('Total Templates:', MODULE_TEMPLATES.length);
+            
+            MODULE_TEMPLATES.forEach((template, index) => {
+                if (!template) {
+                    console.error(`Template ${index} ist undefined`);
+                } else if (!template.id) {
+                    console.error(`Template ${index} hat keine ID:`, template);
+                } else if (!template.name) {
+                    console.warn(`Template ${template.id} hat keinen Namen`);
+                }
+            });
+            
+            // LocalStorage Debug
+            try {
+                const saved = localStorage.getItem('kerberos-custom-templates');
+                if (saved) {
+                    const customTemplates = JSON.parse(saved);
+                    console.log('Custom Templates im LocalStorage:', customTemplates.length);
+                    customTemplates.forEach((template, index) => {
+                        if (!template || !template.id) {
+                            console.error(`LocalStorage Template ${index} ist ungültig:`, template);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('LocalStorage ist korrupt:', e);
+            }
+        }
+
+        // Globale Funktion verfügbar machen
+        window.debugTemplates = debugTemplates;
+
+        function resetLocalStorage() {
+            if (confirm('⚠️ WARNUNG: Dies löscht alle gespeicherten Custom Templates, Seiten und Einstellungen!\n\nFortfahren?')) {
+                localStorage.removeItem('kerberos-custom-templates');
+                localStorage.removeItem('kerberos-saved-pages');
+                localStorage.removeItem('kerberos-deleted-templates');
+                
+                // Seite neu laden um frischen Zustand zu haben
+                location.reload();
+            }
+        }
+
+        function fixMissingTemplate(moduleId) {
+            const module = modules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            // Versuche, ein passendes Template zu finden oder erstelle ein Basis-Template
+            let template = MODULE_TEMPLATES.find(t => t && t.name && t.name.includes(module.name));
+            
+            if (!template) {
+                // Erstelle ein Notfall-Template
+                template = {
+                    id: module.templateId,
+                    name: module.name || 'Repariertes Template',
+                    category: 'Custom',
+                    description: 'Automatisch repariertes Template',
+                    html: module.html || '<div>{{title}}</div>',
+                    properties: module.properties || { title: 'Titel' },
+                    customized: true
+                };
+                
+                MODULE_TEMPLATES.push(template);
+                saveCustomTemplates();
+            }
+            
+            // Aktualisiere das Modul
+            module.templateId = template.id;
+            
+            renderPropertyPanel();
+            showNotification('✅ Template repariert');
         }
 
     </script>
