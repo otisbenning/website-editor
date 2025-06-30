@@ -1544,6 +1544,188 @@
         textSpacing: '2rem'
     }
 },
+
+{
+    id: 'kerberos-testimonials-carousel',
+    name: 'Testimonials Carousel',
+    category: 'Content & Images',
+    description: 'Responsive Kundenbewertungs-Carousel mit automatischem Slideshow',
+    html: `<style>
+/* Kerberos Testimonials Carousel - Responsive & Optimiert */
+.kerberos-testimonials-container {
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.kerberos-testimonials-track {
+    display: flex;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: fit-content;
+}
+
+.testimonial-slide {
+    flex: 0 0 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 1rem;
+}
+
+.testimonial-content {
+    background: {{cardBackground}};
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(6,58,168,0.1);
+    height: 100%;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: {{primaryColor}};
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(6,58,168,0.2);
+    transition: all 0.3s ease;
+    z-index: 10;
+    font-family: 'Font Awesome 5 Pro';
+    font-size: 1.2rem;
+}
+
+.nav-button:hover {
+    background: rgba(6,58,168,0.8);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(6,58,168,0.3);
+}
+
+.nav-prev { left: 1rem; }
+.nav-next { right: 1rem; }
+
+.testimonial-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.testimonial-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #DEE2E6;
+}
+
+.testimonial-dot.active {
+    background: {{primaryColor}};
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .testimonial-content {
+        padding: 1.5rem;
+        min-height: 300px;
+    }
+    
+    .nav-button {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .nav-prev { left: 0.5rem; }
+    .nav-next { right: 0.5rem; }
+}
+
+@media (max-width: 480px) {
+    .testimonial-content {
+        padding: 1rem;
+    }
+    
+    .nav-button {
+        display: none;
+    }
+}
+</style>
+
+<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}};" class="kerberos-module-{{templateId}}">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0 0 1rem 0;">{{title}}</h2>
+            <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{subtitleColor}}; max-width: 600px; margin: 0 auto;">{{subtitle}}</p>
+        </div>
+        
+        <div class="kerberos-testimonials-container">
+            <div class="kerberos-testimonials-track">
+                {{testimonialSlides}}
+            </div>
+            
+            <button class="nav-button nav-prev" aria-label="Vorheriges Testimonial">
+                &#xf060;
+            </button>
+            <button class="nav-button nav-next" aria-label="Nächstes Testimonial">
+                &#xf061;
+            </button>
+        </div>
+        
+        <div class="testimonial-dots">
+            {{navigationDots}}
+        </div>
+    </div>
+</section>`,
+    properties: {
+        title: 'Was unsere Kunden sagen',
+        titleColor: '#063AA8',
+        subtitle: 'Vertrauen Sie auf die Erfahrungen von über 500 zufriedenen Kunden',
+        subtitleColor: '#6c757d',
+        backgroundColor: '#F8F9FA',
+        sectionSpacing: '6rem 0',
+        cardBackground: '#FFFFFF',
+        primaryColor: '#063AA8',
+        starColor: '#FFD700',
+        textColor: '#212529',
+        authorColor: '#063AA8',
+        
+        testimonial1Text: 'Kerberos hat unsere Compliance-Prozesse revolutioniert. Was früher Wochen dauerte, erledigen wir jetzt in Minuten.',
+        testimonial1Author: 'Dr. Michael Schmidt',
+        testimonial1Position: 'Geschäftsführer',
+        testimonial1Company: 'FinTech Solutions GmbH',
+        testimonial1Rating: '5',
+        testimonial1Image: '',
+        testimonial1Active: 'true',
+        
+        testimonial2Text: 'Die beste Investition für unser Unternehmen. Endlich haben wir Rechtssicherheit und können uns aufs Kerngeschäft konzentrieren.',
+        testimonial2Author: 'Sarah Weber',
+        testimonial2Position: 'Compliance Officer',
+        testimonial2Company: 'Real Estate Partners',
+        testimonial2Rating: '5',
+        testimonial2Image: '',
+        testimonial2Active: 'true',
+        
+        testimonial3Text: 'Hervorragender Support und eine Plattform, die wirklich funktioniert. Kerberos versteht die Bedürfnisse von KMUs.',
+        testimonial3Author: 'Thomas Müller',
+        testimonial3Position: 'Rechtsanwalt',
+        testimonial3Company: 'Kanzlei Müller & Partner',
+        testimonial3Rating: '5',
+        testimonial3Image: '',
+        testimonial3Active: 'true'
+    }
+},
             {
                 id: 'kerberos-team-gallery',
                 name: 'Team Galerie',
@@ -1838,6 +2020,90 @@ properties: {
                     backgroundPattern: 'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)'
                 }
             },
+
+            {
+    id: 'kerberos-warning-facts',
+    name: 'Warnungs-Modul mit Fakten',
+    category: 'Content & Services',
+    description: 'Aufmerksamkeitsstarkes Modul mit Hauptmeldung, Statistiken und Call-to-Action',
+    html: `<section style="padding: {{sectionSpacing}}; background: {{backgroundColor}}; position: relative; overflow: hidden;" class="kerberos-warning-module">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('{{backgroundImage}}') center/cover; opacity: {{backgroundOpacity}};" class="background-overlay"></div>
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
+            <div style="text-align: center; margin-bottom: {{contentGap}};">
+                <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin-bottom: {{titleSpacing}}; text-align: center;">
+                    <span style="background: linear-gradient(180deg, transparent 70%, {{highlightColor}} 70%); padding: 0 0.2rem;">{{titleLine1}}</span><br>
+                    <span style="background: linear-gradient(180deg, transparent 70%, {{highlightColor}} 70%); padding: 0 0.2rem;">{{titleLine2}}</span>
+                </h2>
+                <h3 style="font-family: var(--heading-font-font-family); font-size: var(--heading-3-size); font-weight: var(--heading-font-font-weight); color: {{subtitleColor}}; margin-bottom: {{subtitleSpacing}}; text-align: center;">
+                    <strong>{{subtitle}}</strong>
+                </h3>
+                <div style="margin: {{buttonSpacing}}; text-align: center;">
+                    <a href="{{buttonLink}}" style="display: inline-block; font-family: var(--button-font-family); font-weight: var(--button-font-weight); background: {{buttonBgColor}}; color: {{buttonTextColor}}; padding: 1rem 2rem; border-radius: {{buttonRadius}}; text-decoration: none; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: {{buttonShadow}};">{{buttonText}}</a>
+                </div>
+            </div>
+            {{factsContent}}
+        </div>
+    </section>`,
+    properties: {
+        titleLine1: "Wissen Sie nicht,",
+        titleLine2: "was Sie tun müssen?",
+        titleColor: "#FFFFFF",
+        titleSpacing: "1rem",
+        highlightColor: "rgba(138, 43, 226, 0.4)",
+        
+        subtitle: "Sprechen Sie jetzt mit unseren Expert:innen.",
+        subtitleColor: "#FFFFFF",
+        subtitleSpacing: "2rem",
+        
+        buttonText: "Kostenfreie Beratung",
+        buttonLink: "/unternehmen/kontakt",
+        buttonBgColor: "rgba(255,255,255,0.9)",
+        buttonTextColor: "#063AA8",
+        buttonRadius: "6px",
+        buttonShadow: "0 4px 12px rgba(0,0,0,0.15)",
+        buttonSpacing: "2rem 0",
+        
+        backgroundColor: "#1a1a1a",
+        backgroundImage: "",
+        backgroundOpacity: "0.15",
+        
+        sectionSpacing: "6rem 0",
+        contentGap: "3rem",
+        factsSpacing: "4rem",
+        factsGap: "2rem",
+        
+        lineColor: "#8A2BE2",
+        factNumberSize: "1.8rem",
+        factNumberColor: "#8A2BE2",
+        factTextSize: "1rem",
+        factTextColor: "#FFFFFF",
+        
+        fact1Number: "100+ Mrd. €",
+        fact1Description: "Werden pro Jahr in Deutschland gewaschen",
+        fact1Active: "true",
+        
+        fact2Number: "30+ Änderungen",
+        fact2Description: "im Geldwäschegesetz seit 2007",
+        fact2Active: "true",
+        
+        fact3Number: "Bis zu 1 Mio. € Bußgeld",
+        fact3Description: "bei Verstößen gegen das Geldwäschegesetz möglich",
+        fact3Active: "true",
+        
+        fact4Number: "95% der Unternehmen",
+        fact4Description: "haben keine vollständige Compliance-Strategie",
+        fact4Active: "false",
+        
+        fact5Number: "24/7 Überwachung",
+        fact5Description: "durch Aufsichtsbehörden möglich",
+        fact5Active: "false",
+        
+        fact6Number: "50+ Prüfpunkte",
+        fact6Description: "müssen regelmäßig kontrolliert werden",
+        fact6Active: "false"
+    },
+    customized: true
+},
             
             // Vorhandene Module beibehalten...
             {
@@ -1929,24 +2195,43 @@ properties: {
                     const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
                     
                     testimonialSlides += `
-                        <div class="testimonial-slide" style="min-width: 100%; background: ${props.cardBackground}; border-radius: ${props.cardRadius}; padding: ${props.cardPadding}; text-align: center; box-shadow: ${props.cardShadow};">
-                            <div style="font-size: 1.5rem; color: ${props.starColor}; margin-bottom: 1.5rem;">${stars}</div>
-                            <blockquote style="font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 1.6; color: ${props.textColor}; margin: 0 0 2rem 0; font-style: italic;">${text}</blockquote>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-                                <div style="width: 60px; height: 60px; border-radius: 50%; ${avatarStyle}">${image ? '' : initial}</div>
-                                <div style="text-align: left;">
-                                    <div style="font-family: var(--heading-font-font-family); font-weight: 600; color: ${props.authorColor}; margin-bottom: 0.25rem;">${author}</div>
-                                    <div style="font-size: 0.9rem; color: ${props.subtitleColor};">${position}</div>
-                                    <div style="font-size: 0.85rem; color: ${props.subtitleColor}; opacity: 0.8;">${company}</div>
+                        <div class="testimonial-slide" style="flex: 0 0 100%; max-width: 100%; box-sizing: border-box; padding: 0 1rem;">
+                            <div class="testimonial-content" style="background: ${props.cardBackground || '#FFFFFF'}; border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1); height: 100%; min-height: 350px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div class="testimonial-quote" style="flex: 1; display: flex; flex-direction: column; justify-content: center; margin-bottom: 2rem;">
+                                    <div style="font-size: 1.5rem; color: ${props.starColor || '#FFD700'}; margin-bottom: 1.5rem;">${stars}</div>
+                                    <blockquote style="font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 1.6; color: ${props.textColor || '#212529'}; margin: 0; font-style: italic;">"${text}"</blockquote>
+                                </div>
+                                <div class="testimonial-author" style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: auto;">
+                                    <div class="author-avatar" style="width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0; ${avatarStyle}">${image ? '' : initial}</div>
+                                    <div class="author-info" style="text-align: left; min-width: 0;">
+                                        <div style="font-family: var(--heading-font-font-family, Arial, sans-serif); font-weight: 600; color: ${props.authorColor || '#063AA8'}; margin-bottom: 0.25rem;">${author}</div>
+                                        <div style="font-size: 0.9rem; color: ${props.subtitleColor || '#6c757d'};">${position}</div>
+                                        ${company ? `<div style="font-size: 0.85rem; color: ${props.subtitleColor || '#6c757d'}; opacity: 0.8;">${company}</div>` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
                     
                     navigationDots += `
-                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" data-slide="${slideCount}"></button>`;
+                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease; background: #DEE2E6;" data-slide="${slideCount}"></button>`;
                     
                     slideCount++;
                 }
+            }
+            
+            // Fallback für den Fall, dass keine aktiven Testimonials gefunden wurden
+            if (slideCount === 0) {
+                testimonialSlides = `
+                    <div class="testimonial-slide" style="flex: 0 0 100%; max-width: 100%; box-sizing: border-box; padding: 0 1rem;">
+                        <div class="testimonial-content" style="background: ${props.cardBackground || '#FFFFFF'}; border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1); height: 100%; min-height: 350px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="color: #6c757d; font-style: italic;">
+                                <p>Keine aktiven Testimonials gefunden.</p>
+                                <p style="font-size: 0.9rem;">Aktivieren Sie Testimonials in den Eigenschaften.</p>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                navigationDots = `<button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease; background: #DEE2E6;" data-slide="0"></button>`;
             }
             
             html = html.replace('{{testimonialSlides}}', testimonialSlides);
@@ -2128,29 +2413,48 @@ properties: {
                     const initial = author.charAt(0).toUpperCase();
                     const avatarStyle = image ? 
                         `background: url('${image}') center/cover;` : 
-                        `background: linear-gradient(135deg, ${props.primaryColor}, #009CE6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
+                        `background: linear-gradient(135deg, ${props.primaryColor || '#063AA8'}, #009CE6); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;`;
                     
                     const stars = '★'.repeat(parseInt(rating)) + '☆'.repeat(5 - parseInt(rating));
                     
                     testimonialSlides += `
-                        <div class="testimonial-slide" style="min-width: 100%; background: ${props.cardBackground}; border-radius: 12px; padding: 3rem 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1);">
-                            <div style="font-size: 1.5rem; color: ${props.starColor}; margin-bottom: 1.5rem;">${stars}</div>
-                            <blockquote style="font-family: 'Playfair Display', serif; font-size: 1.25rem; line-height: 1.6; color: ${props.textColor}; margin: 0 0 2rem 0; font-style: italic;">${text}</blockquote>
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-                                <div style="width: 60px; height: 60px; border-radius: 50%; ${avatarStyle}">${image ? '' : initial}</div>
-                                <div style="text-align: left;">
-                                    <div style="font-family: var(--heading-font-font-family); font-weight: 600; color: ${props.authorColor}; margin-bottom: 0.25rem;">${author}</div>
-                                    <div style="font-size: 0.9rem; color: ${props.subtitleColor};">${position}</div>
-                                    <div style="font-size: 0.85rem; color: ${props.subtitleColor}; opacity: 0.8;">${company}</div>
+                        <div class="testimonial-slide" style="flex: 0 0 100%; max-width: 100%; box-sizing: border-box; padding: 0 1rem;">
+                            <div class="testimonial-content" style="background: ${props.cardBackground || '#FFFFFF'}; border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1); height: 100%; min-height: 350px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div class="testimonial-quote" style="flex: 1; display: flex; flex-direction: column; justify-content: center; margin-bottom: 2rem;">
+                                    <div style="font-size: 1.5rem; color: ${props.starColor || '#FFD700'}; margin-bottom: 1.5rem;">${stars}</div>
+                                    <blockquote style="font-family: var(--body-font-font-family, Arial, sans-serif); font-size: 1.25rem; line-height: 1.6; color: ${props.textColor || '#212529'}; margin: 0; font-style: italic;">"${text}"</blockquote>
+                                </div>
+                                <div class="testimonial-author" style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: auto;">
+                                    <div class="author-avatar" style="width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0; ${avatarStyle}">${image ? '' : initial}</div>
+                                    <div class="author-info" style="text-align: left; min-width: 0;">
+                                        <div style="font-family: var(--heading-font-font-family, Arial, sans-serif); font-weight: 600; color: ${props.authorColor || '#063AA8'}; margin-bottom: 0.25rem;">${author}</div>
+                                        <div style="font-size: 0.9rem; color: ${props.subtitleColor || '#6c757d'};">${position}</div>
+                                        ${company ? `<div style="font-size: 0.85rem; color: ${props.subtitleColor || '#6c757d'}; opacity: 0.8;">${company}</div>` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>`;
                     
                     navigationDots += `
-                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease;" data-slide="${slideCount}"></button>`;
+                        <button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease; background: #DEE2E6;" data-slide="${slideCount}"></button>`;
                     
                     slideCount++;
                 }
+            }
+            
+            // Fallback für den Fall, dass keine aktiven Testimonials gefunden wurden
+            if (slideCount === 0) {
+                testimonialSlides = `
+                    <div class="testimonial-slide" style="flex: 0 0 100%; max-width: 100%; box-sizing: border-box; padding: 0 1rem;">
+                        <div class="testimonial-content" style="background: ${props.cardBackground || '#FFFFFF'}; border-radius: 12px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(6,58,168,0.1); height: 100%; min-height: 350px; display: flex; flex-direction: column; justify-content: center;">
+                            <div style="color: #6c757d; font-style: italic;">
+                                <p>Keine aktiven Testimonials gefunden.</p>
+                                <p style="font-size: 0.9rem;">Aktivieren Sie Testimonials in den Eigenschaften.</p>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                navigationDots = `<button class="testimonial-dot" style="width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; transition: all 0.3s ease; background: #DEE2E6;" data-slide="0"></button>`;
             }
             
             html = html.replace('{{testimonialSlides}}', testimonialSlides);
@@ -2792,6 +3096,12 @@ properties: {
             setTimeout(() => {
                 activateModuleInteractivity();
             }, 100);
+
+            // Testimonials Carousels nach dem Rendering initialisieren
+            setTimeout(() => {
+                initializeTestimonialsCarousels();
+            }, 100);
+            
         }
 
         // Event Listener Management
@@ -3130,6 +3440,36 @@ properties: {
                 position: relative !important;
                 overflow: hidden !important;
             }\n\n`;
+
+            // NACH dem bestehenden CSS hinzufügen:
+            css += `
+            /* Responsive Styles für Warnungs-Modul */
+            @media (max-width: 768px) {
+                .kerberos-warning-module h2 {
+                    font-size: 1.5rem !important;
+                    line-height: 1.3 !important;
+                }
+                
+                .kerberos-warning-module h3 {
+                    font-size: 1.2rem !important;
+                }
+                
+                .kerberos-warning-module .background-overlay {
+                    opacity: 0.05 !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .kerberos-warning-module div[style*="grid-template-columns"] {
+                    grid-template-columns: 1fr !important;
+                    gap: 1.5rem !important;
+                }
+                
+                .kerberos-warning-module div[style*="height: 80px"] {
+                    height: 60px !important;
+                }
+            }
+            `;
             
             // Individuelle Hover-Styles für jedes Modul
             modules.forEach(module => {
@@ -3462,6 +3802,8 @@ properties: {
             } else if (module.templateId === 'kerberos-product-fade-overview') {
                 console.log('✅ FADE OVERVIEW ERKANNT - Process-Funktion wird ausgeführt!');
                 html = processKerberosProductFadeOverview(module, html);
+            } else if (module.templateId === 'kerberos-warning-facts') {
+                html = processKerberosWarningFacts(module, html);
             }
 
 
@@ -3506,35 +3848,62 @@ properties: {
             
             // CSS für dieses spezifische Modul generieren
             const hoverCSS = `
-        <style>
-        /* Kerberos Button Hover Effects - ${module.name} */
-        .kerberos-btn-${module.id} {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            cursor: pointer !important;
-            position: relative !important;
-            overflow: hidden !important;
-        }
+            <style>
+            /* Kerberos Button Hover Effects - ${module.name} */
+            .kerberos-btn-${module.id} {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                cursor: pointer !important;
+                position: relative !important;
+                overflow: hidden !important;
+            }
 
-        .kerberos-btn-${module.id}:hover {
-            background: ${hoverBg} !important;
-            color: ${hoverColor} !important;
-            transform: ${hoverTransform} !important;
-            box-shadow: ${hoverShadow} !important;
-        }
+            .kerberos-btn-${module.id}:hover {
+                background: ${hoverBg} !important;
+                color: ${hoverColor} !important;
+                transform: ${hoverTransform} !important;
+                box-shadow: ${hoverShadow} !important;
+            }
 
-        .kerberos-btn-${module.id}:active {
-            transform: translateY(0px) !important;
-            transition: all 0.1s ease !important;
-        }
+            .kerberos-btn-${module.id}:active {
+                transform: translateY(0px) !important;
+                transition: all 0.1s ease !important;
+            }
 
-        /* Fallback für Buttons ohne spezifische Klasse */
-        .kerberos-module-${module.id} a[style*="background"]:not(.kerberos-btn):hover {
-            filter: brightness(1.1) saturate(1.1) !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 6px 20px rgba(6,58,168,0.2) !important;
-            transition: all 0.3s ease !important;
-        }
-        </style>`;
+            /* Fallback für Buttons ohne spezifische Klasse */
+            .kerberos-module-${module.id} a[style*="background"]:not(.kerberos-btn):hover {
+                filter: brightness(1.1) saturate(1.1) !important;
+                transform: translateY(-1px) !important;
+                box-shadow: 0 6px 20px rgba(6,58,168,0.2) !important;
+                transition: all 0.3s ease !important;
+            }
+
+            /* RESPONSIVE STYLES FÜR WARNUNGS-MODUL */
+            @media (max-width: 768px) {
+                .kerberos-warning-module h2 {
+                    font-size: 1.5rem !important;
+                    line-height: 1.3 !important;
+                }
+                
+                .kerberos-warning-module h3 {
+                    font-size: 1.2rem !important;
+                }
+                
+                .kerberos-warning-module .background-overlay {
+                    opacity: 0.05 !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .kerberos-warning-module div[style*="grid-template-columns"] {
+                    grid-template-columns: 1fr !important;
+                    gap: 1.5rem !important;
+                }
+                
+                .kerberos-warning-module div[style*="height: 80px"] {
+                    height: 60px !important;
+                }
+            }
+            </style>`;
             
             // CSS am Anfang des HTML einfügen UND Wrapper-Klasse hinzufügen
             if (html.includes('<section') || html.includes('<div')) {
@@ -4823,12 +5192,34 @@ properties: {
                     // Erfolgreich mit speziellem Handler behandelt
                     return;
                 }
+
+                else if (selectedModule.templateId === 'kerberos-warning-facts' && 
+                        (key.startsWith('fact') && (key.includes('Number') || key.includes('Description') || key.includes('Active')))) {
+                    // Facts geändert - komplettes Modul neu rendern
+                    const moduleElement = document.getElementById(`module-${selectedModule.id}`);
+                    if (moduleElement) {
+                        const template = MODULE_TEMPLATES.find(t => t.id === selectedModule.templateId);
+                        if (template) {
+                            moduleElement.innerHTML = processUniversalModule(selectedModule, template.html);
+                        }
+                    }
+                }
                 
             } catch (error) {
                 console.warn('Live-Update fehlgeschlagen, fallback zu vollständigem Update:', error);
                 // Fallback zu komplettem Update
                 clearTimeout(autoApplyTimeout);
                 autoApplyTimeout = setTimeout(() => applyChanges(), 100);
+            }
+
+            // Testimonials Live Updates
+            if (key.includes('testimonial')) {
+                const module = modules.find(m => m.id === moduleId);
+                if (module && module.templateId === 'kerberos-testimonials-carousel') {
+                    setTimeout(() => {
+                        initializeTestimonialsCarousels();
+                    }, 50);
+                }
             }
         }
 
@@ -6652,6 +7043,11 @@ properties: {
             setTimeout(() => {
                 showNotification('🛡️ Kerberos Module Editor (Vollversion) bereit');
             }, 500);
+
+            // Testimonials initialisieren falls bereits Module vorhanden
+            setTimeout(() => {
+                initializeTestimonialsCarousels();
+            }, 200);
         });
 
         // ✨ FADE HOVER PRODUKT-ÜBERSICHT MODUL (KORRIGIERT) ✨
@@ -6773,6 +7169,178 @@ properties: {
             return html;
         }
         
+        function processKerberosWarningFacts(module, html) {
+            const props = module.properties;
+            
+            // Sammle alle aktiven Facts
+            const facts = [];
+            for (let i = 1; i <= 6; i++) {
+                const active = props[`fact${i}Active`];
+                const number = props[`fact${i}Number`];
+                const description = props[`fact${i}Description`];
+                
+                if (active === 'true' && number && description) {
+                    facts.push({
+                        number: number,
+                        description: description
+                    });
+                }
+            }
+            
+            // Generiere Facts HTML
+            let factsHTML = '';
+            if (facts.length > 0) {
+                factsHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: ${props.factsGap}; margin-top: ${props.factsSpacing};">
+                        ${facts.map(fact => `
+                            <div style="text-align: center; position: relative;">
+                                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                                    <div style="width: 2px; height: 80px; background: ${props.lineColor}; margin-right: 1rem; border-radius: 2px;"></div>
+                                    <div>
+                                        <div style="font-size: ${props.factNumberSize}; font-weight: bold; color: ${props.factNumberColor}; line-height: 1.2; margin-bottom: 0.5rem;">${fact.number}</div>
+                                        <div style="font-size: ${props.factTextSize}; color: ${props.factTextColor}; line-height: 1.4;">${fact.description}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // Ersetze Platzhalter
+            html = html.replace('{{factsContent}}', factsHTML);
+            
+            return html;
+        }
+
+        // Testimonials Carousel Funktionalität für Kerberos Module Editor
+        function initializeTestimonialsCarousels() {
+            const containers = document.querySelectorAll('.kerberos-testimonials-container');
+            
+            containers.forEach((container, containerIndex) => {
+                const track = container.querySelector('.kerberos-testimonials-track');
+                if (!track) return;
+                
+                const slides = track.querySelectorAll('.testimonial-slide');
+                if (slides.length === 0) return;
+                
+                const moduleElement = container.closest('.canvas-module') || container.closest('section');
+                const dots = moduleElement ? moduleElement.querySelectorAll('.testimonial-dot') : [];
+                const prevBtn = container.querySelector('.nav-prev');
+                const nextBtn = container.querySelector('.nav-next');
+                
+                let currentSlide = 0;
+                let autoPlay = true;
+                let autoPlayInterval;
+                let isTransitioning = false;
+                
+                function goToSlide(index, smooth = true) {
+                    if (isTransitioning) return;
+                    
+                    isTransitioning = true;
+                    currentSlide = Math.max(0, Math.min(index, slides.length - 1));
+                    
+                    track.style.transition = smooth ? 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    
+                    dots.forEach((dot, i) => {
+                        if (i === currentSlide) {
+                            dot.classList.add('active');
+                            dot.style.background = '#063AA8';
+                            dot.style.transform = 'scale(1.2)';
+                        } else {
+                            dot.classList.remove('active');
+                            dot.style.background = '#DEE2E6';
+                            dot.style.transform = 'scale(1)';
+                        }
+                    });
+                    
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, smooth ? 600 : 0);
+                }
+                
+                function nextSlide() {
+                    const nextIndex = currentSlide >= slides.length - 1 ? 0 : currentSlide + 1;
+                    goToSlide(nextIndex);
+                }
+                
+                function prevSlide() {
+                    const prevIndex = currentSlide <= 0 ? slides.length - 1 : currentSlide - 1;
+                    goToSlide(prevIndex);
+                }
+                
+                function startAutoPlay() {
+                    if (autoPlay && slides.length > 1) {
+                        autoPlayInterval = setInterval(nextSlide, 5000);
+                    }
+                }
+                
+                function stopAutoPlay() {
+                    if (autoPlayInterval) {
+                        clearInterval(autoPlayInterval);
+                        autoPlayInterval = null;
+                    }
+                }
+                
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        nextSlide();
+                        autoPlay = false;
+                        stopAutoPlay();
+                    });
+                }
+                
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        prevSlide();
+                        autoPlay = false;
+                        stopAutoPlay();
+                    });
+                }
+                
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        goToSlide(index);
+                        autoPlay = false;
+                        stopAutoPlay();
+                    });
+                });
+                
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                track.addEventListener('touchstart', (e) => {
+                    touchStartX = e.changedTouches[0].screenX;
+                    stopAutoPlay();
+                });
+                
+                track.addEventListener('touchend', (e) => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    const swipeDistance = touchEndX - touchStartX;
+                    
+                    if (Math.abs(swipeDistance) > 50) {
+                        if (swipeDistance > 0) {
+                            prevSlide();
+                        } else {
+                            nextSlide();
+                        }
+                        autoPlay = false;
+                    }
+                });
+                
+                container.addEventListener('mouseenter', stopAutoPlay);
+                container.addEventListener('mouseleave', () => {
+                    if (autoPlay) startAutoPlay();
+                });
+                
+                goToSlide(0, false);
+                startAutoPlay();
+            });
+        }
 
     </script>
 </body>
