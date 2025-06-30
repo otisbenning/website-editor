@@ -1548,10 +1548,10 @@
 {
     id: 'kerberos-testimonials-carousel',
     name: 'Testimonials Carousel',
-    category: 'Content & Images',
-    description: 'Responsive Kundenbewertungs-Carousel mit automatischem Slideshow',
+    category: 'Content & Images', 
+    description: 'Responsive Kundenbewertungs-Carousel',
     html: `<style>
-/* Kerberos Testimonials Carousel - Responsive & Optimiert */
+/* Kerberos Testimonials Carousel - Responsiv & Optimiert */
 .kerberos-testimonials-container {
     max-width: 100%;
     overflow: hidden;
@@ -1636,6 +1636,7 @@
     transform: scale(1.2);
 }
 
+/* Tablet Responsive */
 @media (max-width: 768px) {
     .testimonial-content {
         padding: 1.5rem;
@@ -1650,23 +1651,133 @@
     
     .nav-prev { left: 0.5rem; }
     .nav-next { right: 0.5rem; }
+    
+    .testimonial-author {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .author-info {
+        text-align: center;
+    }
+    
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Kleinere Schrift auf Tablets */
+    .testimonial-quote blockquote {
+        font-size: 1.1rem !important;
+    }
+
+    .kerberos-module-testimonials-carousel,
+    section[class*="kerberos-module"] {
+        padding: 4rem 0 !important;
+    }
 }
 
+/* Mobile Responsive */
 @media (max-width: 480px) {
     .testimonial-content {
         padding: 1rem;
+        min-height: 280px;
     }
     
     .nav-button {
         display: none;
     }
+    
+    .testimonial-author {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+
+    .kerberos-module-testimonials-carousel,
+    section[class*="kerberos-module"] {
+        padding: 3rem 0 !important;
+    }
+    
+    .author-info {
+        text-align: center;
+    }
+    
+    .author-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem !important;
+    }
+    
+    /* Mobile Typography */
+    .testimonial-quote blockquote {
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    .author-info > div:first-child {
+        font-size: 0.9rem !important;
+    }
+    
+    .author-info > div:nth-child(2) {
+        font-size: 0.8rem !important;
+    }
+    
+    .author-info > div:nth-child(3) {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Sterne kleiner auf Mobile */
+    .testimonial-quote > div:first-child {
+        font-size: 1.3rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Container Spacing */
+    .kerberos-testimonials-container {
+        margin: 0 -1rem;
+    }
+    
+    .testimonial-slide {
+        padding: 0 0.5rem;
+    }
+    
+    /* Dots größer für Touch */
+    .testimonial-dot {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    .testimonial-dots {
+        gap: 1rem !important;
+        margin-top: 1.5rem !important;
+    }
+}
+
+/* Ultra-small screens */
+@media (max-width: 360px) {
+    .testimonial-content {
+        padding: 0.75rem;
+        min-height: 260px;
+    }
+    
+    .testimonial-quote blockquote {
+        font-size: 0.95rem !important;
+    }
+    
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem !important;
+    }
 }
 </style>
 
 <section style="padding: {{sectionSpacing}}; background: {{backgroundColor}};" class="kerberos-module-{{templateId}}">
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 min(2rem, 4vw);">
         <div style="text-align: center; margin-bottom: 3rem;">
-            <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: {{titleColor}}; margin: 0 0 1rem 0;">{{title}}</h2>
+            <h2 style="font-family: var(--heading-font-font-family)...">{{title}}</h2>
             <p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: {{subtitleColor}}; max-width: 600px; margin: 0 auto;">{{subtitle}}</p>
         </div>
         
