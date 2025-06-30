@@ -1987,7 +1987,99 @@ properties: {
             }
             
             return html.replace('{{teamMembers}}', teamMembers);
-        }        
+        }
+        
+        // Produkt-Übersicht Modul Verarbeitung (Bug-frei)
+        function processKerberosProductOverview(module, html) {
+            const props = module.properties;
+            
+            // === HEADER CONTENT ===
+            let headerContent = '';
+            if (props.title) {
+                headerContent += `<div style="text-align: center; margin-bottom: 3rem;">
+                    <h2 style="font-family: var(--heading-font-font-family); font-size: var(--heading-2-size); font-weight: var(--heading-font-font-weight); line-height: var(--heading-font-line-height); color: ${props.titleColor || '#063AA8'}; margin: 0 0 1rem 0;">${props.title}</h2>`;
+                
+                if (props.showSubtitle === 'true' && props.subtitle) {
+                    headerContent += `<p style="font-family: var(--body-font-font-family); font-size: var(--normal-text-size); line-height: var(--body-font-line-height); color: ${props.subtitleColor || '#6c757d'}; max-width: 800px; margin: 0 auto;">${props.subtitle}</p>`;
+                }
+                
+                headerContent += `</div>`;
+            }
+            
+            // === PRODUCT CARDS ===
+            let productCards = '';
+            for (let i = 1; i <= 6; i++) {
+                if (props[`product${i}Active`] === 'true') {
+                    const title = props[`product${i}Title`] || `Produkt ${i}`;
+                    const description = props[`product${i}Description`] || 'Beschreibung';
+                    const image = props[`product${i}Image`] || 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop';
+                    const link = props[`product${i}Link`] || '#';
+                    const imageHeight = props.cardImageHeight || '200px';  // ← FIX: Korrekte Variable
+                    
+                    productCards += `
+                        <a href="${link}" class="kerberos-product-card kerberos-product-card-${module.id}" style="
+                            background: #FFFFFF; 
+                            border: 1px solid ${props.cardBorderColor || '#DEE2E6'}; 
+                            border-radius: ${props.cardBorderRadius || '8px'}; 
+                            overflow: hidden; 
+                            text-decoration: none; 
+                            display: block; 
+                            cursor: pointer;
+                            box-shadow: ${props.cardShadow || '0 2px 8px rgba(0,0,0,0.1)'};
+                            transform: scale(1);
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        ">
+                            <img src="${image}" alt="${title}" style="width: 100%; height: ${imageHeight}; object-fit: cover;">
+                            <div style="padding: 1rem;">
+                                <h4 class="product-title-${module.id}" style="font-family: var(--heading-font-font-family); color: ${props.cardTitleColor || '#212529'}; margin: 0 0 0.5rem 0; font-size: 1.1rem; transition: color 0.3s ease;">${title}</h4>
+                                <p style="font-family: var(--body-font-font-family); color: ${props.cardDescriptionColor || '#6c757d'}; margin: 0; font-size: 0.9rem;">${description}</p>
+                            </div>
+                        </a>`;
+                }
+            }
+            
+            // === CONTENT ASSEMBLY ===
+            const content = `
+                ${headerContent}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: ${props.cardGap || '2rem'};">
+                    ${productCards}
+                </div>
+            `;
+            
+            // === HOVER CSS (Stark spezifisch) ===
+            const hoverCSS = `<style>
+                /* Überschreibe ALLE Button-Hover-Effekte */
+                .kerberos-product-card-${module.id}:hover {
+                    background: #FFFFFF !important;
+                    color: inherit !important;
+                    transform: scale(${props.cardHoverScale || '1.02'}) !important;
+                    box-shadow: ${props.cardHoverShadow || '0 8px 25px rgba(6,58,168,0.15)'} !important;
+                    border-color: rgba(6,58,168,0.4) !important;
+                    filter: none !important;
+                }
+                
+                .kerberos-product-card-${module.id}:hover .product-title-${module.id} {
+                    color: #063AA8 !important;
+                }
+                
+                .kerberos-product-card-${module.id}:active {
+                    transform: scale(0.98) !important;
+                }
+                
+                /* Anti-Button-System */
+                a.kerberos-product-card-${module.id}:hover {
+                    background: #FFFFFF !important;
+                }
+            </style>`;
+            
+            // === TEMPLATE ASSEMBLY ===
+            html = html.replace('{{content}}', content);
+            html = html.replace(/{{templateId}}/g, module.templateId || module.id);
+            
+            html = hoverCSS + html;
+            
+            return html;
+        }
 
         function processKerberosDashboard(module, html) {
             const props = module.properties;
@@ -5167,10 +5259,11 @@ properties: {
                 case 'module-template':
                     const moduleData = data.module || data.template || data;
                     if (moduleData) {
-                        // Erstelle ein neues Template wenn es nicht existiert
-                        if (!MODULE_TEMPLATES.find(t => t.id === moduleData.templateId)) {
+                        // FIX: Unterstütze sowohl 'id' als auch 'templateId'
+                        const templateId = moduleData.id || moduleData.templateId;
+                        if (!MODULE_TEMPLATES.find(t => t.id === templateId)) {
                             const newTemplate = {
-                                id: moduleData.templateId,
+                                id: templateId,  // ← FIX: Korrekte ID verwenden
                                 name: moduleData.name || data.name || 'Importiertes Modul',
                                 category: moduleData.category || 'Custom',
                                 description: moduleData.description || data.description || 'Importiertes Modul',
@@ -5183,8 +5276,8 @@ properties: {
                             saveCustomTemplates();
                         }
                         
-                        // Füge das Modul direkt zum Canvas hinzu
-                        addModuleToCanvas(moduleData.templateId);
+                        // FIX: Verwende die korrekte templateId auch hier
+                        addModuleToCanvas(templateId);
                         
                         // Wenn es Custom Properties gibt, übernehme sie
                         if (moduleData.properties && modules.length > 0) {
